@@ -1,0 +1,30 @@
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h2>Welcome back</h2>
+            <p class="text-muted">Sign in to manage your sites and access unlimited deploys.</p>
+        </div>
+
+        <?php if (!empty($error)): ?>
+            <div class="alert alert-error"><?= htmlspecialchars($error) ?></div>
+        <?php endif; ?>
+
+        <form action="<?= url('login') ?>" method="POST" class="auth-form">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" name="email" id="email" required placeholder="you@domain.com" class="input-text">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" required placeholder="••••••••" class="input-text">
+            </div>
+
+            <button type="submit" class="btn-primary w-full mt-2">Sign In</button>
+        </form>
+
+        <p class="auth-footer-text">
+            Don't have an account? <a href="<?= url('register') ?>" class="accent-link">Sign up free</a>
+        </p>
+    </div>
+</div>

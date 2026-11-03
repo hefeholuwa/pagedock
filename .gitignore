@@ -1,0 +1,8 @@
+# PageDock gitignore
+data/*.sqlite
+data/*.sqlite-*
+sites/*
+!sites/.gitkeep
+!data/.gitkeep
+.DS_Store
+*.log
