@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Northlight — Observability & evaluation for production AI</title>
+<meta name="description" content="Northlight traces every model call, scores every response, and lets you replay production traffic against new prompts and models before you ship.">
+<meta name="theme-color" content="#060606">
+<meta property="og:title" content="Northlight — Ship AI that behaves the way you intended">
+<meta property="og:description" content="Tracing, evaluations and replay for teams running LLMs in production.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cdefs%3E%3ClinearGradient id='nlFavBlade' x1='20' y1='1' x2='20' y2='37' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0' stop-color='%23ffffff'/%3E%3Cstop offset='.46' stop-color='%23c9d0ff'/%3E%3Cstop offset='1' stop-color='%2393a5ff' stop-opacity='.16'/%3E%3C/linearGradient%3E%3ClinearGradient id='nlFavEcho' x1='34' y1='9' x2='27' y2='36' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0' stop-color='%23c9d0ff' stop-opacity='.9'/%3E%3Cstop offset='1' stop-color='%2393a5ff' stop-opacity='.05'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M20 1 26 24 20 37 14 24Z' fill='url(%23nlFavBlade)'/%3E%3Cpath d='M33 9.5 34.6 21 29 36 27.4 24.5Z' fill='url(%23nlFavEcho)'/%3E%3Cpath d='M7 14 5.4 25.5 11 36 12.6 24.5Z' fill='url(%23nlFavEcho)' opacity='.5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060606; --bg-2:#09090a; --surface:#0d0d0f; --surface-2:#121214; --surface-3:#18181b;
+  --line:rgba(255,255,255,.07); --line-2:rgba(255,255,255,.11); --line-3:rgba(255,255,255,.18);
+  --text:#f4f4f5; --soft:#c4c4ca; --muted:#8b8b94; --dim:#5d5d66;
+  --accent:#93a5ff; --accent-2:#bcc6ff; --accent-bg:rgba(147,165,255,.08);
+  --ok:#7fd6ab; --warn:#e6c27f; --err:#ef8f8f;
+  --display:"Plus Jakarta Sans",system-ui,sans-serif;
+  --sans:"Manrope",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+  --wrap:1200px; --gut:clamp(20px,4vw,40px);
+  --r:8px;
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:clip}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:100;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+a{color:inherit;text-decoration:none}
+button,input{font:inherit;color:inherit}
+img,svg{display:block}
+::selection{background:rgba(147,165,255,.3)}
+:focus-visible{outline:1px solid var(--accent);outline-offset:3px;border-radius:4px}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 var(--gut)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.mono{font-family:var(--mono)}
+em.ac{font-style:italic;color:var(--accent);font-weight:300}
+svg.lucide{width:15px;height:15px;stroke-width:1.6}
+
+/* type */
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:inline-flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:18px;height:1px;background:var(--accent);opacity:.7}
+.h2{font-family:var(--display);font-weight:300;font-size:clamp(2rem,4vw,3.25rem);line-height:1.08;letter-spacing:-.03em;margin:18px 0 0}
+.lede{color:var(--muted);font-size:clamp(15px,1.2vw,16.5px);max-width:44ch;margin:20px 0 0}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 18px;border-radius:999px;font-size:14px;font-weight:500;border:1px solid transparent;cursor:pointer;transition:background .25s var(--ease),border-color .25s,color .25s,transform .25s var(--ease);white-space:nowrap}
+.btn svg.lucide{width:14px;height:14px;transition:transform .25s var(--ease)}
+.btn:hover svg.lucide{transform:translateX(2px)}
+.btn-p{background:var(--text);color:#08080a}
+.btn-p:hover{background:#fff}
+.btn-g{border-color:var(--line-2);color:var(--soft)}
+.btn-g:hover{border-color:var(--line-3);color:var(--text)}
+.btn-sm{height:34px;padding:0 14px;font-size:13px}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:50;transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
+.nav.scrolled{background:rgba(6,6,6,.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-color:var(--line)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:64px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px;letter-spacing:-.01em}
+.brand-mark{width:28px;height:28px;flex:none;display:grid;place-items:center}
+.brand-mark svg{display:block;width:100%;height:100%;filter:drop-shadow(0 0 6px rgba(147,165,255,.35));transition:filter .3s var(--ease),transform .35s var(--ease)}
+.brand:hover .brand-mark svg{filter:drop-shadow(0 0 12px rgba(147,165,255,.65));transform:scale(1.06)}
+.nav-links{display:flex;gap:30px;font-size:13.5px;color:var(--muted)}
+.nav-links a{transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+.nav-r{display:flex;align-items:center;gap:18px;font-size:13.5px}
+.nav-r .login{color:var(--muted);transition:color .2s}
+.nav-r .login:hover{color:var(--text)}
+.menu-btn{display:none;width:40px;height:40px;border:1px solid var(--line-2);border-radius:999px;background:none;place-items:center;cursor:pointer}
+.mobile-menu{display:none}
+@media (max-width:860px){
+  .nav-links,.nav-r .login,.nav-r .btn{display:none}
+  .menu-btn{display:grid}
+  .mobile-menu{display:block;overflow:hidden;max-height:0;transition:max-height .35s var(--ease);background:rgba(6,6,6,.96);border-bottom:1px solid transparent}
+  .mobile-menu.open{max-height:420px;border-color:var(--line)}
+  .mobile-menu nav{display:flex;flex-direction:column;padding:8px var(--gut) 24px}
+  .mobile-menu a{padding:14px 0;border-bottom:1px solid var(--line);color:var(--soft);font-size:15px}
+  .mobile-menu .btn{margin-top:18px;justify-content:center}
+}
+
+/* hero */
+.hero{position:relative;padding:clamp(80px,13vw,168px) 0 clamp(90px,12vw,150px);text-align:center;isolation:isolate}
+.hero-bg{position:absolute;inset:-64px 0 0;z-index:-1;pointer-events:none;overflow:hidden}
+.hero-bg::before{content:"";position:absolute;left:50%;top:-10%;width:min(1100px,140vw);height:620px;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(147,165,255,.10),rgba(147,165,255,.03) 55%,transparent)}
+.hero-bg svg{position:absolute;left:50%;top:0;transform:translateX(-50%);width:max(1400px,120vw);height:100%}
+.hero-viz{position:absolute;inset:0;margin:0;z-index:-1;pointer-events:none;overflow:hidden}
+.hero-canvas{display:block;width:100%;height:100%;opacity:0;transition:opacity 1.4s var(--ease)}
+.hero-canvas.ready{opacity:1}
+.hero.webgl .hero-bg{opacity:.5;transition:opacity 1.4s var(--ease)}
+@media (prefers-reduced-motion:reduce){.hero-canvas{display:none}.hero.webgl .hero-bg{opacity:1}}
+.pill{display:inline-flex;align-items:center;gap:10px;padding:5px 14px 5px 6px;border:1px solid var(--line-2);border-radius:999px;font-size:12.5px;color:var(--soft);transition:border-color .25s}
+.pill:hover{border-color:var(--line-3)}
+.pill b{font-weight:500;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);background:var(--accent-bg);padding:3px 8px;border-radius:999px}
+.hero h1{font-family:var(--display);font-weight:300;font-size:clamp(2.6rem,6.4vw,5.6rem);line-height:1.02;letter-spacing:-.038em;margin:30px auto 0;max-width:15ch}
+.hero p.sub{color:var(--muted);font-size:clamp(15px,1.35vw,17.5px);max-width:46ch;margin:28px auto 0}
+.hero-ctas{display:flex;justify-content:center;gap:12px;margin-top:40px;flex-wrap:wrap}
+.assure{margin-top:22px;font-size:12.5px;color:var(--dim);display:flex;justify-content:center;gap:18px;flex-wrap:wrap}
+.assure span{display:inline-flex;align-items:center;gap:6px}
+.assure svg.lucide{width:13px;height:13px;color:var(--accent);opacity:.8}
+
+/* section */
+section{position:relative}
+.sec{padding:clamp(80px,11vw,150px) 0}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--line-2) 20%,var(--line-2) 80%,transparent)}
+
+/* showcase head */
+.show-head{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:end;margin-bottom:56px}
+.show-head .lede{justify-self:end;margin:0}
+@media (max-width:860px){.show-head{grid-template-columns:1fr}.show-head .lede{justify-self:start}}
+
+/* app frame */
+.frame{position:relative;border:1px solid var(--line-2);border-radius:12px;background:var(--surface);overflow:hidden;box-shadow:0 0 0 1px rgba(0,0,0,.6),0 40px 120px -40px rgba(147,165,255,.12)}
+.frame::before{content:"";position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,rgba(147,165,255,.55),transparent);opacity:.6}
+.app-top{display:flex;align-items:center;justify-content:space-between;gap:12px;height:44px;padding:0 14px;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted)}
+.crumbs{display:flex;align-items:center;gap:8px;min-width:0;white-space:nowrap;overflow:hidden}
+.crumbs .sep{color:var(--dim)}
+.crumbs .cur{color:var(--text)}
+.env{font-family:var(--mono);font-size:10.5px;padding:2px 7px;border-radius:4px;border:1px solid rgba(127,214,171,.25);color:var(--ok)}
+.kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--line-2);border-radius:5px;padding:3px 8px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.app{display:grid;grid-template-columns:188px minmax(0,1fr) 340px;min-height:520px}
+.side{border-right:1px solid var(--line);padding:14px 10px;display:flex;flex-direction:column;gap:2px;font-size:12.5px}
+.side .grp{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);padding:14px 8px 6px}
+.side a{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:6px;color:var(--muted);transition:background .2s,color .2s}
+.side a:hover{background:rgba(255,255,255,.03);color:var(--soft)}
+.side a.on{background:rgba(255,255,255,.05);color:var(--text)}
+.side a .n{margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--dim)}
+.side svg.lucide{width:14px;height:14px}
+.main{min-width:0;display:flex;flex-direction:column}
+.toolbar{display:flex;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.chip{font-size:11.5px;border:1px solid var(--line-2);border-radius:6px;padding:4px 9px;color:var(--muted);display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.chip b{color:var(--soft);font-weight:500}
+.chip.ac{border-color:rgba(147,165,255,.3);color:var(--accent-2)}
+.tbl{font-size:12px}
+.tr{display:grid;grid-template-columns:1.6fr 1fr .7fr .7fr .7fr .9fr;gap:10px;align-items:center;padding:0 14px;height:42px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tr>*{overflow:hidden;text-overflow:ellipsis}
+.th{height:34px;color:var(--dim);font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase}
+button.tr{width:100%;background:none;border:0;border-bottom:1px solid var(--line);text-align:left;cursor:pointer;color:var(--soft);transition:background .2s}
+button.tr:hover{background:rgba(255,255,255,.025)}
+button.tr[aria-selected="true"]{background:var(--accent-bg);box-shadow:inset 2px 0 0 var(--accent);color:var(--text)}
+.tr .nm{display:flex;align-items:center;gap:8px}
+.dot{width:6px;height:6px;border-radius:50%;flex:none;background:var(--ok)}
+.dot.warn{background:var(--warn)}.dot.err{background:var(--err)}
+.tr .m{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.score{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px}
+.score i{flex:1;height:3px;border-radius:2px;background:var(--line-2);position:relative;overflow:hidden;max-width:56px}
+.score i::after{content:"";position:absolute;inset:0;width:var(--w);background:var(--accent);border-radius:2px}
+.detail{border-left:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:16px;min-width:0;background:var(--bg-2)}
+.d-head{display:flex;justify-content:space-between;align-items:start;gap:10px}
+.d-head h4{margin:0;font-weight:500;font-size:13.5px}
+.d-head .id{font-family:var(--mono);font-size:10.5px;color:var(--dim);margin-top:2px}
+.meta{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:6px}
+.meta div{padding:9px 11px;border-bottom:1px solid var(--line)}
+.meta div:nth-child(odd){border-right:1px solid var(--line)}
+.meta div:nth-last-child(-n+2){border-bottom:0}
+.meta span{display:block;font-size:10.5px;color:var(--dim)}
+.meta strong{font-family:var(--mono);font-weight:400;font-size:12px;color:var(--soft)}
+.lbl{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+.wf{display:flex;flex-direction:column;gap:7px}
+.wf-row{display:grid;grid-template-columns:96px 1fr 42px;gap:8px;align-items:center;font-size:11px}
+.wf-row .n{color:var(--muted);font-family:var(--mono);font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wf-row .t{font-family:var(--mono);font-size:10px;color:var(--dim);text-align:right}
+.bar{position:relative;height:8px}
+.bar i{position:absolute;top:0;bottom:0;border-radius:2px;background:rgba(255,255,255,.18);transition:left .5s var(--ease),width .5s var(--ease)}
+.bar i.llm{background:var(--accent)}
+.bar i.guard{background:var(--warn)}
+.bar i.err{background:var(--err)}
+.out{font-size:11.5px;line-height:1.55;color:var(--soft);border:1px solid var(--line);border-radius:6px;padding:10px 12px;background:var(--surface)}
+.out .flag{display:inline-block;margin-top:8px;font-family:var(--mono);font-size:10px;color:var(--warn)}
+@media (max-width:1060px){.app{grid-template-columns:minmax(0,1fr) 300px}.side{display:none}}
+@media (max-width:760px){
+  .app{grid-template-columns:1fr}
+  .detail{border-left:0;border-top:1px solid var(--line)}
+  .tr{grid-template-columns:1.6fr .7fr .9fr}
+  .tr .hm{display:none}
+  .app-top .kbd{display:none}
+}
+
+/* split features */
+.split{display:grid;grid-template-columns:5fr 7fr;gap:clamp(40px,6vw,96px);align-items:center}
+.split.rev{grid-template-columns:7fr 5fr}
+.split.rev .copy{order:2}
+@media (max-width:900px){.split,.split.rev{grid-template-columns:1fr}.split.rev .copy{order:0}}
+.points{list-style:none;padding:0;margin:34px 0 0;border-top:1px solid var(--line)}
+.points li{display:grid;grid-template-columns:24px 1fr;gap:10px;padding:14px 0;border-bottom:1px solid var(--line);font-size:14px;color:var(--soft)}
+.points li span{color:var(--muted)}
+.points svg.lucide{color:var(--accent);margin-top:4px;width:14px;height:14px}
+
+.panel{border:1px solid var(--line-2);border-radius:10px;background:var(--surface);overflow:hidden;font-size:12px}
+.panel-h{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);color:var(--muted);flex-wrap:wrap}
+.panel-h strong{color:var(--text);font-weight:500;font-size:12.5px}
+.vs{display:flex;gap:6px;align-items:center;font-family:var(--mono);font-size:10.5px}
+.tag{border:1px solid var(--line-2);border-radius:4px;padding:2px 7px;color:var(--muted)}
+.tag.ac{border-color:rgba(147,165,255,.35);color:var(--accent-2)}
+.ev-row{display:grid;grid-template-columns:1.3fr 2fr .9fr;gap:14px;align-items:center;padding:13px 16px;border-bottom:1px solid var(--line)}
+.ev-row .k{color:var(--soft)}
+.ev-bars{display:flex;flex-direction:column;gap:4px}
+.ev-bars i{display:block;height:4px;border-radius:2px;background:rgba(255,255,255,.14);width:var(--w);transform-origin:left}
+.ev-bars i.n{background:var(--accent)}
+.delta{font-family:var(--mono);font-size:11px;text-align:right;color:var(--ok)}
+.delta.down{color:var(--err)}
+.ev-foot{display:grid;grid-template-columns:repeat(3,1fr)}
+.ev-foot div{padding:14px 16px;border-right:1px solid var(--line)}
+.ev-foot div:last-child{border-right:0}
+.ev-foot span{display:block;font-size:10.5px;color:var(--dim);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
+.ev-foot strong{font-family:var(--display);font-weight:300;font-size:22px;letter-spacing:-.02em}
+.reg{padding:12px 16px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.reg div{display:flex;gap:10px;align-items:center;color:var(--muted);font-size:11.5px}
+.reg code{font-family:var(--mono);font-size:10.5px;color:var(--err);flex:none}
+
+.diff{display:grid;grid-template-columns:1fr 1fr}
+.diff>div{padding:16px;min-width:0}
+.diff>div+div{border-left:1px solid var(--line)}
+.diff .lbl{display:flex;justify-content:space-between}
+.diff p{margin:0;line-height:1.65;color:var(--soft);font-size:12.5px}
+.del{background:rgba(239,143,143,.1);color:#f3b1b1;border-radius:3px;padding:0 2px;text-decoration:line-through;text-decoration-color:rgba(239,143,143,.5)}
+.ins{background:rgba(147,165,255,.12);color:var(--accent-2);border-radius:3px;padding:0 2px}
+.cmp{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line)}
+.cmp div{padding:14px 16px;border-right:1px solid var(--line)}
+.cmp div:last-child{border-right:0}
+.cmp span{display:block;font-size:10.5px;color:var(--dim);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
+.cmp strong{font-family:var(--mono);font-weight:400;font-size:13px;color:var(--soft)}
+.cmp em{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--ok);margin-left:6px}
+.replay-bar{display:flex;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid var(--line);color:var(--muted);font-size:11.5px}
+.prog{flex:1;height:3px;border-radius:2px;background:var(--line-2);overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--accent);transition:width 2.4s var(--ease)}
+.prog.go i{width:100%}
+@media (max-width:560px){.diff{grid-template-columns:1fr}.diff>div+div{border-left:0;border-top:1px solid var(--line)}.ev-row{grid-template-columns:1fr 1.2fr .7fr}}
+
+/* trio */
+.trio-head{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end;margin-bottom:52px}
+.trio-head .lede{margin:0;justify-self:end}
+@media (max-width:860px){.trio-head{grid-template-columns:1fr}.trio-head .lede{justify-self:start}}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg-2)}
+.card{padding:24px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:20px;transition:background .3s}
+.card:last-child{border-right:0}
+.card:hover{background:rgba(255,255,255,.015)}
+.card h3{margin:0;font-family:var(--display);font-weight:400;font-size:17px;letter-spacing:-.01em}
+.card p{margin:6px 0 0;color:var(--muted);font-size:13.5px}
+.mini{border:1px solid var(--line);border-radius:7px;background:var(--surface);padding:12px;font-size:11.5px;min-height:150px}
+.rule{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);color:var(--soft)}
+.rule:last-child{border-bottom:0}
+.rule small{display:block;color:var(--dim);font-family:var(--mono);font-size:10px}
+.sw{width:26px;height:15px;border-radius:999px;background:var(--line-2);position:relative;border:0;cursor:pointer;flex:none;transition:background .25s}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:11px;height:11px;border-radius:50%;background:#9a9aa3;transition:transform .25s var(--ease),background .25s}
+.sw[aria-checked="true"]{background:rgba(147,165,255,.35)}
+.sw[aria-checked="true"]::after{transform:translateX(11px);background:var(--accent-2)}
+.cost{display:flex;flex-direction:column;gap:9px}
+.cost div{display:grid;grid-template-columns:86px 1fr 46px;gap:8px;align-items:center;color:var(--muted)}
+.cost i{height:6px;border-radius:2px;background:rgba(255,255,255,.14);width:var(--w)}
+.cost div:first-child i{background:var(--accent)}
+.cost b{font-family:var(--mono);font-weight:400;font-size:10.5px;color:var(--soft);text-align:right}
+.spark{width:100%;height:90px}
+.spark-meta{display:flex;justify-content:space-between;color:var(--dim);font-family:var(--mono);font-size:10px;margin-top:6px}
+.spark-meta .w{color:var(--warn)}
+@media (max-width:900px){.trio{grid-template-columns:1fr}.card{border-right:0;border-bottom:1px solid var(--line)}.card:last-child{border-bottom:0}}
+
+/* stat */
+.stat{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(40px,6vw,96px);align-items:center}
+.big{font-family:var(--display);font-weight:300;font-size:clamp(6rem,16vw,13rem);line-height:.85;letter-spacing:-.06em;margin:22px 0 0}
+.big em{font-style:italic;color:var(--accent);font-size:.38em;letter-spacing:-.03em;margin-left:.1em}
+.stat .lede{max-width:38ch}
+.snippet{margin-top:30px;border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:14px 16px;font-family:var(--mono);font-size:12.5px;color:var(--soft);overflow-x:auto;white-space:pre}
+.snippet .c{color:var(--dim)}.snippet .k{color:var(--accent-2)}.snippet .s{color:var(--ok)}
+.facts{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.facts div{padding:26px 24px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.facts strong{display:block;font-family:var(--display);font-weight:300;font-size:clamp(1.4rem,2.2vw,1.8rem);letter-spacing:-.02em;line-height:1.15}
+.facts span{display:block;margin-top:8px;color:var(--muted);font-size:13px}
+@media (max-width:900px){.stat{grid-template-columns:1fr}}
+@media (max-width:480px){.facts{grid-template-columns:1fr}}
+
+/* pricing */
+.pr-head{text-align:center;margin-bottom:48px}
+.pr-head .lede{margin:18px auto 0}
+.toggle{display:inline-flex;border:1px solid var(--line-2);border-radius:999px;padding:3px;margin-top:30px;font-size:12.5px}
+.toggle button{background:none;border:0;padding:7px 16px;border-radius:999px;color:var(--muted);cursor:pointer;transition:background .25s,color .25s}
+.toggle button[aria-pressed="true"]{background:rgba(255,255,255,.08);color:var(--text)}
+.toggle small{color:var(--accent);font-family:var(--mono);font-size:10.5px;margin-left:4px}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.plan{padding:32px 28px;border-right:1px solid var(--line);display:flex;flex-direction:column;position:relative}
+.plan:last-child{border-right:0}
+.plan.rec{background:linear-gradient(180deg,rgba(147,165,255,.05),transparent 60%)}
+.plan.rec::before{content:"";position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+.plan-top{display:flex;justify-content:space-between;align-items:center}
+.plan h3{margin:0;font-weight:500;font-size:14.5px}
+.plan .badge{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.price{margin:22px 0 4px;font-family:var(--display);font-weight:300;font-size:46px;letter-spacing:-.04em;line-height:1}
+.price small{font-family:var(--sans);font-size:13px;color:var(--muted);letter-spacing:0;margin-left:4px}
+.bill{font-size:12px;color:var(--dim);min-height:18px}
+.plan p{color:var(--muted);font-size:13.5px;margin:18px 0 22px}
+.plan ul{list-style:none;padding:0;margin:0 0 30px;border-top:1px solid var(--line);flex:1}
+.plan li{padding:11px 0;border-bottom:1px solid var(--line);font-size:13.5px;color:var(--soft);display:flex;gap:10px;align-items:center}
+.plan li svg.lucide{width:13px;height:13px;color:var(--accent);flex:none}
+.plan .btn{justify-content:center}
+@media (max-width:900px){.plans{grid-template-columns:1fr}.plan{border-right:0;border-bottom:1px solid var(--line)}.plan:last-child{border-bottom:0}}
+
+/* faq */
+.faq{display:grid;grid-template-columns:1fr 1.6fr;gap:clamp(40px,6vw,96px)}
+@media (max-width:900px){.faq{grid-template-columns:1fr}}
+.acc{border-top:1px solid var(--line)}
+.acc-item{border-bottom:1px solid var(--line)}
+.acc-item h3{margin:0}
+.acc-btn{width:100%;display:flex;justify-content:space-between;align-items:center;gap:24px;padding:22px 0;background:none;border:0;text-align:left;cursor:pointer;font-family:var(--display);font-weight:400;font-size:clamp(15.5px,1.4vw,17px);color:var(--soft);transition:color .2s}
+.acc-btn:hover,.acc-btn[aria-expanded="true"]{color:var(--text)}
+.pm{width:14px;height:14px;position:relative;flex:none}
+.pm::before,.pm::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--muted);transition:transform .3s var(--ease),background .2s}
+.pm::after{transform:rotate(90deg)}
+.acc-btn[aria-expanded="true"] .pm::after{transform:rotate(0)}
+.acc-btn[aria-expanded="true"] .pm::before{background:var(--accent)}
+.acc-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s var(--ease)}
+.acc-panel.open{grid-template-rows:1fr}
+.acc-panel>div{overflow:hidden}
+.acc-panel p{margin:0;padding:0 40px 24px 0;color:var(--muted);font-size:14.5px;max-width:62ch}
+
+/* closing */
+.close{text-align:center;padding:clamp(110px,15vw,190px) 0;overflow:hidden;isolation:isolate}
+.close .hero-bg{inset:0}
+.close .hero-bg::before{top:auto;bottom:-30%}
+.close h2{font-family:var(--display);font-weight:300;font-size:clamp(2.4rem,5.6vw,4.8rem);line-height:1.04;letter-spacing:-.037em;margin:22px auto 0;max-width:16ch}
+.close p.sub{color:var(--muted);max-width:42ch;margin:24px auto 0;font-size:16px}
+.signup{display:flex;gap:8px;max-width:440px;margin:38px auto 0;padding:5px;border:1px solid var(--line-2);border-radius:999px;background:rgba(13,13,15,.8);transition:border-color .25s}
+.signup:focus-within{border-color:rgba(147,165,255,.45)}
+.signup input{flex:1;min-width:0;background:none;border:0;padding:0 16px;font-size:14px;outline:none}
+.signup input::placeholder{color:var(--dim)}
+.close .fine{font-size:12px;color:var(--dim);margin-top:16px}
+[data-hh-form-msg]{max-width:440px;margin:16px auto 0;font-size:13px;padding:10px 14px;border-radius:8px;border:1px solid var(--line-2);color:var(--soft)}
+[data-hh-form-msg][data-state="success"]{border-color:rgba(127,214,171,.3);color:var(--ok);background:rgba(127,214,171,.05)}
+[data-hh-form-msg][data-state="error"]{border-color:rgba(239,143,143,.3);color:var(--err);background:rgba(239,143,143,.05)}
+@media (max-width:480px){.signup{flex-direction:column;border-radius:12px}.signup input{height:44px}.signup .btn{justify-content:center}}
+
+/* footer */
+footer{border-top:1px solid var(--line);padding:64px 0 36px;font-size:13px}
+.f-grid{display:grid;grid-template-columns:1.6fr repeat(3,1fr);gap:40px}
+.f-grid p{color:var(--muted);max-width:30ch;margin:16px 0 0}
+.f-grid h4{margin:0 0 14px;font-family:var(--mono);font-weight:400;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.f-grid ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.f-grid a{color:var(--muted);transition:color .2s}
+.f-grid a:hover{color:var(--text)}
+.f-bot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:56px;padding-top:24px;border-top:1px solid var(--line);color:var(--dim);font-size:12px}
+.f-bot nav{display:flex;gap:20px}
+.f-bot a:hover{color:var(--soft)}
+.status{display:inline-flex;align-items:center;gap:8px}
+@media (max-width:760px){.f-grid{grid-template-columns:1fr 1fr}.f-grid>div:first-child{grid-column:1/-1}}
+</style>
+</head>
+<body id="top">
+
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a href="#top" class="brand" aria-label="Northlight home">
+      <span class="brand-mark"><svg width="28" height="28" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><defs><linearGradient id="nlBlade" x1="20" y1="1" x2="20" y2="37" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffffff"/><stop offset=".46" stop-color="#c9d0ff"/><stop offset="1" stop-color="#93a5ff" stop-opacity=".16"/></linearGradient><linearGradient id="nlEcho" x1="34" y1="9" x2="27" y2="36" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#c9d0ff" stop-opacity=".9"/><stop offset="1" stop-color="#93a5ff" stop-opacity=".05"/></linearGradient></defs><path d="M20 1 26 24 20 37 14 24Z" fill="url(#nlBlade)"/><path d="M33 9.5 34.6 21 29 36 27.4 24.5Z" fill="url(#nlEcho)"/><path d="M7 14 5.4 25.5 11 36 12.6 24.5Z" fill="url(#nlEcho)" opacity=".5"/></svg></span>
+      Northlight
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#product">Product</a>
+      <a href="#evaluations">Evaluations</a>
+      <a href="#replay">Replay</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="nav-r">
+      <a href="#start" class="login">Log in</a>
+      <a href="#start" class="btn btn-p btn-sm">Start free</a>
+      <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu"><i data-lucide="menu"></i></button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <nav aria-label="Mobile">
+      <a href="#product">Product</a>
+      <a href="#evaluations">Evaluations</a>
+      <a href="#replay">Replay</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a href="#start" class="btn btn-p">Start free</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg" aria-hidden="true">
+      <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMin slice" fill="none">
+        <g stroke="#93a5ff" stroke-width="1">
+          <ellipse cx="700" cy="980" rx="900" ry="560" opacity=".07"/>
+          <ellipse cx="700" cy="1010" rx="760" ry="500" opacity=".055"/>
+          <ellipse cx="700" cy="1040" rx="620" ry="440" opacity=".045"/>
+          <ellipse cx="700" cy="1070" rx="480" ry="380" opacity=".035"/>
+        </g>
+        <path d="M-50 340 C 300 260, 520 420, 760 330 S 1180 220, 1460 300" stroke="#fff" stroke-opacity=".035"/>
+      </svg>
+    </div>
+    <figure class="hero-viz" aria-labelledby="heroVizDesc">
+      <canvas id="heroCanvas" class="hero-canvas" aria-hidden="true"></canvas>
+      <figcaption id="heroVizDesc" class="sr">Decorative hero backdrop: a slowly morphing three-dimensional contour sphere that tilts toward the pointer. When motion or WebGL is unavailable the static ring graphic behind it is shown instead.</figcaption>
+    </figure>
+    <div class="wrap">
+      <a href="#replay" class="pill rv" style="background:rgba(255,255,255,0.03);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.12);box-shadow:0 4px 20px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,255,255,0.15)"><b>New</b> Replay — rerun production traffic on any model <i data-lucide="arrow-right"></i></a>
+      <h1 class="rv">Ship AI that behaves the way you <em class="ac">intended.</em></h1>
+      <p class="sub rv">Northlight traces every model call, scores every response, and shows you what changes before your users do.</p>
+      <div class="hero-ctas rv">
+        <a href="#start" class="btn btn-p">Start free <i data-lucide="arrow-right"></i></a>
+        <a href="#product" class="btn btn-g">See the workspace</a>
+      </div>
+      <div class="assure rv">
+        <span><i data-lucide="check"></i>10,000 traces a month, free</span>
+        <span><i data-lucide="check"></i>No card required</span>
+        <span><i data-lucide="check"></i>OpenTelemetry-native</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- SHOWCASE -->
+  <section class="sec" id="product">
+    <div class="wrap">
+      <div class="show-head">
+        <div>
+          <span class="eyebrow rv">The workspace</span>
+          <h2 class="h2 rv">Every model call,<br><em class="ac">accounted for.</em></h2>
+        </div>
+        <p class="lede rv">Retrieval, tool calls, guardrails and generations on one timeline — with cost, latency and quality scored on every trace. Select a trace to inspect it.</p>
+      </div>
+
+      <div class="frame rv" role="region" aria-label="Interactive product preview">
+        <div class="app-top">
+          <div class="crumbs"><span>acme</span><span class="sep">/</span><span>support-agent</span><span class="sep">/</span><span class="cur">Traces</span><span class="env">production</span></div>
+          <span class="kbd"><i data-lucide="search"></i>Search traces <span>⌘K</span></span>
+        </div>
+        <div class="app">
+          <aside class="side" aria-label="App navigation (preview)">
+            <span class="grp">Observe</span>
+            <a href="#product" class="on"><i data-lucide="activity"></i>Traces<span class="n">48.2k</span></a>
+            <a href="#product"><i data-lucide="messages-square"></i>Sessions</a>
+            <a href="#product"><i data-lucide="bell"></i>Monitors<span class="n">2</span></a>
+            <span class="grp">Improve</span>
+            <a href="#evaluations"><i data-lucide="flask-conical"></i>Evaluations</a>
+            <a href="#replay"><i data-lucide="rotate-ccw"></i>Replay</a>
+            <a href="#product"><i data-lucide="database"></i>Datasets</a>
+            <a href="#product"><i data-lucide="file-text"></i>Prompts</a>
+          </aside>
+
+          <div class="main">
+            <div class="toolbar">
+              <span class="chip ac"><i data-lucide="clock"></i>Last 24 hours</span>
+              <span class="chip">route: <b>support.*</b></span>
+              <span class="chip">score <b>&lt; 0.80</b></span>
+              <span class="chip"><i data-lucide="plus"></i>Filter</span>
+            </div>
+            <div class="tbl" role="listbox" aria-label="Traces" id="traceList">
+              <div class="tr th" aria-hidden="true"><span>Trace</span><span class="hm">Model</span><span>Latency</span><span class="hm">Tokens</span><span class="hm">Cost</span><span>Score</span></div>
+            </div>
+          </div>
+
+          <div class="detail" aria-live="polite" id="detail"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- EVALUATIONS -->
+  
+<section class="sec" id="testimonials">
+  <style>
+    #testimonials .tst-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:clamp(36px,5vw,56px)}
+    #testimonials .tst-card{margin:0;padding:26px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);display:flex;flex-direction:column;gap:20px;transition:border-color .25s var(--ease),background .25s var(--ease)}
+    #testimonials .tst-card:hover{border-color:var(--line-2);background:var(--surface-2)}
+    #testimonials .tst-card blockquote{margin:0;font-size:15px;line-height:1.65;color:var(--soft)}
+    #testimonials .tst-card blockquote::before{content:"“";display:block;font-family:var(--display);font-size:34px;line-height:.7;color:var(--accent);opacity:.65;margin-bottom:12px}
+    #testimonials .tst-who{display:flex;align-items:center;gap:12px;margin-top:auto;padding-top:18px;border-top:1px solid var(--line)}
+    #testimonials .tst-av{width:40px;height:40px;flex:none;border:1px solid var(--line-2);border-radius:999px;object-fit:cover;object-position:center 22%;background:var(--surface-3);filter:grayscale(.18) contrast(1.04);transition:filter .25s var(--ease),border-color .25s var(--ease)}
+    #testimonials .tst-card:hover .tst-av{filter:grayscale(0) contrast(1.04);border-color:rgba(147,165,255,.45)}
+    #testimonials .tst-name{font-size:13.5px;font-weight:500;color:var(--text);line-height:1.35}
+    #testimonials .tst-role{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);line-height:1.5}
+    @media (max-width:900px){#testimonials .tst-grid{grid-template-columns:1fr}}
+  </style>
+  <div class="wrap">
+    <div class="show-head">
+      <div>
+        <span class="eyebrow rv">Testimonials</span>
+        <h2 class="h2 rv">Trusted by teams shipping<br><em class="ac">in production.</em></h2>
+      </div>
+      <p class="lede rv">From two-person startups to platform teams running millions of traces a month — here is what changes once every model call is visible.</p>
+    </div>
+
+    <div class="tst-grid">
+      <figure class="tst-card rv">
+        <blockquote>We cut a full day off incident triage. Being able to replay the exact trace — retrieval, tool call and prompt — meant the on-call engineer stopped guessing.</blockquote>
+        <figcaption class="tst-who">
+          <img class="tst-av" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&crop=faces&w=120&h=120&q=80" alt="Portrait of Maya Reyes" width="40" height="40" loading="lazy" decoding="async">
+          <span>
+            <span class="tst-name">Maya Reyes</span>
+            <span class="tst-role">Staff Engineer, Lumen</span>
+          </span>
+        </figcaption>
+      </figure>
+
+      <figure class="tst-card rv">
+        <blockquote>Evaluations used to be a spreadsheet and a prayer. Now a prompt change either clears the suite or it doesn't ship — and regressions surface on the exact cases that broke.</blockquote>
+        <figcaption class="tst-who">
+          <img class="tst-av" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&crop=faces&w=120&h=120&q=80" alt="Portrait of Daniel Kowalski" width="40" height="40" loading="lazy" decoding="async">
+          <span>
+            <span class="tst-name">Daniel Kowalski</span>
+            <span class="tst-role">Head of AI, Northbeam Labs</span>
+          </span>
+        </figcaption>
+      </figure>
+
+      <figure class="tst-card rv">
+        <blockquote>Cost per resolved ticket is finally a number I can defend in a planning meeting. Same dashboard, same traces, no separate analytics pipeline to maintain.</blockquote>
+        <figcaption class="tst-who">
+          <img class="tst-av" src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&crop=faces&w=120&h=120&q=80" alt="Portrait of Amara Osei" width="40" height="40" loading="lazy" decoding="async">
+          <span>
+            <span class="tst-name">Amara Osei</span>
+            <span class="tst-role">Director of Support Operations, Fielder</span>
+          </span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+<section class="sec" id="evaluations">
+    <div class="wrap split">
+      <div class="copy">
+        <span class="eyebrow rv">Evaluations</span>
+        <h2 class="h2 rv">Know a prompt is better<br><em class="ac">before</em> it ships.</h2>
+        <p class="lede rv">Score every change against real cases from your own traffic. LLM judges, code checks and human review live side by side, and regressions surface on the exact inputs that broke.</p>
+        <ul class="points rv">
+          <li><i data-lucide="git-compare"></i><span><strong style="color:var(--soft);font-weight:500">Version against version.</strong> Compare prompts, models or retrieval settings on one dataset.</span></li>
+          <li><i data-lucide="git-pull-request"></i><span><strong style="color:var(--soft);font-weight:500">Gate in CI.</strong> Fail the pull request when a score drops below your threshold.</span></li>
+        </ul>
+      </div>
+      <div class="panel rv" aria-label="Evaluation comparison example">
+        <div class="panel-h">
+          <strong>support-agent · regression suite</strong>
+          <span class="vs"><span class="tag">prompt v14</span>→<span class="tag ac">prompt v15</span></span>
+        </div>
+        <div class="ev-row"><span class="k">Faithfulness</span><span class="ev-bars"><i style="--w:86%"></i><i class="n" style="--w:93%"></i></span><span class="delta">+0.07</span></div>
+        <div class="ev-row"><span class="k">Answer relevance</span><span class="ev-bars"><i style="--w:88%"></i><i class="n" style="--w:91%"></i></span><span class="delta">+0.03</span></div>
+        <div class="ev-row"><span class="k">Policy adherence</span><span class="ev-bars"><i style="--w:95%"></i><i class="n" style="--w:96%"></i></span><span class="delta">+0.01</span></div>
+        <div class="ev-row"><span class="k">Concision</span><span class="ev-bars"><i style="--w:81%"></i><i class="n" style="--w:76%"></i></span><span class="delta down">−0.05</span></div>
+        <div class="ev-foot">
+          <div><span>Cases</span><strong>128</strong></div>
+          <div><span>Improved</span><strong>31</strong></div>
+          <div><span>Regressed</span><strong style="color:var(--err)">3</strong></div>
+        </div>
+        <div class="reg">
+          <div><code>case_0412</code>Refund policy answer now cites outdated 14-day window</div>
+          <div><code>case_0877</code>Response length up 2.1× on shipping questions</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REPLAY -->
+  <section class="sec" id="replay" style="padding-top:0">
+    <div class="wrap split rev">
+      <div class="copy">
+        <span class="eyebrow rv">Replay</span>
+        <h2 class="h2 rv">Swap the model.<br>Keep the <em class="ac">behaviour.</em></h2>
+        <p class="lede rv">Rerun last week's production traces against a new model or prompt, then read the differences output by output — alongside what each change does to latency and spend.</p>
+        <div class="rv" style="margin-top:32px"><button class="btn btn-g" id="replayBtn" type="button" style="background:transparent"><i data-lucide="rotate-ccw"></i>Run sample replay</button></div>
+      </div>
+      <div class="panel rv" aria-label="Replay diff example">
+        <div class="panel-h">
+          <strong>tr_51c9 · “Where is my order?”</strong>
+          <span class="vs"><span class="tag">llm-large-v3</span>→<span class="tag ac">llm-small-v4</span></span>
+        </div>
+        <div class="diff">
+          <div>
+            <div class="lbl"><span>Original</span><span>0.88</span></div>
+            <p>Your order <span class="del">#48213 has shipped and</span> is currently in transit. <span class="del">Based on the carrier's latest scan, it</span> should arrive by Thursday. <span class="del">Let me know if there's anything else I can help with today!</span></p>
+          </div>
+          <div>
+            <div class="lbl"><span>Replayed</span><span style="color:var(--accent-2)">0.93</span></div>
+            <p>Your order <span class="ins">#48213</span> is in transit and <span class="ins">expected Thursday, 30 Oct</span>. <span class="ins">You can track it from the link in your confirmation email.</span></p>
+          </div>
+        </div>
+        <div class="cmp">
+          <div><span>Latency</span><strong>0.84s</strong><em>−62%</em></div>
+          <div><span>Cost / 1k</span><strong>$1.90</strong><em>−71%</em></div>
+          <div><span>Score</span><strong>0.93</strong><em>+0.05</em></div>
+        </div>
+        <div class="replay-bar"><span class="mono" id="replayLabel">2,400 traces queued</span><span class="prog" id="prog"><i></i></span><span class="mono" id="replayPct">0%</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- TRIO -->
+  <section class="sec">
+    <div class="wrap">
+      <div class="trio-head">
+        <div>
+          <span class="eyebrow rv">In production</span>
+          <h2 class="h2 rv">Quiet until something<br><em class="ac">needs you.</em></h2>
+        </div>
+        <p class="lede rv">Guardrails, spend and drift — watched continuously, so the dashboard stays closed until it matters.</p>
+      </div>
+      <div class="trio rv">
+        <article class="card">
+          <div class="mini" aria-label="Guardrail rules example">
+            <div class="rule"><span>Redact PII<small>email, phone, card</small></span><button class="sw" role="switch" aria-checked="true" aria-label="Redact PII"></button></div>
+            <div class="rule"><span>Block off-topic<small>classifier · 0.7</small></span><button class="sw" role="switch" aria-checked="true" aria-label="Block off-topic"></button></div>
+            <div class="rule"><span>Require citations<small>retrieval routes</small></span><button class="sw" role="switch" aria-checked="false" aria-label="Require citations"></button></div>
+          </div>
+          <div><h3>Guardrails</h3><p>Inline checks that redact, block or flag a response before it reaches the user.</p></div>
+        </article>
+        <article class="card">
+          <div class="mini" aria-label="Cost by feature example">
+            <div class="lbl">Spend by feature · Oct</div>
+            <div class="cost">
+              <div><span>support</span><i style="--w:92%"></i><b>$4,210</b></div>
+              <div><span>search</span><i style="--w:58%"></i><b>$2,640</b></div>
+              <div><span>summaries</span><i style="--w:31%"></i><b>$1,420</b></div>
+              <div><span>onboarding</span><i style="--w:12%"></i><b>$540</b></div>
+            </div>
+          </div>
+          <div><h3>Cost attribution</h3><p>Spend broken down by feature, customer and model — not one number on an invoice.</p></div>
+        </article>
+        <article class="card">
+          <div class="mini" aria-label="Latency monitor example">
+            <div class="lbl">p95 latency · support.answer</div>
+            <svg class="spark" viewBox="0 0 240 90" preserveAspectRatio="none" aria-hidden="true">
+              <line x1="0" y1="28" x2="240" y2="28" stroke="#e6c27f" stroke-opacity=".5" stroke-dasharray="3 4"/>
+              <path d="M0 62 L20 58 L40 64 L60 55 L80 60 L100 52 L120 57 L140 49 L160 54 L180 38 L200 22 L220 30 L240 44" fill="none" stroke="#93a5ff" stroke-width="1.4"/>
+              <path d="M0 62 L20 58 L40 64 L60 55 L80 60 L100 52 L120 57 L140 49 L160 54 L180 38 L200 22 L220 30 L240 44 V90 H0Z" fill="#93a5ff" fill-opacity=".06"/>
+              <circle cx="200" cy="22" r="2.5" fill="#e6c27f"/>
+            </svg>
+            <div class="spark-meta"><span>00:00</span><span class="w">● breached 3.0s</span><span>now</span></div>
+          </div>
+          <div><h3>Monitors</h3><p>Alerts on latency, score and spend drift, routed to Slack or your pager.</p></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- STAT -->
+  <section class="sec">
+    <div class="wrap stat">
+      <div>
+        <span class="eyebrow rv">Setup</span>
+        <p class="big rv" aria-label="One line">1<em>line</em></p>
+        <p class="lede rv">To instrument an existing app. Northlight wraps your model client and emits standard OpenTelemetry spans — no proxy in the request path.</p>
+        <div class="snippet rv" aria-label="Code example"><span class="c"># pip install northlight</span>
+<span class="k">import</span> northlight; northlight.<span class="k">init</span>(project=<span class="s">"support-agent"</span>)</div>
+      </div>
+      <div class="facts rv">
+        <div><strong>OpenTelemetry</strong><span>Standard spans you can export to the tools you already run.</span></div>
+        <div><strong>Python · TS · Go</strong><span>First-party SDKs, plus any OTLP-compatible client.</span></div>
+        <div><strong>US &amp; EU</strong><span>Choose where trace data is stored, per project.</span></div>
+        <div><strong>Your VPC</strong><span>Self-host the full platform on Enterprise.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- PRICING -->
+  <section class="sec" id="pricing">
+    <div class="wrap">
+      <div class="pr-head">
+        <span class="eyebrow rv">Pricing</span>
+        <h2 class="h2 rv">Start free. Pay as your<br><em class="ac">traffic</em> grows.</h2>
+        <div class="toggle rv" role="group" aria-label="Billing period">
+          <button type="button" aria-pressed="true" data-period="m">Monthly</button>
+          <button type="button" aria-pressed="false" data-period="y">Annual <small>−20%</small></button>
+        </div>
+      </div>
+      <div class="plans rv">
+        <article class="plan">
+          <div class="plan-top"><h3>Hobby</h3></div>
+          <div class="price">$0</div>
+          <div class="bill">Free forever</div>
+          <p>For side projects and first prototypes.</p>
+          <ul>
+            <li><i data-lucide="check"></i>10,000 traces / month</li>
+            <li><i data-lucide="check"></i>1 seat · 14-day retention</li>
+            <li><i data-lucide="check"></i>Tracing &amp; basic evals</li>
+          </ul>
+          <a href="#start" class="btn btn-g">Start free</a>
+        </article>
+        <article class="plan rec">
+          <div class="plan-top"><h3>Team</h3><span class="badge">Most teams</span></div>
+          <div class="price"><span id="teamPrice">$49</span><small>/ seat / mo</small></div>
+          <div class="bill" id="teamBill">Billed monthly</div>
+          <p>For teams running AI features in production.</p>
+          <ul>
+            <li><i data-lucide="check"></i>1M traces / month included</li>
+            <li><i data-lucide="check"></i>90-day retention</li>
+            <li><i data-lucide="check"></i>Evaluations, Replay &amp; CI gates</li>
+            <li><i data-lucide="check"></i>Monitors with Slack alerts</li>
+          </ul>
+          <a href="#start" class="btn btn-p">Start 14-day trial</a>
+        </article>
+        <article class="plan">
+          <div class="plan-top"><h3>Enterprise</h3></div>
+          <div class="price">Custom</div>
+          <div class="bill">Annual agreement</div>
+          <p>For regulated data and large-scale traffic.</p>
+          <ul>
+            <li><i data-lucide="check"></i>SSO / SAML &amp; audit logs</li>
+            <li><i data-lucide="check"></i>Self-host in your VPC</li>
+            <li><i data-lucide="check"></i>Up to 400-day retention</li>
+            <li><i data-lucide="check"></i>Dedicated support engineer</li>
+          </ul>
+          <a href="#start" class="btn btn-g">Talk to us</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- FAQ -->
+  <section class="sec" id="faq">
+    <div class="wrap faq">
+      <div>
+        <span class="eyebrow rv">FAQ</span>
+        <h2 class="h2 rv">Questions,<br><em class="ac">answered.</em></h2>
+      </div>
+      <div class="acc rv" id="acc">
+        <div class="acc-item">
+          <h3><button class="acc-btn" id="q1" aria-expanded="false" aria-controls="a1">Does Northlight sit in the request path?<span class="pm" aria-hidden="true"></span></button></h3>
+          <div class="acc-panel" id="a1" role="region" aria-labelledby="q1"><div><p>No. The SDK records spans asynchronously and ships them in the background, so a Northlight outage never blocks or slows a model call.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <h3><button class="acc-btn" id="q2" aria-expanded="false" aria-controls="a2">Which model providers are supported?<span class="pm" aria-hidden="true"></span></button></h3>
+          <div class="acc-panel" id="a2" role="region" aria-labelledby="q2"><div><p>Any of them. We ship wrappers for the major hosted APIs and common open-weight servers, and anything that emits OpenTelemetry spans works out of the box.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <h3><button class="acc-btn" id="q3" aria-expanded="false" aria-controls="a3">Can we keep sensitive data out of traces?<span class="pm" aria-hidden="true"></span></button></h3>
+          <div class="acc-panel" id="a3" role="region" aria-labelledby="q3"><div><p>Yes. Redaction rules run inside the SDK before anything leaves your servers, and on Enterprise you can self-host the whole platform in your own cloud.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <h3><button class="acc-btn" id="q4" aria-expanded="false" aria-controls="a4">What counts as a trace?<span class="pm" aria-hidden="true"></span></button></h3>
+          <div class="acc-panel" id="a4" role="region" aria-labelledby="q4"><div><p>One end-to-end request through your app — every retrieval, tool call and generation inside it counts as a single trace, however many spans it contains.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <h3><button class="acc-btn" id="q5" aria-expanded="false" aria-controls="a5">What happens if we exceed our plan?<span class="pm" aria-hidden="true"></span></button></h3>
+          <div class="acc-panel" id="a5" role="region" aria-labelledby="q5"><div><p>Nothing breaks. On Team, extra traces are billed at $5 per additional 100k; on Hobby, ingestion pauses until the next month and we email you first.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLOSING -->
+  <section class="close" id="start">
+    <div class="hero-bg" aria-hidden="true">
+      <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMax slice" fill="none">
+        <g stroke="#93a5ff" stroke-width="1">
+          <ellipse cx="700" cy="-80" rx="900" ry="560" opacity=".06"/>
+          <ellipse cx="700" cy="-110" rx="740" ry="500" opacity=".045"/>
+          <ellipse cx="700" cy="-140" rx="580" ry="440" opacity=".035"/>
+        </g>
+      </svg>
+    </div>
+    <div class="wrap">
+      <span class="eyebrow rv">Get started</span>
+      <h2 class="rv">Stop guessing what your <em class="ac">model just did.</em></h2>
+      <p class="sub rv">Instrument your app in minutes and see your first traces before your coffee cools.</p>
+      <form class="signup rv" action="/__hh/form" method="post">
+        <input type="hidden" name="_form" value="Contact">
+        <label for="email" class="sr">Work email</label>
+        <input id="email" type="email" name="email" placeholder="you@company.com" autocomplete="email" required>
+        <button type="submit" class="btn btn-p">Start free <i data-lucide="arrow-right"></i></button>
+      </form>
+      <p class="fine rv">Free for 10,000 traces a month. No card required.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="f-grid">
+      <div>
+        <a href="#top" class="brand"><span class="brand-mark"><svg width="24" height="24" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><defs><linearGradient id="nlBladeF" x1="20" y1="1" x2="20" y2="37" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffffff"/><stop offset=".46" stop-color="#c9d0ff"/><stop offset="1" stop-color="#93a5ff" stop-opacity=".16"/></linearGradient><linearGradient id="nlEchoF" x1="34" y1="9" x2="27" y2="36" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#c9d0ff" stop-opacity=".9"/><stop offset="1" stop-color="#93a5ff" stop-opacity=".05"/></linearGradient></defs><path d="M20 1 26 24 20 37 14 24Z" fill="url(#nlBladeF)"/><path d="M33 9.5 34.6 21 29 36 27.4 24.5Z" fill="url(#nlEchoF)"/><path d="M7 14 5.4 25.5 11 36 12.6 24.5Z" fill="url(#nlEchoF)" opacity=".5"/></svg></span>Northlight</a>
+        <p>Observability and evaluation for teams running AI in production.</p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <ul><li><a href="#product">Tracing</a></li><li><a href="#evaluations">Evaluations</a></li><li><a href="#replay">Replay</a></li><li><a href="#pricing">Pricing</a></li></ul>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul><li><a href="#faq">FAQ</a></li><li><a href="#start">Get started</a></li><li><a href="mailto:hello@northlight.dev">Contact</a></li></ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul><li><a href="mailto:careers@northlight.dev">Careers</a></li><li><a href="mailto:security@northlight.dev">Security</a></li><li><a href="mailto:press@northlight.dev">Press</a></li></ul>
+      </div>
+    </div>
+    <div class="f-bot">
+      <span>© <span id="yr">2026</span> Northlight Labs, Inc.</span>
+      <nav aria-label="Legal"><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/dpa">DPA</a></nav>
+    </div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/lucide@0.454.0/dist/umd/lucide.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+(function(){
+  document.getElementById('yr').textContent = new Date().getFullYear();
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* nav */
+  const nav = document.getElementById('nav');
+  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
+  onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
+  const menuBtn = document.getElementById('menuBtn'), menu = document.getElementById('mobileMenu');
+  menuBtn.addEventListener('click', () => {
+    const open = menu.classList.toggle('open');
+    menuBtn.setAttribute('aria-expanded', open);
+    menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  });
+  menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    menu.classList.remove('open'); menuBtn.setAttribute('aria-expanded','false');
+  }));
+
+  /* traces */
+  const traces = [
+    {id:'tr_8f2a41', name:'support.answer', model:'llm-large-v3', lat:'2.41s', tok:'3,912', cost:'$0.018', score:.94, st:'',
+     spans:[['retrieve.docs',0,14,'','340ms'],['rerank',14,7,'','170ms'],['llm.generate',21,58,'llm','1.40s'],['guardrail.pii',79,5,'guard','120ms'],['respond',84,4,'','90ms']],
+     out:'Refunds are issued to the original payment method within 5–7 business days of the return being received.'},
+    {id:'tr_51c9d0', name:'support.order_status', model:'llm-large-v3', lat:'2.22s', tok:'2,604', cost:'$0.012', score:.88, st:'',
+     spans:[['classify.intent',0,9,'llm','200ms'],['tool.lookup_order',9,24,'','530ms'],['llm.generate',33,55,'llm','1.22s'],['respond',88,5,'','110ms']],
+     out:'Your order #48213 has shipped and is currently in transit. It should arrive by Thursday.'},
+    {id:'tr_c03e77', name:'support.answer', model:'llm-large-v3', lat:'4.87s', tok:'6,140', cost:'$0.031', score:.61, st:'warn',
+     spans:[['retrieve.docs',0,9,'','440ms'],['rerank',9,6,'','290ms'],['llm.generate',15,46,'llm','2.24s'],['llm.retry',61,30,'llm','1.46s'],['guardrail.pii',91,4,'guard','190ms']],
+     out:'Our return window is 14 days from delivery…', flag:'⚑ faithfulness 0.61 — source states 30 days'},
+    {id:'tr_9b1f02', name:'search.summarize', model:'llm-small-v4', lat:'0.92s', tok:'1,488', cost:'$0.002', score:.91, st:'',
+     spans:[['retrieve.docs',0,22,'','200ms'],['llm.generate',22,66,'llm','610ms'],['respond',88,6,'','60ms']],
+     out:'Three articles match: shipping times, customs fees for EU orders, and how to change a delivery address.'},
+    {id:'tr_e7a5c3', name:'support.escalate', model:'llm-large-v3', lat:'3.10s', tok:'2,910', cost:'$0.014', score:.42, st:'err',
+     spans:[['classify.intent',0,8,'llm','250ms'],['tool.create_ticket',8,40,'err','1.24s'],['llm.generate',48,44,'llm','1.36s']],
+     out:'I\'ve escalated this to our team and someone will be in touch.', flag:'⚑ tool.create_ticket returned 503 — no ticket created'}
+  ];
+  const list = document.getElementById('traceList'), detail = document.getElementById('detail');
+  traces.forEach((t,i) => {
+    const b = document.createElement('button');
+    b.className = 'tr'; b.type = 'button'; b.setAttribute('role','option'); b.dataset.i = i;
+    b.innerHTML = `<span class="nm"><span class="dot ${t.st}"></span>${t.name}</span><span class="m hm">${t.model}</span><span class="m">${t.lat}</span><span class="m hm">${t.tok}</span><span class="m hm">${t.cost}</span><span class="score">${t.score.toFixed(2)}<i style="--w:${t.score*100}%"></i></span>`;
+    b.addEventListener('click', () => select(i));
+    b.addEventListener('keydown', e => {
+      const btns = [...list.querySelectorAll('button.tr')];
+      let n = null;
+      if (e.key === 'ArrowDown') n = Math.min(i+1, btns.length-1);
+      if (e.key === 'ArrowUp') n = Math.max(i-1, 0);
+      if (n !== null){ e.preventDefault(); btns[n].focus(); select(n); }
+    });
+    list.appendChild(b);
+  });
+  function select(i){
+    const t = traces[i];
+    list.querySelectorAll('button.tr').forEach(b => b.setAttribute('aria-selected', b.dataset.i == i));
+    detail.innerHTML = `
+      <div class="d-head"><div><h4>${t.name}</h4><div class="id">${t.id} · 2 min ago</div></div><span class="tag ${t.st ? '' : 'ac'}" style="font-family:var(--mono);font-size:10px">${t.st === 'err' ? 'error' : t.st === 'warn' ? 'low score' : 'ok'}</span></div>
+      <div class="meta"><div><span>Model</span><strong>${t.model}</strong></div><div><span>Latency</span><strong>${t.lat}</strong></div><div><span>Tokens</span><strong>${t.tok}</strong></div><div><span>Cost</span><strong>${t.cost}</strong></div></div>
+      <div><div class="lbl">Spans</div><div class="wf">${t.spans.map(s => `<div class="wf-row"><span class="n">${s[0]}</span><span class="bar"><i class="${s[3]}" style="left:${s[1]}%;width:${s[2]}%"></i></span><span class="t">${s[4]}</span></div>`).join('')}</div></div>
+      <div><div class="lbl">Output</div><div class="out">${t.out}${t.flag ? `<br><span class="flag">${t.flag}</span>` : ''}</div></div>`;
+  }
+  select(2);
+
+  /* switches */
+  document.querySelectorAll('.sw').forEach(s => s.addEventListener('click', () => s.setAttribute('aria-checked', s.getAttribute('aria-checked') !== 'true')));
+
+  /* replay demo */
+  const rb = document.getElementById('replayBtn'), prog = document.getElementById('prog'), pct = document.getElementById('replayPct'), rl = document.getElementById('replayLabel');
+  rb.addEventListener('click', () => {
+    prog.classList.remove('go'); void prog.offsetWidth; prog.classList.add('go');
+    rl.textContent = 'Replaying 2,400 traces';
+    const start = performance.now(), dur = reduce ? 1 : 2400;
+    (function tick(now){
+      const p = Math.min(1, (now - start) / dur);
+      pct.textContent = Math.round(p*100) + '%';
+      if (p < 1) requestAnimationFrame(tick); else rl.textContent = '2,400 replayed · 41 changed';
+    })(start);
+  });
+
+  /* pricing */
+  const tp = document.getElementById('teamPrice'), tbill = document.getElementById('teamBill');
+  document.querySelectorAll('.toggle button').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('.toggle button').forEach(x => x.setAttribute('aria-pressed', x === b));
+    const y = b.dataset.period === 'y';
+    tp.textContent = y ? '$39' : '$49';
+    tbill.textContent = y ? 'Billed annually · $468 / seat' : 'Billed monthly';
+  }));
+
+  /* accordion */
+  const accBtns = [...document.querySelectorAll('.acc-btn')];
+  accBtns.forEach((b, i) => {
+    b.addEventListener('click', () => {
+      const open = b.getAttribute('aria-expanded') === 'true';
+      b.setAttribute('aria-expanded', !open);
+      document.getElementById(b.getAttribute('aria-controls')).classList.toggle('open', !open);
+    });
+    b.addEventListener('keydown', e => {
+      let n = null;
+      if (e.key === 'ArrowDown') n = (i+1) % accBtns.length;
+      if (e.key === 'ArrowUp') n = (i-1+accBtns.length) % accBtns.length;
+      if (e.key === 'Home') n = 0;
+      if (e.key === 'End') n = accBtns.length-1;
+      if (n !== null){ e.preventDefault(); accBtns[n].focus(); }
+    });
+  });
+
+  /* icons */
+  if (window.lucide) lucide.createIcons();
+
+  /* entrance motion */
+  if (window.gsap && window.ScrollTrigger && !reduce){
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.from('.hero .rv', {y:18, opacity:0, duration:1.1, ease:'power3.out', stagger:.09, delay:.1});
+    gsap.utils.toArray('main section:not(.hero) .rv').forEach(el => {
+      gsap.from(el, {y:20, opacity:0, duration:.9, ease:'power2.out', scrollTrigger:{trigger:el, start:'top 90%', once:true}});
+    });
+    gsap.utils.toArray('.ev-bars i').forEach(el => {
+      gsap.from(el, {scaleX:0, duration:1.2, ease:'power3.out', scrollTrigger:{trigger:el, start:'top 92%', once:true}});
+    });
+  }
+})();
+</script>
+
+<!-- Hero backdrop: progressive enhancement over the static SVG in .hero-bg -->
+<script type="module">
+const heroEl = document.querySelector('.hero');
+const heroCanvas = document.getElementById('heroCanvas');
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const NOISE_GLSL = `
+vec3 mod289(vec3 x){ return x - floor(x * (1.0 / 289.0)) * 289.0; }
+vec4 mod289(vec4 x){ return x - floor(x * (1.0 / 289.0)) * 289.0; }
+vec4 permute(vec4 x){ return mod289(((x * 34.0) + 1.0) * x); }
+vec4 taylorInvSqrt(vec4 r){ return 1.79284291400159 - 0.85373472095314 * r; }
+float snoise(vec3 v){
+  const vec2 C = vec2(1.0 / 6.0, 1.0 / 3.0);
+  const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+  vec3 i  = floor(v + dot(v, C.yyy));
+  vec3 x0 = v - i + dot(i, C.xxx);
+  vec3 g = step(x0.yzx, x0.xyz);
+  vec3 l = 1.0 - g;
+  vec3 i1 = min(g.xyz, l.zxy);
+  vec3 i2 = max(g.xyz, l.zxy);
+  vec3 x1 = x0 - i1 + C.xxx;
+  vec3 x2 = x0 - i2 + C.yyy;
+  vec3 x3 = x0 - D.yyy;
+  i = mod289(i);
+  vec4 p = permute(permute(permute(
+             i.z + vec4(0.0, i1.z, i2.z, 1.0))
+           + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+           + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+  float n_ = 0.142857142857;
+  vec3 ns = n_ * D.wyz - D.xzx;
+  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+  vec4 x_ = floor(j * ns.z);
+  vec4 y_ = floor(j - 7.0 * x_);
+  vec4 x = x_ * ns.x + ns.yyyy;
+  vec4 y = y_ * ns.x + ns.yyyy;
+  vec4 h = 1.0 - abs(x) - abs(y);
+  vec4 b0 = vec4(x.xy, y.xy);
+  vec4 b1 = vec4(x.zw, y.zw);
+  vec4 s0 = floor(b0) * 2.0 + 1.0;
+  vec4 s1 = floor(b1) * 2.0 + 1.0;
+  vec4 sh = -step(h, vec4(0.0));
+  vec4 a0 = b0.xzyw + s0.xzyw * sh.xxyy;
+  vec4 a1 = b1.xzyw + s1.xzyw * sh.zzww;
+  vec3 p0 = vec3(a0.xy, h.x);
+  vec3 p1 = vec3(a0.zw, h.y);
+  vec3 p2 = vec3(a1.xy, h.z);
+  vec3 p3 = vec3(a1.zw, h.w);
+  vec4 norm = taylorInvSqrt(vec4(dot(p0, p0), dot(p1, p1), dot(p2, p2), dot(p3, p3)));
+  p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+  vec4 m = max(0.6 - vec4(dot(x0, x0), dot(x1, x1), dot(x2, x2), dot(x3, x3)), 0.0);
+  m = m * m;
+  return 42.0 * dot(m * m, vec4(dot(p0, x0), dot(p1, x1), dot(p2, x2), dot(p3, x3)));
+}
+`;
+
+const HERO_VERT = `
+uniform float uTime;
+uniform vec2 uMouse;
+uniform float uAmp;
+varying float vNoise;
+varying float vRim;
+${NOISE_GLSL}
+void main(){
+  vec3 p = normalize(position);
+  float t = uTime * 0.16;
+  float n1 = snoise(p * 1.3 + vec3(0.0, t, t * 0.6));
+  float n2 = snoise(p * 2.9 + vec3(t * 1.4, 0.0, -t));
+  float n3 = snoise(p * 6.1 + vec3(0.0, -t * 2.0, 0.0));
+  float d = n1 * 0.60 + n2 * 0.28 + n3 * 0.12;
+  vec3 mp = normalize(vec3(uMouse * 1.4, 1.0));
+  float pull = smoothstep(0.10, 1.0, dot(p, mp));
+  d *= 0.90 + pull * 0.60;
+  vNoise = d;
+  vec4 mv = modelViewMatrix * vec4(p * (1.0 + d * uAmp), 1.0);
+  vRim = length(mv.xy) / max(0.001, -mv.z);
+  gl_Position = projectionMatrix * mv;
+}
+`;
+
+const HERO_FRAG = `
+uniform vec3 uColor;
+uniform float uOpacity;
+varying float vNoise;
+varying float vRim;
+void main(){
+  float band = smoothstep(-0.70, 0.95, vNoise);
+  float edge = 1.0 - smoothstep(0.30, 0.80, vRim);
+  float a = (0.05 + band * 0.14) * edge * uOpacity;
+  if (a < 0.002) discard;
+  gl_FragColor = vec4(uColor, a);
+}
+`;
+
+async function initHeroScene(){
+  const probe = document.createElement('canvas');
+  if (!(probe.getContext('webgl2') || probe.getContext('webgl'))) return;
+
+  const THREE = await import('https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js');
+
+  const renderer = new THREE.WebGLRenderer({canvas: heroCanvas, alpha: true, antialias: false, powerPreference: 'high-performance'});
+  renderer.setClearAlpha(0);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 40);
+  camera.position.set(0, 0, 3.4);
+
+  const narrow = window.innerWidth < 760;
+  const geometry = new THREE.IcosahedronGeometry(1, narrow ? 16 : 32);
+  const uniforms = {
+    uTime: {value: 0},
+    uMouse: {value: new THREE.Vector2(0, 0)},
+    uAmp: {value: narrow ? 0.30 : 0.34},
+    uColor: {value: new THREE.Color('#93a5ff')},
+    uOpacity: {value: narrow ? 0.85 : 1}
+  };
+  const material = new THREE.ShaderMaterial({
+    uniforms: uniforms,
+    vertexShader: HERO_VERT,
+    fragmentShader: HERO_FRAG,
+    wireframe: true,
+    transparent: true,
+    depthWrite: false,
+    depthTest: false,
+    blending: THREE.AdditiveBlending
+  });
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.scale.setScalar(narrow ? 0.82 : 1.02);
+  mesh.position.y = -0.1;
+  scene.add(mesh);
+
+  const resize = () => {
+    const w = heroEl.clientWidth || window.innerWidth;
+    const h = heroEl.clientHeight || 1;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, narrow ? 1.75 : 2));
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  };
+  resize();
+  if (window.ResizeObserver) new ResizeObserver(resize).observe(heroEl);
+  else window.addEventListener('resize', resize, {passive: true});
+
+  const pointer = {x: 0, y: 0}, target = {x: 0, y: 0};
+  window.addEventListener('pointermove', (e) => {
+    target.x = (e.clientX / window.innerWidth) * 2 - 1;
+    target.y = -((e.clientY / window.innerHeight) * 2 - 1);
+  }, {passive: true});
+
+  let raf = 0, elapsed = 0, last = 0;
+  const loop = (now) => {
+    if (!last) last = now;
+    elapsed += Math.min((now - last) / 1000, 0.05);
+    last = now;
+    pointer.x += (target.x - pointer.x) * 0.045;
+    pointer.y += (target.y - pointer.y) * 0.045;
+    uniforms.uTime.value = elapsed;
+    uniforms.uMouse.value.set(pointer.x, pointer.y);
+    mesh.rotation.y = pointer.x * 0.42 + elapsed * 0.035;
+    mesh.rotation.x = -pointer.y * 0.26;
+    mesh.position.x = pointer.x * 0.10;
+    mesh.position.y = -0.1 + pointer.y * 0.06;
+    renderer.render(scene, camera);
+    raf = requestAnimationFrame(loop);
+  };
+  const play = () => { if (!raf && !document.hidden) { last = 0; raf = requestAnimationFrame(loop); } };
+  const pause = () => { if (raf) { cancelAnimationFrame(raf); raf = 0; last = 0; } };
+
+  if (window.IntersectionObserver) {
+    new IntersectionObserver((entries) => {
+      entries.forEach((entry) => { if (entry.isIntersecting) play(); else pause(); });
+    }, {threshold: 0}).observe(heroEl);
+  } else {
+    play();
+  }
+  document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); else play(); });
+  heroCanvas.addEventListener('webglcontextlost', (e) => {
+    e.preventDefault();
+    pause();
+    heroCanvas.classList.remove('ready');
+  });
+
+  renderer.render(scene, camera);
+  heroCanvas.classList.add('ready');
+  heroEl.classList.add('webgl');
+}
+
+if (heroEl && heroCanvas && !reduceMotion) {
+  initHeroScene().catch(() => {
+    heroCanvas.classList.remove('ready');
+    heroEl.classList.remove('webgl');
+  });
+}
+</script>
+</body>
+</html>

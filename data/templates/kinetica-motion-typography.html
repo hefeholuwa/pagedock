@@ -1,0 +1,1973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0A0A0A">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Good type deserves a little movement. Make kinetic typography, animated backgrounds, and short motion graphics in your browser with Kinetica.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Kinetica — Good type. Great moves.">
+  <meta property="og:description" content="A little type. A little motion. A whole new way to make yourself seen. Create motion graphics right in your browser.">
+  <meta property="og:image" content="https://htmlhost.co/photo/landscape/abstract-lime-light-trails-on-black">
+  <meta property="og:image:alt" content="Electric lime light trails against a dark background">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>Kinetica — Good type. Great moves.</title>
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23C8FF3D'/%3E%3Cpath d='M17 13h9v17l15-17h12L35 33l19 18H41L26 36v15h-9z' fill='%230A0A0A'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11.2.10/swiper-bundle.min.css">
+
+  <style>
+    :root {
+      --void: #0a0a0a;
+      --bone: #f4f1ea;
+      --acid: #c8ff3d;
+      --ash: #96958e;
+      --ink: #161616;
+      --line: #292929;
+      --display: "Instrument Sans", Arial, sans-serif;
+      --body: "Inter Tight", Arial, sans-serif;
+      --serif: "Instrument Serif", Georgia, serif;
+      --radius: 22px;
+      --gutter: clamp(20px, 5vw, 80px);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 100px; }
+    body {
+      margin: 0;
+      background: var(--void);
+      color: var(--bone);
+      font-family: var(--body);
+      font-size: 16px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    body:has(dialog[open]) { overflow: hidden; }
+    ::selection { background: var(--acid); color: var(--void); }
+    button, input, select, textarea { font: inherit; }
+    button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+    button, select { cursor: pointer; }
+    button { color: inherit; }
+    button:disabled { cursor: default; opacity: .55; }
+    a { color: inherit; text-decoration: none; }
+    button { border: 0; }
+    img, svg, canvas { display: block; }
+    img { width: 100%; height: 100%; object-fit: cover; }
+    h1, h2, h3, p { margin: 0; }
+    h1, h2, h3 { font-family: var(--display); font-weight: 500; }
+    em { font-family: var(--serif); font-weight: 400; }
+    ul { margin: 0; padding: 0; list-style: none; }
+    [hidden] { display: none !important; }
+    :focus-visible { outline: 2px solid var(--acid); outline-offset: 6px; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      padding: 0; margin: -1px; overflow: hidden;
+      clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+    }
+    .skip-link {
+      position: fixed; top: 12px; left: 12px; z-index: 100;
+      padding: 12px 18px; background: var(--acid); color: var(--void);
+      border-radius: 8px; transform: translateY(-160%);
+    }
+    .skip-link:focus { transform: none; }
+    .container { width: min(1240px, calc(100% - var(--gutter) * 2)); margin-inline: auto; }
+    .section { padding-block: clamp(76px, 9vw, 140px); }
+    .section-rule { border-top: 1px solid var(--line); }
+    .eyebrow, .micro {
+      font-size: 10px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: .15em;
+    }
+    .eyebrow {
+      display: flex; align-items: center; gap: 12px;
+      color: var(--ash); margin-bottom: 28px;
+    }
+    .eyebrow::before { content: ""; width: 22px; height: 1px; background: currentColor; }
+    .section-heading {
+      font-size: clamp(46px, 6.6vw, 88px);
+      line-height: .99; letter-spacing: -.065em;
+      text-wrap: balance;
+    }
+    .section-heading em { letter-spacing: -.045em; }
+    .section-intro {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: 40px; margin-bottom: 56px;
+    }
+    .section-intro > p, .section-intro > div:last-child > p {
+      color: var(--ash); max-width: 300px; font-size: 16px;
+    }
+    .muted { color: var(--ash); }
+    .accent { color: var(--acid); }
+    .icon { width: 18px; height: 18px; flex: 0 0 auto; stroke-width: 1.7; }
+    .text-link {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 14px; font-weight: 500; padding-block: 7px;
+      border-bottom: 1px solid #62625b;
+    }
+    .text-link:hover { color: var(--acid); border-color: var(--acid); }
+    .text-link svg { transition: transform .25s ease; }
+    .text-link:hover svg { transform: translate(3px, -3px); }
+    .btn {
+      min-height: 48px; padding: 14px 24px; border-radius: 100px;
+      display: inline-flex; justify-content: center; align-items: center; gap: 18px;
+      background: var(--bone); color: var(--void);
+      font-size: 14px; font-weight: 600; line-height: 1.2;
+      border: 1px solid transparent;
+      transition: transform .25s ease, background .25s ease;
+      white-space: nowrap;
+    }
+    .btn:hover { transform: translateY(-2px); background: #fff; }
+    .btn-acid { background: var(--acid); }
+    .btn-acid:hover { background: #d7ff76; }
+    .btn-outline { background: transparent; border-color: #3c3c3c; color: var(--bone); }
+    .btn-outline:hover { background: #222; }
+    .btn-sm { min-height: 40px; padding: 11px 18px; font-size: 12px; }
+    .roll { height: 1.2em; display: block; overflow: hidden; }
+    .roll > span { display: block; transition: transform .3s cubic-bezier(.2,.7,.2,1); }
+    .btn:hover .roll > span { transform: translateY(-50%); }
+    .roll b { display: block; line-height: 1.2; font-weight: inherit; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 7px;
+      border: 1px solid var(--line); border-radius: 100px;
+      padding: 7px 11px; font-size: 11px;
+    }
+
+    /* Navigation */
+    .site-header { position: sticky; top: 0; z-index: 40; height: 82px; border-bottom: 1px solid transparent; }
+    .site-header.scrolled, .site-header:has(.nav-links.open) {
+      background: rgb(10 10 10 / .88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom-color: var(--line);
+    }
+    .nav-shell { height: 100%; display: flex; align-items: center; gap: 40px; }
+    .brand {
+      font-family: var(--display); font-size: 29px; font-weight: 700;
+      letter-spacing: -.085em; display: inline-flex; align-items: center; gap: 5px;
+    }
+    .brand-star { color: var(--acid); font-size: 32px; line-height: 1; margin-left: 1px; }
+    .nav-links { display: flex; align-items: center; gap: 25px; margin-inline: auto; }
+    .nav-links a, .nav-links button, .sign-in { font-size: 12px; background: none; padding: 8px 0; color: #bbb9b3; }
+    .nav-links a:hover, .nav-links button:hover, .sign-in:hover { color: var(--bone); }
+    .nav-actions { display: flex; align-items: center; gap: 24px; }
+    .menu-toggle {
+      display: none; width: 42px; height: 42px; background: transparent;
+      border: 1px solid var(--line); border-radius: 50%;
+      align-items: center; justify-content: center;
+    }
+    .menu-toggle span, .menu-toggle span::after {
+      display: block; width: 16px; height: 1px; background: var(--bone); transition: transform .25s ease;
+    }
+    .menu-toggle span::after { content: ""; transform: translateY(5px); }
+    .menu-toggle[aria-expanded="true"] span { transform: rotate(45deg); }
+    .menu-toggle[aria-expanded="true"] span::after { transform: rotate(-90deg); }
+
+    /* Hero and template wall */
+    .hero { position: relative; isolation: isolate; overflow: hidden; padding: 185px 0 65px; }
+    .marquee-wall {
+      position: absolute; inset: 10px -80px auto; z-index: -1;
+      display: grid; gap: 14px; transform: rotate(-5deg); opacity: .54;
+      mask-image: linear-gradient(to bottom, #000, #000 38%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to bottom, #000, #000 38%, transparent 100%);
+      pointer-events: auto;
+    }
+    .wall-row { width: 100%; overflow: hidden; }
+    .wall-row .swiper-wrapper { display: flex; transition-timing-function: linear !important; }
+    .wall-row .swiper-slide { flex: 0 0 245px; width: 245px; margin-right: 14px; }
+    .wall-card {
+      height: 142px; border-radius: 14px; overflow: hidden; position: relative;
+      display: grid; place-items: center; background: #252525; color: var(--bone);
+      border: 1px solid #ffffff0a;
+    }
+    .wall-card strong {
+      position: relative; z-index: 1; font-family: var(--display); font-size: 39px;
+      font-weight: 600; letter-spacing: -.07em; line-height: .9; text-align: center;
+    }
+    .wall-card img { position: absolute; inset: 0; filter: grayscale(1) brightness(.6); }
+    .wall-card.paper { background: #d4d0c7; color: var(--void); }
+    .wall-card.lime { background: var(--acid); color: var(--void); }
+    .wall-card.outline strong { -webkit-text-stroke: 1px var(--bone); color: transparent; }
+    .wall-card.serif strong { font-family: var(--serif); font-style: italic; font-size: 49px; }
+    .hero-content { text-align: center; position: relative; }
+    .hero-kicker {
+      display: inline-flex; align-items: center; gap: 8px; font-size: 10px;
+      letter-spacing: .13em; text-transform: uppercase; margin-bottom: 30px;
+      color: #d3d0c7;
+    }
+    .status-dot { width: 6px; height: 6px; background: var(--acid); border-radius: 100%; }
+    h1 {
+      font-size: clamp(52px, 11.6vw, 160px); line-height: .94;
+      letter-spacing: -.075em; font-weight: 500;
+    }
+    .headline-line { display: flex; justify-content: center; align-items: center; gap: .14em; }
+    .headline-line + .headline-line { margin-top: .07em; }
+    h1 em { letter-spacing: -.06em; }
+    .wave-word { white-space: nowrap; }
+    .wave-letter { display: inline-block; width: .57em; text-align: center; font-weight: 400; }
+    .wave-letter:nth-child(3) { width: .52em; }
+    .wave-letter:nth-child(4) { width: .52em; }
+    .wave-letter:nth-child(5) { width: .49em; }
+    .wave-letter:last-child { width: .21em; }
+    .inline-reel {
+      width: 1.35em; aspect-ratio: 1.6; border-radius: .13em;
+      display: inline-block; overflow: hidden; position: relative;
+      background: var(--acid); flex: 0 0 auto; transform: rotate(-7deg);
+      box-shadow: 0 0 0 1px #ffffff15;
+    }
+    .inline-reel img { filter: grayscale(1) contrast(1.2); opacity: .64; }
+    .inline-reel::after {
+      content: "K"; position: absolute; inset: 0; display: grid; place-items: center;
+      font-size: .75em; font-weight: 700; color: var(--acid); line-height: 1;
+    }
+    .hero-subhead { font-size: clamp(15px, 1.6vw, 19px); color: #bbb9b3; margin: 30px auto 23px; }
+    .hero-actions { display: flex; gap: 25px; align-items: center; justify-content: center; }
+    .hero-actions .sign-in { border-bottom: 1px solid #42423e; }
+    .hero-explainer { color: var(--ash); max-width: 410px; margin: 25px auto 0; font-size: 13px; line-height: 1.65; }
+    .hero-bottom {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 82px; padding-top: 22px; border-top: 1px solid var(--line);
+      color: #97968f; font-size: 10px; letter-spacing: .08em; text-transform: uppercase;
+    }
+    .hero-bottom > span { display: flex; gap: 8px; align-items: center; }
+    .motion-toggle { background: none; display: flex; align-items: center; gap: 8px; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+    .motion-indicator { display: flex; height: 13px; align-items: center; gap: 2px; }
+    .motion-indicator i { display: block; width: 2px; height: 9px; background: var(--acid); animation: equalize .75s ease-in-out infinite alternate; }
+    .motion-indicator i:nth-child(2) { animation-delay: -.3s; height: 13px; }
+    .motion-indicator i:nth-child(3) { animation-delay: -.6s; height: 6px; }
+
+    /* Feature blocks */
+    .feature-list { display: grid; gap: 90px; margin-top: 68px; }
+    .feature { display: grid; grid-template-columns: .82fr 1.18fr; align-items: center; gap: 8%; }
+    .feature.reverse { grid-template-columns: 1.18fr .82fr; }
+    .feature.reverse .feature-copy { order: 2; }
+    .feature-copy { max-width: 380px; }
+    .feature-index { color: #787872; font-size: 11px; margin-bottom: 20px; display: block; }
+    .feature-copy h3 { font-size: clamp(31px, 3.5vw, 47px); letter-spacing: -.055em; line-height: 1.06; margin-bottom: 18px; }
+    .feature-copy p { color: var(--ash); font-size: 15px; max-width: 330px; }
+    .feature-copy .text-link { margin-top: 24px; }
+    .media-card {
+      border-radius: var(--radius); overflow: hidden; aspect-ratio: 1.35;
+      background: var(--ink); position: relative; border: 1px solid #ffffff07;
+      min-width: 0;
+    }
+    .media-label {
+      position: absolute; bottom: 18px; left: 22px; right: 22px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 9px; text-transform: uppercase; letter-spacing: .1em; z-index: 2;
+    }
+    .editor-chrome {
+      position: absolute; inset: 0 0 auto; height: 41px; border-bottom: 1px solid #ffffff0c;
+      display: flex; align-items: center; gap: 5px; padding: 0 16px; font-size: 9px; color: #8e8e88;
+    }
+    .chrome-dot { width: 5px; height: 5px; border-radius: 50%; background: #494944; }
+    .editor-chrome > span:last-child { margin-left: auto; }
+    .figma-stage {
+      position: absolute; inset: 58px 32px 48px; display: grid; place-items: center;
+      background-image: radial-gradient(#ffffff13 .65px, transparent .65px);
+      background-size: 14px 14px;
+    }
+    .selected-type {
+      position: relative; font-size: clamp(38px, 5vw, 67px); line-height: .9;
+      font-family: var(--display); font-weight: 650; letter-spacing: -.07em;
+      color: var(--acid); border: 1px solid var(--acid); padding: 14px 18px;
+      transform: rotate(-6deg);
+    }
+    .selected-type::before, .selected-type::after {
+      content: ""; position: absolute; width: 6px; height: 6px;
+      background: var(--void); border: 1px solid var(--acid);
+    }
+    .selected-type::before { top: -3px; left: -3px; }
+    .selected-type::after { bottom: -3px; right: -3px; }
+    .selection-tag { position: absolute; top: -23px; left: -1px; font: 9px var(--body); letter-spacing: 0; color: var(--acid); }
+    .cursor-tag {
+      position: absolute; right: 7%; bottom: 20%; background: var(--bone);
+      color: var(--void); padding: 5px 10px; font-size: 9px; border-radius: 4px;
+      animation: cursorFloat 5s ease-in-out infinite;
+    }
+    .cursor-tag::before { content: "↖"; position: absolute; top: -21px; left: -12px; font-size: 24px; color: var(--bone); }
+    .glyph-card { background: var(--bone); color: var(--void); }
+    .glyph-stage { position: absolute; inset: 45px 28px 80px; display: grid; place-items: center; }
+    .glyph-stage::before, .glyph-stage::after {
+      content: ""; height: 1px; background: #0002; position: absolute; left: 0; right: 0;
+    }
+    .glyph-stage::before { top: 17%; }
+    .glyph-stage::after { bottom: 15%; }
+    .glyph-text { font-size: clamp(110px, 16vw, 210px); line-height: 1; letter-spacing: -.09em; font-family: var(--display); }
+    .glyph-text span { color: transparent; -webkit-text-stroke: 1px var(--void); }
+    .font-picker { position: absolute; bottom: 52px; left: 0; right: 0; display: flex; justify-content: center; gap: 5px; }
+    .font-picker button {
+      border-radius: 100px; padding: 6px 10px; font-size: 9px; background: transparent;
+      border: 1px solid #0002; color: var(--void);
+    }
+    .font-picker button[aria-pressed="true"] { background: var(--void); color: var(--bone); }
+    .font-picker button:focus-visible { outline-color: var(--void); }
+    .sphere-card { display: grid; place-items: center; background: #131610; }
+    .sphere-art { width: 83%; height: 83%; overflow: visible; }
+    .sphere-orbit { transform-origin: 200px 200px; animation: spin 26s linear infinite; }
+    .sphere-wire { stroke: #c8ff3d25; fill: none; stroke-width: .8; }
+    .sphere-type { font-family: var(--display); font-weight: 600; font-size: 38px; fill: var(--acid); letter-spacing: -1px; }
+
+    /* Sound */
+    .sound-panel {
+      border-radius: 26px; background: var(--acid); color: var(--void);
+      min-height: 400px; padding: 27px 32px; position: relative; overflow: hidden;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .sound-panel :focus-visible { outline-color: var(--void); }
+    .sound-toolbar, .sound-controls { display: flex; justify-content: space-between; align-items: center; gap: 20px; position: relative; z-index: 2; }
+    .sound-switch {
+      display: inline-flex; align-items: center; gap: 9px; border-radius: 100px;
+      padding: 9px 14px; border: 1px solid #0004; background: none; font-size: 12px; color: var(--void);
+    }
+    .sound-switch[aria-pressed="true"] { background: var(--void); color: var(--acid); }
+    .sound-word {
+      display: flex; justify-content: center; align-items: center; padding: 38px 0;
+      font-family: var(--display); font-size: clamp(68px, 15.5vw, 210px);
+      font-weight: 700; letter-spacing: -.08em; line-height: 1;
+    }
+    .sound-char { display: inline-block; }
+    .sound-options { display: flex; gap: 22px; align-items: center; }
+    .sound-options label { display: flex; align-items: center; gap: 8px; font-size: 11px; }
+    .sound-options select {
+      background: transparent; color: var(--void); border: 0; border-bottom: 1px solid #0004;
+      border-radius: 0; padding: 5px 16px 5px 0; font-size: 11px; color-scheme: light;
+    }
+    .replay-button { display: inline-flex; align-items: center; gap: 7px; background: transparent; color: var(--void); font-size: 11px; }
+    .sound-note { margin-top: 15px; font-size: 11px; color: var(--ash); display: flex; justify-content: space-between; gap: 20px; }
+
+    /* The whole frame */
+    .frame-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+    .frame-preview { aspect-ratio: 1.08; position: relative; overflow: hidden; border-radius: 20px; background: #181818; }
+    .frame-card h3 { font-size: 23px; margin: 22px 0 8px; letter-spacing: -.04em; }
+    .frame-card p { color: var(--ash); font-size: 13px; max-width: 270px; }
+    .gallery-photo {
+      position: absolute; top: 20%; width: 48%; aspect-ratio: 3 / 4;
+      overflow: hidden; border-radius: 8px; box-shadow: 0 15px 30px #0005;
+    }
+    .gallery-photo img { filter: grayscale(1); }
+    .gallery-photo:nth-child(1) { left: 5%; transform: rotate(-14deg); }
+    .gallery-photo:nth-child(2) { left: 28%; top: 15%; transform: rotate(4deg); z-index: 2; animation: galleryFloat 6s ease-in-out infinite; }
+    .gallery-photo:nth-child(3) { left: 49%; transform: rotate(17deg); }
+    .widget-preview { background: #e3dfd5; color: var(--void); display: grid; place-items: center; }
+    .widget-disc {
+      width: 66%; aspect-ratio: 1; border: 1px solid #0002; border-radius: 50%;
+      position: relative; display: grid; place-items: center;
+    }
+    .widget-disc::before { content: ""; position: absolute; inset: 10px; border-radius: 50%; border: 1px dashed #0003; }
+    .widget-hand { position: absolute; inset: 0; animation: spin 12s linear infinite; }
+    .widget-hand::before { content: ""; position: absolute; width: 3px; height: 44%; background: var(--void); top: 6%; left: 50%; }
+    .widget-number { position: relative; font-family: var(--display); font-size: clamp(31px, 4vw, 55px); letter-spacing: -.07em; padding: 4px 8px; background: #e3dfd5; }
+    .widget-label { position: absolute; bottom: 18px; font-size: 9px; letter-spacing: .15em; }
+    .background-preview { background: #171c0f; }
+    .blob {
+      position: absolute; width: 100%; aspect-ratio: 1; border-radius: 50%; left: -40%; top: -25%;
+      background: var(--acid); filter: blur(32px); animation: blobFloat 9s ease-in-out infinite alternate;
+    }
+    .blob.two { background: #758449; left: 40%; top: 55%; animation-delay: -5s; }
+    .halftone {
+      position: absolute; inset: 0; background-image: radial-gradient(#0009 1px, transparent 1px);
+      background-size: 4px 4px; opacity: .7;
+    }
+    .background-caption { position: absolute; bottom: 20px; left: 22px; font-size: 10px; letter-spacing: .12em; }
+    .tip { margin-top: 33px; display: flex; align-items: baseline; justify-content: center; gap: 12px; color: var(--ash); font-size: 12px; text-align: center; }
+    .tip strong { color: var(--acid); font-size: 9px; border: 1px solid #c8ff3d40; border-radius: 4px; padding: 2px 5px; text-transform: uppercase; letter-spacing: .08em; }
+
+    /* Templates */
+    .templates-section { padding-top: 70px; }
+    .template-top { margin-bottom: 35px; }
+    .template-top .section-heading { max-width: 780px; }
+    .template-description { margin: 22px 0 18px; color: var(--ash); max-width: 430px; font-size: 15px; }
+    .template-filters { display: flex; gap: 6px; margin-bottom: 25px; flex-wrap: wrap; }
+    .filter { background: transparent; color: var(--ash); border: 1px solid var(--line); padding: 8px 17px; border-radius: 100px; font-size: 12px; }
+    .filter[aria-pressed="true"] { background: var(--bone); color: var(--void); border-color: var(--bone); }
+    .template-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 26px 18px; }
+    .template-card { min-width: 0; }
+    .template-preview {
+      aspect-ratio: 1.15; border-radius: 15px; overflow: hidden; position: relative;
+      background: #1b1b1b; display: grid; place-items: center;
+      transition: transform .35s ease;
+    }
+    .template-card:hover .template-preview, .template-card:focus-within .template-preview { transform: translateY(-4px); }
+    .template-preview img { position: absolute; inset: 0; filter: grayscale(1) brightness(.55); }
+    .template-preview.paper { background: var(--bone); color: var(--void); }
+    .template-preview.lime { background: var(--acid); color: var(--void); }
+    .template-preview.grey { background: #353733; }
+    .template-preview.rings::before, .template-preview.rings::after {
+      content: ""; position: absolute; inset: 12%; border: 1px solid currentColor; opacity: .3; border-radius: 50%;
+    }
+    .template-preview.rings::after { inset: 24%; }
+    .sample-text {
+      position: relative; z-index: 1; font-family: var(--display);
+      font-size: clamp(25px, 3.3vw, 47px); font-weight: 650; line-height: .91;
+      text-align: center; letter-spacing: -.065em; white-space: pre-line;
+      animation: sampleBounce 2.4s cubic-bezier(.4,0,.2,1) infinite;
+      animation-play-state: paused;
+    }
+    .sample-text.serif { font-family: var(--serif); font-size: clamp(32px, 4.1vw, 60px); font-weight: 400; font-style: italic; }
+    .sample-text.stroke { -webkit-text-stroke: 1px currentColor; -webkit-text-fill-color: transparent; }
+    .sample-text.tilt { transform: rotate(-12deg); animation-name: sampleTilt; }
+    .sample-text.stack { text-transform: uppercase; font-size: clamp(24px, 3vw, 42px); }
+    .template-card:hover .sample-text, .template-card:focus-within .sample-text { animation-play-state: running; }
+    .template-open {
+      position: absolute; left: 12px; right: 12px; bottom: 12px; z-index: 3;
+      background: var(--bone); color: var(--void); border: 1px solid #0001; border-radius: 100px;
+      min-height: 37px; display: flex; align-items: center; justify-content: center; gap: 10px;
+      font-size: 11px; font-weight: 600; opacity: 0; transform: translateY(8px);
+      transition: opacity .2s ease, transform .2s ease;
+    }
+    .template-card:hover .template-open, .template-card:focus-within .template-open { opacity: 1; transform: none; }
+    .template-open:focus-visible { outline-color: var(--void); outline-offset: 2px; }
+    .template-meta { display: flex; justify-content: space-between; gap: 8px; margin-top: 11px; font-size: 11px; }
+    .template-meta span { color: var(--ash); font-size: 10px; }
+    .template-number { position: absolute; top: 13px; left: 15px; z-index: 2; font-size: 8px; opacity: .6; letter-spacing: .1em; }
+
+    /* Pricing */
+    .pricing-head { text-align: center; margin-bottom: 46px; }
+    .pricing-head .eyebrow { justify-content: center; }
+    .pricing-head p { margin-top: 20px; color: var(--ash); font-size: 14px; }
+    .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; max-width: 860px; margin-inline: auto; }
+    .price-card { border: 1px solid var(--line); border-radius: 22px; padding: 35px; background: #111; position: relative; }
+    .price-card.pro { border-color: var(--acid); background: linear-gradient(145deg, #1d2414, #111 55%); }
+    .price-label { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .price-label h3 { font-size: 23px; letter-spacing: -.035em; }
+    .pro-badge { color: var(--acid); font-size: 8px; text-transform: uppercase; letter-spacing: .09em; }
+    .price { display: flex; align-items: baseline; margin-top: 24px; gap: 8px; }
+    .price strong { font-family: var(--display); font-size: 82px; font-weight: 500; letter-spacing: -.075em; line-height: 1.1; }
+    .price > span { color: var(--ash); font-size: 12px; }
+    .price-description { font-size: 13px; color: var(--ash); margin: 13px 0 28px; }
+    .price-list { display: grid; gap: 15px; font-size: 13px; margin: 0 0 35px; padding-top: 25px; border-top: 1px solid var(--line); }
+    .price-list li { display: flex; align-items: center; gap: 10px; }
+    .price-list li::before { content: "✓"; color: var(--acid); font-size: 13px; }
+    .price-card .btn { width: 100%; }
+    .pricing-footnote { text-align: center; font-size: 11px; color: #777770; margin-top: 22px; }
+
+    /* FAQ */
+    .faq-layout { display: grid; grid-template-columns: .7fr 1.3fr; gap: 9%; align-items: start; }
+    .faq-intro p { color: var(--ash); font-size: 14px; margin-top: 24px; max-width: 220px; }
+    .faq-list { border-top: 1px solid var(--line); }
+    .faq-item { border-bottom: 1px solid var(--line); }
+    .faq-question {
+      display: flex; width: 100%; justify-content: space-between; align-items: center; gap: 20px;
+      padding: 23px 0; background: transparent; text-align: left; font-size: 15px; font-weight: 500;
+    }
+    .faq-plus { flex: 0 0 20px; width: 20px; height: 20px; position: relative; transition: transform .3s ease; }
+    .faq-plus::before, .faq-plus::after { content: ""; position: absolute; top: 9px; left: 5px; width: 10px; height: 1px; background: var(--ash); }
+    .faq-plus::after { transform: rotate(90deg); transition: opacity .2s ease; }
+    .faq-question[aria-expanded="true"] .faq-plus { transform: rotate(180deg); }
+    .faq-question[aria-expanded="true"] .faq-plus::after { opacity: 0; }
+    .faq-answer { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows .35s ease, opacity .3s ease; }
+    .faq-answer > div { overflow: hidden; min-height: 0; }
+    .faq-answer p { color: var(--ash); font-size: 14px; line-height: 1.7; padding-bottom: 23px; max-width: 560px; }
+    .faq-question[aria-expanded="true"] + .faq-answer { grid-template-rows: 1fr; opacity: 1; }
+
+    /* Footer */
+    .footer { padding: 70px 0 26px; }
+    .footer-head { display: flex; align-items: center; justify-content: space-between; gap: 25px; margin-bottom: 75px; }
+    .footer-statement { font-size: clamp(40px, 7.8vw, 108px); letter-spacing: -.065em; line-height: 1; }
+    .footer-arrow {
+      width: 74px; height: 74px; border-radius: 50%; background: var(--acid); color: var(--void);
+      display: grid; place-items: center; flex: 0 0 auto;
+      transition: transform .25s ease;
+    }
+    .footer-arrow:hover { transform: rotate(45deg); }
+    .footer-arrow svg { width: 29px; height: 29px; }
+    .footer-main { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 30px; }
+    .footer-brand p { color: var(--ash); font-size: 12px; margin-top: 16px; }
+    .social-links { display: flex; gap: 10px; margin-top: 22px; }
+    .social-links a { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; }
+    .social-links a:hover { color: var(--acid); border-color: var(--acid); }
+    .social-links svg { width: 14px; height: 14px; }
+    .footer-column h3 { text-transform: uppercase; letter-spacing: .12em; color: #72736d; font-family: var(--body); font-size: 9px; margin-bottom: 20px; }
+    .footer-column li + li { margin-top: 10px; }
+    .footer-column a, .footer-column button { background: none; padding: 0; font-size: 12px; color: #b6b4ad; }
+    .footer-column a:hover, .footer-column button:hover { color: var(--acid); }
+    .footer-bottom { display: flex; justify-content: space-between; gap: 20px; margin-top: 70px; padding-top: 23px; border-top: 1px solid var(--line); color: #777770; font-size: 10px; }
+    .footer-bottom span:last-child { display: flex; align-items: center; gap: 6px; }
+
+    /* Local editor and information dialogs */
+    dialog {
+      color: var(--bone); background: #141414; border: 1px solid #353535; border-radius: 23px;
+      padding: 28px; width: min(900px, calc(100% - 28px)); max-height: calc(100dvh - 36px);
+      overflow: auto;
+    }
+    dialog::backdrop { background: #000b; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .dialog-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
+    .dialog-head .micro { color: var(--acid); margin-bottom: 8px; }
+    .dialog-head h2 { font-size: 33px; letter-spacing: -.055em; line-height: 1.1; }
+    .close-dialog { flex: 0 0 35px; width: 35px; height: 35px; border: 1px solid #333; background: transparent; border-radius: 50%; font-size: 24px; line-height: 1; }
+    .canvas-wrap { width: 100%; aspect-ratio: 16 / 9; border-radius: 13px; overflow: hidden; background: var(--acid); }
+    #editor-canvas { width: 100%; height: 100%; }
+    .editor-controls { display: grid; grid-template-columns: 1.7fr 1fr 1fr; gap: 14px; margin-top: 20px; }
+    .field { display: flex; flex-direction: column; gap: 7px; font-size: 11px; color: var(--ash); }
+    .field input, .field select, .field textarea {
+      width: 100%; border: 1px solid #373737; border-radius: 8px; padding: 11px 12px;
+      background: #0b0b0b; color: var(--bone); font-size: 13px;
+    }
+    .editor-bottom { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 22px; }
+    .editor-status { font-size: 11px; color: var(--ash); }
+    .small-dialog { max-width: 510px; }
+    .dialog-copy { color: var(--ash); font-size: 14px; line-height: 1.75; }
+    .dialog-copy p + p { margin-top: 14px; }
+    .dialog-copy ul { display: grid; gap: 14px; }
+    .dialog-copy li { padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+    .dialog-copy strong { color: var(--bone); }
+    .contact-form { display: grid; gap: 18px; margin-top: 22px; }
+    .contact-form textarea { resize: vertical; min-height: 95px; }
+    [data-hh-form-msg] { border-radius: 8px; padding: 12px; font-size: 13px; }
+    [data-hh-form-msg]:empty { display: none; }
+    [data-hh-form-msg][data-state="success"] { background: #c8ff3d14; border: 1px solid #c8ff3d50; color: var(--acid); }
+    [data-hh-form-msg][data-state="error"] { background: #3d1e1e; border: 1px solid #9b5555; color: #f4c7c7; }
+
+    /* Only visible preview regions run their continuous CSS motion. */
+    .loop { animation-play-state: paused; }
+    .motion-region.in-view .loop { animation-play-state: running; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes equalize { to { transform: scaleY(.35); } }
+    @keyframes cursorFloat { 50% { transform: translate(-20px, -12px); } }
+    @keyframes galleryFloat { 50% { transform: translateY(-12px) rotate(-3deg); } }
+    @keyframes blobFloat { to { transform: translate(65%, 45%) scale(1.3); } }
+    @keyframes sampleBounce { 50% { transform: translateY(-9px) scale(1.035); } }
+    @keyframes sampleTilt { 50% { transform: rotate(6deg) scale(1.07); } }
+
+    .motion-paused *, .motion-paused *::before, .motion-paused *::after { animation-play-state: paused !important; transition-duration: 0s !important; }
+    html:has(.motion-paused) { scroll-behavior: auto; }
+
+    @media (min-width: 1440px) {
+      .hero { padding-top: 210px; }
+    }
+    @media (max-width: 1100px) {
+      .nav-shell { gap: 25px; }
+      .nav-links { gap: 17px; }
+      .nav-actions { gap: 16px; }
+      .template-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .sample-text { font-size: 42px; }
+      .sample-text.serif { font-size: 54px; }
+      .sample-text.stack { font-size: 37px; }
+    }
+    @media (max-width: 900px) {
+      .site-header { height: 72px; }
+      .nav-shell { justify-content: space-between; gap: 15px; }
+      .nav-actions { margin-left: auto; gap: 14px; }
+      .menu-toggle { display: inline-flex; }
+      .nav-links {
+        position: absolute; top: 71px; left: 0; right: 0; margin: 0;
+        padding: 18px var(--gutter) 26px; display: none;
+        flex-direction: column; align-items: stretch; gap: 0;
+        background: #101010; border-bottom: 1px solid var(--line);
+      }
+      .nav-links.open { display: flex; }
+      .nav-links a, .nav-links button { font-size: 17px; padding: 13px 0; text-align: left; }
+      .feature { gap: 6%; }
+      .feature-copy h3 { font-size: 33px; }
+      .feature-copy p { font-size: 13px; }
+      .frame-grid { gap: 16px; }
+      .sound-panel { min-height: 350px; }
+      .faq-layout { gap: 6%; grid-template-columns: .8fr 1.2fr; }
+      .faq-question { font-size: 14px; }
+    }
+    @media (max-width: 680px) {
+      :root { --gutter: 21px; }
+      .brand { font-size: 27px; }
+      .nav-actions .sign-in { display: none; }
+      .nav-actions .btn { font-size: 11px; padding: 11px 15px; }
+      .menu-toggle { width: 36px; height: 36px; }
+      .hero { padding-top: 135px; padding-bottom: 38px; }
+      .marquee-wall { top: 4px; gap: 10px; inset-inline: -40px; }
+      .wall-card { height: 100px; }
+      .wall-row .swiper-slide { flex-basis: 175px; width: 175px; }
+      .wall-card strong { font-size: 29px; }
+      .wall-card.serif strong { font-size: 36px; }
+      .hero-kicker { font-size: 8px; margin-bottom: 24px; letter-spacing: .1em; }
+      h1 { font-size: clamp(43px, 11.3vw, 76px); letter-spacing: -.07em; }
+      .inline-reel { width: 1.15em; }
+      .hero-subhead { max-width: 285px; margin-top: 25px; font-size: 14px; line-height: 1.5; }
+      .hero-actions { gap: 22px; }
+      .hero-explainer { max-width: 290px; font-size: 12px; }
+      .hero-bottom { margin-top: 48px; font-size: 8px; }
+      .hero-bottom .desktop-note { display: none; }
+      .motion-toggle { font-size: 8px; }
+      .section-heading { font-size: clamp(43px, 10vw, 65px); }
+      .section-intro { flex-direction: column; align-items: flex-start; gap: 23px; margin-bottom: 35px; }
+      .section-intro > p { font-size: 14px; max-width: 330px; }
+      .feature-list { margin-top: 42px; gap: 54px; }
+      .feature, .feature.reverse { grid-template-columns: 1fr; gap: 26px; }
+      .feature.reverse .feature-copy { order: initial; }
+      .feature-copy { max-width: 100%; }
+      .feature-copy h3 { font-size: 35px; max-width: 300px; }
+      .feature-copy p { font-size: 14px; max-width: 340px; }
+      .feature-index { margin-bottom: 12px; }
+      .feature-copy .text-link { margin-top: 15px; }
+      .media-card { aspect-ratio: 1.35; }
+      .selected-type { font-size: clamp(44px, 11vw, 65px); }
+      .glyph-text { font-size: clamp(145px, 34vw, 210px); }
+      .sound-panel { padding: 20px; min-height: 310px; border-radius: 19px; }
+      .sound-toolbar .micro { font-size: 8px; max-width: 110px; }
+      .sound-switch { font-size: 10px; padding: 8px 10px; }
+      .sound-word { font-size: 20vw; padding-block: 35px; }
+      .sound-controls { align-items: flex-end; gap: 12px; }
+      .sound-options { gap: 12px; }
+      .sound-options label { flex-direction: column; align-items: flex-start; gap: 2px; font-size: 9px; }
+      .sound-options select { font-size: 10px; max-width: 105px; }
+      .replay-button { font-size: 10px; padding: 7px 0; }
+      .sound-note { font-size: 10px; }
+      .sound-note span:last-child { display: none; }
+      .frame-grid { grid-template-columns: 1fr; gap: 35px; }
+      .frame-preview { aspect-ratio: 1.35; }
+      .frame-card h3 { margin-top: 16px; }
+      .frame-card p { max-width: 100%; }
+      .gallery-photo { width: 42%; top: 13%; }
+      .gallery-photo:nth-child(2) { top: 7%; }
+      .widget-disc { width: 53%; }
+      .widget-number { font-size: 56px; }
+      .tip { text-align: left; justify-content: flex-start; font-size: 11px; }
+      .templates-section { padding-top: 30px; }
+      .template-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 12px; }
+      .template-preview { border-radius: 12px; aspect-ratio: .94; }
+      .sample-text { font-size: clamp(25px, 6vw, 38px); }
+      .sample-text.serif { font-size: clamp(30px, 7.5vw, 48px); }
+      .sample-text.stack { font-size: clamp(23px, 5.8vw, 36px); }
+      .template-meta { font-size: 10px; }
+      .template-meta span { font-size: 8px; }
+      .template-open { opacity: 1; transform: none; min-height: 29px; bottom: 8px; left: 8px; right: 8px; font-size: 9px; gap: 5px; }
+      .template-open svg { width: 13px; height: 13px; }
+      .template-number { font-size: 7px; top: 10px; left: 11px; }
+      .pricing-grid { grid-template-columns: 1fr; gap: 18px; }
+      .price-card { padding: 28px; }
+      .faq-layout { grid-template-columns: 1fr; gap: 35px; }
+      .faq-intro p { max-width: 100%; margin-top: 18px; }
+      .faq-question { padding-block: 21px; }
+      .footer-head { margin-bottom: 45px; }
+      .footer-statement { font-size: 10vw; }
+      .footer-arrow { width: 46px; height: 46px; }
+      .footer-arrow svg { width: 22px; height: 22px; }
+      .footer-main { grid-template-columns: repeat(3, 1fr); gap: 36px 15px; }
+      .footer-brand { grid-column: 1 / -1; }
+      .footer-column h3 { font-size: 8px; margin-bottom: 15px; }
+      .footer-column a, .footer-column button { font-size: 11px; }
+      .footer-bottom { margin-top: 45px; font-size: 9px; }
+      dialog { padding: 20px; }
+      .dialog-head h2 { font-size: 28px; }
+      .editor-controls { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .editor-controls .field:first-child { grid-column: 1 / -1; }
+      .editor-bottom { flex-direction: column; align-items: stretch; gap: 16px; }
+      .editor-status { text-align: center; }
+    }
+    @media (hover: none) {
+      .template-open { opacity: 1; transform: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-play-state: paused !important; transition-duration: 0s !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header" id="site-header">
+    <nav class="container nav-shell" aria-label="Main navigation">
+      <a href="#top" class="brand" aria-label="Kinetica home">kinetica<span class="brand-star" aria-hidden="true">✳</span></a>
+
+      <div class="nav-links" id="nav-links">
+        <a href="#templates">Templates</a>
+        <a href="#sound">Sound</a>
+        <a href="#typefaces">Typefaces</a>
+        <a href="#pricing">Pricing</a>
+        <button type="button" data-info="changelog">Changelog</button>
+      </div>
+
+      <div class="nav-actions">
+        <!-- Connect this route to your authentication service when deploying. -->
+        <a class="sign-in" href="/sign-in">Sign in</a>
+        <button class="btn btn-sm" type="button" data-editor>
+          <span class="roll"><span><b>Try it free</b><b aria-hidden="true">Make a move</b></span></span>
+          <span aria-hidden="true">↗</span>
+        </button>
+        <button class="menu-toggle" type="button" id="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+          <span aria-hidden="true"></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top" aria-labelledby="hero-heading">
+      <div class="marquee-wall" aria-hidden="true">
+        <div class="wall-row swiper" id="wall-one"><div class="swiper-wrapper"></div></div>
+        <div class="wall-row swiper" id="wall-two"><div class="swiper-wrapper"></div></div>
+      </div>
+
+      <div class="container hero-content">
+        <div class="hero-kicker"><span class="status-dot"></span> A browser. A few words. Endless possibilities.</div>
+        <h1 id="hero-heading" aria-label="Type that really moves.">
+          <span class="headline-line" aria-hidden="true">
+            <span class="hero-rise">Type that</span>
+            <span class="inline-reel">
+              <img src="https://htmlhost.co/photo/landscape/abstract-chrome-ribbon-in-dark-studio" alt="" fetchpriority="high" width="320" height="200">
+            </span>
+          </span>
+          <span class="headline-line" aria-hidden="true">
+            <em class="hero-rise">really</em>
+            <span class="wave-word"><span class="wave-letter">m</span><span class="wave-letter">o</span><span class="wave-letter">v</span><span class="wave-letter">e</span><span class="wave-letter">s</span><span class="wave-letter">.</span></span>
+          </span>
+        </h1>
+
+        <p class="hero-subhead">From a few good words to a very good loop.</p>
+        <div class="hero-actions">
+          <button class="btn btn-acid" type="button" data-editor>
+            <span class="roll"><span><b>Start making moves</b><b aria-hidden="true">Start making moves</b></span></span>
+            <span aria-hidden="true">↗</span>
+          </button>
+          <a class="sign-in" href="/sign-in">Sign in</a>
+        </div>
+        <p class="hero-explainer">Pick a preset. Nudge a couple of settings. You’re moving.<br>We’ve already obsessed over the timing.</p>
+
+        <div class="hero-bottom">
+          <span><span class="status-dot"></span> Made in your browser</span>
+          <span class="desktop-note">No downloads. No timeline anxiety.</span>
+          <button class="motion-toggle" id="motion-toggle" type="button" aria-pressed="false" aria-label="Pause page motion">
+            <span class="motion-indicator" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span id="motion-label">Motion on</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-rule" id="features" aria-labelledby="type-heading">
+      <div class="container">
+        <div class="section-intro">
+          <div>
+            <div class="eyebrow">01 / A good foundation</div>
+            <h2 class="section-heading" id="type-heading" data-reveal>Built from <em>type.</em><br>Born to move.</h2>
+          </div>
+          <p>Real letters. Real control.<br>Nothing flattened. Nothing boxed in.</p>
+        </div>
+
+        <div class="feature-list">
+          <article class="feature">
+            <div class="feature-copy">
+              <span class="feature-index">01.1 / BRING YOUR GOOD IDEAS</span>
+              <h3 data-reveal>From Figma.<br>With <em>feeling.</em></h3>
+              <p>Your layout has somewhere to go. Bring it into Kinetica with live, editable text, then give it a little momentum.</p>
+              <!-- Replace with your published Figma Community plugin URL. -->
+              <a class="text-link" href="/figma-plugin">Get the Figma plugin <span aria-hidden="true">↗</span></a>
+            </div>
+            <div class="media-card motion-region" role="img" aria-label="Editable lime typography selected inside a dark design canvas">
+              <div class="editor-chrome">
+                <i class="chrome-dot"></i><i class="chrome-dot"></i><i class="chrome-dot"></i>
+                <span>Untitled good idea / Kinetica</span>
+              </div>
+              <div class="figma-stage">
+                <div class="selected-type">
+                  <span class="selection-tag">T / Live text</span>
+                  GOOD<br>IDEAS<br>GET LOUD.
+                </div>
+                <span class="cursor-tag loop">You, but moving</span>
+              </div>
+              <div class="media-label"><span>Layout intact. Possibilities open.</span><span>↗</span></div>
+            </div>
+          </article>
+
+          <article class="feature reverse" id="typefaces">
+            <div class="feature-copy">
+              <span class="feature-index">01.2 / LETTERS, NOT FLAT PICTURES</span>
+              <h3 data-reveal>Every curve.<br>Every <em>character.</em></h3>
+              <p>Real glyphs, crisp outlines, proper kerning. Animate each letter without losing what made the type good in the first place.</p>
+              <div class="pill" style="margin-top:22px"><span class="status-dot"></span> Still text. Always editable.</div>
+            </div>
+            <div class="media-card glyph-card">
+              <div class="glyph-stage" aria-hidden="true"><div class="glyph-text" id="glyph-text">A<span>g</span></div></div>
+              <div class="font-picker" role="group" aria-label="Preview a typeface">
+                <button type="button" data-font="sans" aria-pressed="true">Instrument Sans</button>
+                <button type="button" data-font="serif" aria-pressed="false">Instrument Serif</button>
+                <button type="button" data-font="tight" aria-pressed="false">Inter Tight</button>
+              </div>
+              <div class="media-label"><span id="font-caption">Instrument Sans / Live specimen</span><span>VECTOR ↗</span></div>
+            </div>
+          </article>
+
+          <article class="feature">
+            <div class="feature-copy">
+              <span class="feature-index">01.3 / THINK OUTSIDE THE LINE</span>
+              <h3 data-reveal>A new dimension<br>of <em>expression.</em></h3>
+              <p>Wrap words around a world. Send a sentence down a path. Give flat type a point of view, and keep every letter editable.</p>
+              <button class="text-link" type="button" data-editor data-preset="wave" style="background:none">Give it a spin <span aria-hidden="true">↗</span></button>
+            </div>
+            <div class="media-card sphere-card motion-region" role="img" aria-label="Lime typography orbiting a wireframe sphere">
+              <svg class="sphere-art" viewBox="0 0 400 400" aria-hidden="true">
+                <defs>
+                  <path id="type-orbit" d="M200,60 a140,140 0 1,1 -0.1,0"></path>
+                </defs>
+                <g class="sphere-wire">
+                  <circle cx="200" cy="200" r="120"></circle>
+                  <ellipse cx="200" cy="200" rx="120" ry="37"></ellipse>
+                  <ellipse cx="200" cy="200" rx="120" ry="75"></ellipse>
+                  <ellipse cx="200" cy="200" rx="37" ry="120"></ellipse>
+                  <ellipse cx="200" cy="200" rx="75" ry="120"></ellipse>
+                  <path d="M80 200h240M200 80v240"></path>
+                </g>
+                <g class="sphere-orbit loop">
+                  <text class="sphere-type"><textPath href="#type-orbit" textLength="877">AROUND WE GO · AROUND WE GO · </textPath></text>
+                </g>
+                <circle cx="200" cy="200" r="4" fill="#C8FF3D"></circle>
+              </svg>
+              <div class="media-label"><span>Same words. New perspective.</span><span>360°</span></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-rule" id="sound" aria-labelledby="sound-heading">
+      <div class="container">
+        <div class="section-intro">
+          <div>
+            <div class="eyebrow">02 / Turn up the feeling</div>
+            <h2 class="section-heading" id="sound-heading" data-reveal>Looks good.<br><em>Sounds</em> better.</h2>
+          </div>
+          <p>A tiny click. A soft pop. That satisfying little moment when motion and sound meet.</p>
+        </div>
+
+        <div class="sound-panel" id="sound-panel">
+          <div class="sound-toolbar">
+            <span class="micro">Go on. Make some noise.</span>
+            <button class="sound-switch" id="sound-toggle" type="button" aria-pressed="false">
+              <span id="sound-icon" aria-hidden="true">◌</span>
+              <span id="sound-toggle-label">Sound off</span>
+            </button>
+          </div>
+
+          <div class="sound-word" id="sound-word" aria-label="CLICK.">
+            <span class="sound-char" aria-hidden="true">C</span><span class="sound-char" aria-hidden="true">L</span><span class="sound-char" aria-hidden="true">I</span><span class="sound-char" aria-hidden="true">C</span><span class="sound-char" aria-hidden="true">K</span><span class="sound-char" aria-hidden="true">.</span>
+          </div>
+
+          <div class="sound-controls">
+            <div class="sound-options">
+              <label>Move
+                <select id="move-style" aria-label="Letter movement">
+                  <option value="rise">Letter rise</option>
+                  <option value="bounce">Little bounce</option>
+                </select>
+              </label>
+              <label>Sound
+                <select id="sound-style" aria-label="Letter sound">
+                  <option value="pop">Soft pop</option>
+                  <option value="click">Dry click</option>
+                </select>
+              </label>
+            </div>
+            <button type="button" class="replay-button" id="replay-sound">
+              <span aria-hidden="true">↻</span> Replay
+            </button>
+          </div>
+        </div>
+        <div class="sound-note">
+          <span id="sound-status" role="status">Sound starts only when you switch it on.</span>
+          <span>Six letters. Six tiny dopamine hits.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-rule" id="frame" aria-labelledby="frame-heading">
+      <div class="container">
+        <div class="section-intro">
+          <div>
+            <div class="eyebrow">03 / More than a few words</div>
+            <h2 class="section-heading" id="frame-heading" data-reveal>Build the<br>whole <em>frame.</em></h2>
+          </div>
+          <p>Type is just the beginning.<br>Give it a world to live in.</p>
+        </div>
+
+        <div class="frame-grid">
+          <article class="frame-card">
+            <div class="frame-preview motion-region" role="img" aria-label="Three monochrome creative photography prints arranged as a moving gallery">
+              <div class="gallery-photo"><img src="https://htmlhost.co/photo/portrait/concrete-staircase-in-afternoon-light" alt="" loading="lazy" width="360" height="480"></div>
+              <div class="gallery-photo loop"><img src="https://htmlhost.co/photo/portrait/sculptural-paper-folds-in-studio" alt="" loading="lazy" width="360" height="480"></div>
+              <div class="gallery-photo"><img src="https://htmlhost.co/photo/portrait/silhouette-dancing-behind-frosted-glass" alt="" loading="lazy" width="360" height="480"></div>
+            </div>
+            <h3>Galleries <span class="muted">↗</span></h3>
+            <p>A few stills. A story that won’t sit still.</p>
+          </article>
+
+          <article class="frame-card">
+            <div class="frame-preview widget-preview motion-region" role="img" aria-label="Minimal animated clock widget with a rotating hand">
+              <div class="widget-disc">
+                <div class="widget-hand loop"></div>
+                <div class="widget-number">12:48</div>
+              </div>
+              <span class="widget-label">TIME, WITH A LITTLE TIMING.</span>
+            </div>
+            <h3>Widgets <span class="muted">↗</span></h3>
+            <p>Clocks, counters, little things with big energy.</p>
+          </article>
+
+          <article class="frame-card">
+            <div class="frame-preview background-preview motion-region" role="img" aria-label="Slow-moving lime gradient with a fine halftone texture">
+              <div class="blob loop"></div><div class="blob two loop"></div><div class="halftone"></div>
+              <span class="background-caption">A GOOD KIND OF ATMOSPHERE.</span>
+            </div>
+            <h3>Backgrounds <span class="muted">↗</span></h3>
+            <p>Set the scene. Let the atmosphere do its thing.</p>
+          </article>
+        </div>
+        <p class="tip"><strong>Tip</strong><span>Run a background through dither, halftone, or a gradient map. Instant character.</span></p>
+      </div>
+    </section>
+
+    <section class="section templates-section" id="templates" aria-labelledby="templates-heading">
+      <div class="container">
+        <div class="template-top">
+          <div class="eyebrow">04 / A head start, with personality</div>
+          <h2 class="section-heading" id="templates-heading" data-reveal>Learn it by taking<br>one <em>apart.</em></h2>
+          <p class="template-description">Every template opens fully editable. Keep the good bits. Make the rest yours.</p>
+          <button class="text-link" id="browse-all" type="button" style="background:none">Browse all templates <span aria-hidden="true">↗</span></button>
+        </div>
+
+        <div class="template-filters" role="group" aria-label="Filter templates">
+          <button type="button" class="filter" data-filter="all" aria-pressed="true">All the good stuff <span id="template-count">12</span></button>
+          <button type="button" class="filter" data-filter="type" aria-pressed="false">Type</button>
+          <button type="button" class="filter" data-filter="scenes" aria-pressed="false">Scenes</button>
+          <button type="button" class="filter" data-filter="loops" aria-pressed="false">Loops</button>
+        </div>
+        <p class="sr-only" id="filter-status" role="status"></p>
+        <div class="template-grid" id="template-grid"></div>
+        <noscript><p class="muted">Enable JavaScript to browse the editable template previews and try the motion tools.</p></noscript>
+      </div>
+    </section>
+
+    <section class="section section-rule" id="pricing" aria-labelledby="pricing-heading">
+      <div class="container">
+        <div class="pricing-head">
+          <div class="eyebrow">05 / Small price. Big moves.</div>
+          <h2 class="section-heading" id="pricing-heading" data-reveal>Free to <em>start.</em></h2>
+          <p>No card. No big commitment. Just make something.</p>
+        </div>
+
+        <div class="pricing-grid">
+          <article class="price-card">
+            <div class="price-label"><h3>Free</h3><span class="micro muted">Find your rhythm</span></div>
+            <div class="price"><strong>$0</strong><span>/ forever</span></div>
+            <p class="price-description">Everything you need for your first good loop.</p>
+            <ul class="price-list">
+              <li>The full editor</li>
+              <li>Core animation presets</li>
+              <li>A collection of great fonts</li>
+              <li>Video export</li>
+            </ul>
+            <button class="btn btn-outline" type="button" data-editor>Start for free <span aria-hidden="true">↗</span></button>
+          </article>
+
+          <article class="price-card pro">
+            <div class="price-label"><h3>Pro</h3><span class="pro-badge">A little extra everything</span></div>
+            <div class="price"><strong>$10</strong><span>/ month</span></div>
+            <p class="price-description">More room for the ideas you can’t leave alone.</p>
+            <ul class="price-list">
+              <li>Everything in Free</li>
+              <li>Premium motion templates</li>
+              <li>The full premium font collection</li>
+              <li>High-resolution video export</li>
+            </ul>
+            <button class="btn btn-acid" type="button" data-contact="pro">Get Pro access <span aria-hidden="true">↗</span></button>
+          </article>
+        </div>
+        <p class="pricing-footnote">Prices in USD. Pro is billed monthly.</p>
+      </div>
+    </section>
+
+    <section class="section section-rule" id="faq" aria-labelledby="faq-heading">
+      <div class="container faq-layout">
+        <div class="faq-intro">
+          <div class="eyebrow">06 / Before you move</div>
+          <h2 class="section-heading" id="faq-heading" data-reveal>A few<br><em>answers.</em></h2>
+          <p>The little things you might be wondering.</p>
+        </div>
+
+        <div class="faq-list">
+          <article class="faq-item">
+            <h3><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq-answer-1" id="faq-q-1">What exactly is Kinetica?<span class="faq-plus" aria-hidden="true"></span></button></h3>
+            <div class="faq-answer" id="faq-answer-1" role="region" aria-labelledby="faq-q-1" aria-hidden="true"><div><p>A motion design tool that lives in your browser. Turn text, photos, backgrounds, and small animated elements into short videos. Pick a starting point, make it yours, and export.</p></div></div>
+          </article>
+          <article class="faq-item">
+            <h3><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq-answer-2" id="faq-q-2">How quickly can I make something?<span class="faq-plus" aria-hidden="true"></span></button></h3>
+            <div class="faq-answer" id="faq-answer-2" role="region" aria-labelledby="faq-q-2" aria-hidden="true"><div><p>Your first loop can happen in a few minutes. Start with a template, swap in your words, and adjust the pace. The presets already have the fiddly timing worked out.</p></div></div>
+          </article>
+          <article class="faq-item">
+            <h3><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq-answer-3" id="faq-q-3">What can I make besides moving text?<span class="faq-plus" aria-hidden="true"></span></button></h3>
+            <div class="faq-answer" id="faq-answer-3" role="region" aria-labelledby="faq-q-3" aria-hidden="true"><div><p>Animated photo galleries, atmospheric backgrounds, counters, clocks, and short graphic loops. Add a shader or a little sound to pull the whole frame together.</p></div></div>
+          </article>
+          <article class="faq-item">
+            <h3><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq-answer-4" id="faq-q-4">Is it free? Do I need to sign up?<span class="faq-plus" aria-hidden="true"></span></button></h3>
+            <div class="faq-answer" id="faq-answer-4" role="region" aria-labelledby="faq-q-4" aria-hidden="true"><div><p>Yes, there’s a free plan with the editor, core presets, fonts, and video export. You can try the interactive editor on this page without an account or a credit card.</p></div></div>
+          </article>
+          <article class="faq-item">
+            <h3><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq-answer-5" id="faq-q-5">Which video formats can I export?<span class="faq-plus" aria-hidden="true"></span></button></h3>
+            <div class="faq-answer" id="faq-answer-5" role="region" aria-labelledby="faq-q-5" aria-hidden="true"><div><p>The quick editor on this page exports four-second videos as WebM, or MP4 where your browser supports it. It automatically selects a supported format and downloads the finished loop.</p></div></div>
+          </article>
+          <article class="faq-item">
+            <h3><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq-answer-6" id="faq-q-6">Can I use my own fonts?<span class="faq-plus" aria-hidden="true"></span></button></h3>
+            <div class="faq-answer" id="faq-answer-6" role="region" aria-labelledby="faq-q-6" aria-hidden="true"><div><p>The full editor supports your own fonts alongside the built-in collection. Just make sure your font license covers the way you plan to use and share your animation.</p></div></div>
+          </article>
+          <article class="faq-item">
+            <h3><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq-answer-7" id="faq-q-7">Does it work with Figma?<span class="faq-plus" aria-hidden="true"></span></button></h3>
+            <div class="faq-answer" id="faq-answer-7" role="region" aria-labelledby="faq-q-7" aria-hidden="true"><div><p>Yes. The Figma plugin brings your layout across with editable text. Start with the composition you already like, then add the movement it’s been missing.</p></div></div>
+          </article>
+          <article class="faq-item">
+            <h3><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq-answer-8" id="faq-q-8">Is this an alternative to After Effects?<span class="faq-plus" aria-hidden="true"></span></button></h3>
+            <div class="faq-answer" id="faq-answer-8" role="region" aria-labelledby="faq-q-8" aria-hidden="true"><div><p>For quick type animation, social clips, and short motion graphics, Kinetica gives you a lighter place to start. Complex compositing and long productions still belong in a bigger production toolkit.</p></div></div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer section-rule">
+    <div class="container">
+      <div class="footer-head">
+        <h2 class="footer-statement">Good things <em>move.</em></h2>
+        <button type="button" class="footer-arrow" data-editor aria-label="Try Kinetica">
+          <i data-lucide="arrow-up-right" class="icon" aria-hidden="true">↗</i>
+        </button>
+      </div>
+
+      <div class="footer-main">
+        <div class="footer-brand">
+          <a class="brand" href="#top">kinetica<span class="brand-star" aria-hidden="true">✳</span></a>
+          <p>A little less static. A little more you.</p>
+          <!-- Replace social destinations with your official profiles. -->
+          <div class="social-links">
+            <a href="https://x.com/" target="_blank" rel="noopener noreferrer" aria-label="Visit X">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22H17l-4.9-7.4L5.6 22H2.4l7.3-8.5L.8 2h6.4l4.5 6.8L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg>
+            </a>
+            <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Visit Instagram">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor" stroke="none"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="footer-column">
+          <h3>Product</h3>
+          <ul>
+            <li><a href="#templates">Templates</a></li>
+            <li><a href="#typefaces">Typefaces</a></li>
+            <li><a href="#sound">Sound</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Legal</h3>
+          <ul>
+            <li><button type="button" data-info="privacy">Privacy</button></li>
+            <li><button type="button" data-info="terms">Terms of use</button></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Support</h3>
+          <ul>
+            <li><a href="#faq">Help & FAQs</a></li>
+            <li><button type="button" data-contact="support">Get in touch</button></li>
+            <li><button type="button" data-info="changelog">Changelog</button></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>© <span id="year">2026</span> Kinetica. Keep things moving.</span>
+        <span><span class="status-dot"></span> Built for the joy of it.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- A working, browser-local preview. No account or backend required. -->
+  <dialog id="editor-dialog" aria-labelledby="editor-heading">
+    <div class="dialog-head">
+      <div>
+        <p class="micro">The quick editor</p>
+        <h2 id="editor-heading">Your words. <em>Your move.</em></h2>
+      </div>
+      <button class="close-dialog" type="button" data-close aria-label="Close editor">×</button>
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="editor-canvas" width="1280" height="720" role="img" aria-label="Animated preview of your custom typography">Your animated text preview.</canvas>
+    </div>
+
+    <div class="editor-controls">
+      <label class="field">Your words
+        <input id="editor-text" value="MAKE MOVES." maxlength="32" autocomplete="off" spellcheck="false">
+      </label>
+      <label class="field">Movement
+        <select id="editor-preset">
+          <option value="wave">Weight of the wave</option>
+          <option value="rise">A little rise</option>
+          <option value="pulse">Big pulse energy</option>
+        </select>
+      </label>
+      <label class="field">Palette
+        <select id="editor-palette">
+          <option value="lime">Acid / Ink</option>
+          <option value="bone">Bone / Ink</option>
+          <option value="dark">Ink / Bone</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="editor-bottom">
+      <p class="editor-status" id="editor-status" role="status">4-second loop · 1280 × 720 · Made right here.</p>
+      <button class="btn btn-acid btn-sm" id="export-button" type="button">Export a little video <span aria-hidden="true">↓</span></button>
+    </div>
+  </dialog>
+
+  <dialog id="info-dialog" class="small-dialog" aria-labelledby="info-heading">
+    <div class="dialog-head">
+      <div><p class="micro">Kinetica / The details</p><h2 id="info-heading"></h2></div>
+      <button class="close-dialog" type="button" data-close aria-label="Close information">×</button>
+    </div>
+    <div class="dialog-copy" id="info-copy"></div>
+  </dialog>
+
+  <dialog id="contact-dialog" class="small-dialog" aria-labelledby="contact-heading">
+    <div class="dialog-head">
+      <div><p class="micro" id="contact-eyebrow">Say hello</p><h2 id="contact-heading">Let’s make <em>moves.</em></h2></div>
+      <button class="close-dialog" type="button" data-close aria-label="Close contact form">×</button>
+    </div>
+    <p class="dialog-copy" id="contact-description">Got a question or an idea? Send it our way.</p>
+
+    <!-- Native host submission. Deliberately no JavaScript submit handler. -->
+    <form class="contact-form" action="/__hh/form" method="post">
+      <input type="hidden" name="_form" value="Contact">
+      <input type="hidden" name="interest" id="contact-interest" value="support">
+      <label class="field">Name
+        <input type="text" name="name" autocomplete="name" required maxlength="100">
+      </label>
+      <label class="field">Email
+        <input type="email" name="email" autocomplete="email" required maxlength="254">
+      </label>
+      <label class="field">A few words
+        <textarea name="message" id="contact-message" maxlength="3000" required></textarea>
+      </label>
+      <button class="btn btn-acid" type="submit">Send it our way <span aria-hidden="true">↗</span></button>
+      <div data-hh-form-msg role="status"></div>
+    </form>
+  </dialog>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const $ = (selector, root = document) => root.querySelector(selector);
+      const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+      const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+      let manualPause = false;
+      let motionContext = null;
+      let swipers = [];
+      let soundVisible = false;
+      let soundEnabled = false;
+      let soundTimers = [];
+      let soundAnimations = [];
+      let soundBank = null;
+      let soundLoad = null;
+      let animationReady = false;
+      let editorFrame = 0;
+      let editorEpoch = 0;
+      let recorder = null;
+      let exportTimer = 0;
+      let exportDiscarded = false;
+
+      const stopped = () => reduceMotion.matches || manualPause || document.hidden;
+      const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
+
+      /*
+       * Exact CDN versions. All authored JavaScript stays in this script.
+       * The page's core layout and controls work even if a library is unavailable.
+       * Instrument Sans exposes its actual 400–700 weight range.
+       */
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = src;
+          script.async = true;
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error("Could not load " + src));
+          document.head.appendChild(script);
+        });
+      }
+
+      const libraries = {
+        gsap: loadScript("https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"),
+        swiper: loadScript("https://cdn.jsdelivr.net/npm/swiper@11.2.10/swiper-bundle.min.js"),
+        howler: loadScript("https://cdn.jsdelivr.net/npm/howler@2.2.4/dist/howler.min.js"),
+        lucide: loadScript("https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"),
+        tailwind: loadScript("https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.1.3/dist/index.global.js")
+      };
+
+      // Handle every optional dependency rejection immediately.
+      Object.values(libraries).forEach(promise => promise.catch(() => {}));
+      libraries.lucide.then(() => window.lucide.createIcons()).catch(() => {});
+
+      /* Mobile navigation */
+      const menuToggle = $("#menu-toggle");
+      const navLinks = $("#nav-links");
+
+      function closeMenu() {
+        navLinks.classList.remove("open");
+        menuToggle.setAttribute("aria-expanded", "false");
+        menuToggle.setAttribute("aria-label", "Open menu");
+      }
+
+      menuToggle.addEventListener("click", () => {
+        const open = menuToggle.getAttribute("aria-expanded") !== "true";
+        menuToggle.setAttribute("aria-expanded", String(open));
+        menuToggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+        navLinks.classList.toggle("open", open);
+      });
+
+      navLinks.addEventListener("click", event => {
+        if (event.target.closest("a, button")) closeMenu();
+      });
+
+      document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && navLinks.classList.contains("open")) {
+          closeMenu();
+          menuToggle.focus();
+        }
+      });
+
+      document.addEventListener("click", event => {
+        if (!event.target.closest(".nav-shell")) closeMenu();
+      });
+
+      matchMedia("(min-width: 901px)").addEventListener("change", closeMenu);
+
+      const updateHeader = () => $("#site-header").classList.toggle("scrolled", scrollY > 12);
+      window.addEventListener("scroll", updateHeader, { passive: true });
+      updateHeader();
+      $("#year").textContent = new Date().getFullYear();
+
+      /* Template data: editable labels, creative directions, and preview imagery. */
+      const templates = [
+        { name: "Big Mood", category: "type", theme: "lime", text: "BIG\nMOOD.", style: "stack", preset: "pulse" },
+        { name: "Soft Focus", category: "scenes", theme: "", text: "Soft\nfocus.", style: "serif", preset: "rise", photo: "sunlight-through-rippled-glass-in-studio", alt: "Sunlight refracting through rippled studio glass" },
+        { name: "On Repeat", category: "loops", theme: "paper", text: "again.\nagain.\nagain.", style: "", preset: "wave" },
+        { name: "Split Personality", category: "type", theme: "", text: "MAKE\nBELIEVE.", style: "stroke stack", preset: "rise" },
+        { name: "Full Circle", category: "loops", theme: "grey rings", text: "what goes\naround", style: "serif", preset: "wave" },
+        { name: "Sunday Club", category: "scenes", theme: "", text: "Sunday\nclub.", style: "serif", preset: "rise", photo: "soft-shadows-on-a-concrete-wall", alt: "Soft geometric shadows on a textured concrete wall" },
+        { name: "Heavy Rotation", category: "type", theme: "lime", text: "HEAVY\nROTATION", style: "tilt stack", preset: "pulse" },
+        { name: "The Next Wave", category: "loops", theme: "paper", text: "WAVE\nAFTER\nWAVE", style: "stack", preset: "wave" },
+        { name: "In Good Time", category: "loops", theme: "grey", text: "00:24", style: "", preset: "pulse" },
+        { name: "Field Notes", category: "scenes", theme: "", text: "Field\nnotes.", style: "serif", preset: "rise", photo: "wind-moving-through-tall-meadow-grass", alt: "Tall meadow grass bending gently in the wind" },
+        { name: "Nice Noise", category: "type", theme: "paper", text: "NICE\nNOISE.", style: "stroke stack", preset: "pulse" },
+        { name: "Make Waves", category: "scenes", theme: "", text: "Make\nwaves.", style: "serif", preset: "wave", photo: "black-ocean-waves-under-soft-moonlight", alt: "Dark ocean waves catching soft moonlight" }
+      ];
+
+      const templateGrid = $("#template-grid");
+
+      templates.forEach((template, index) => {
+        const card = document.createElement("article");
+        card.className = "template-card";
+        card.dataset.category = template.category;
+
+        const preview = document.createElement("div");
+        preview.className = "template-preview " + template.theme;
+
+        if (template.photo) {
+          const image = document.createElement("img");
+          image.src = "https://htmlhost.co/photo/square/" + template.photo;
+          image.alt = template.alt;
+          image.loading = "lazy";
+          image.width = 480;
+          image.height = 480;
+          preview.appendChild(image);
+        }
+
+        const number = document.createElement("span");
+        number.className = "template-number";
+        number.textContent = "KIN / " + String(index + 1).padStart(3, "0");
+
+        const specimen = document.createElement("div");
+        specimen.className = "sample-text " + template.style;
+        specimen.textContent = template.text;
+        specimen.setAttribute("aria-hidden", "true");
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "template-open";
+        button.dataset.editor = "";
+        button.dataset.preset = template.preset;
+        button.dataset.text = template.text.replace(/\n/g, " ");
+        button.setAttribute("aria-label", "Open " + template.name + " in the quick editor");
+        button.innerHTML = 'Open in editor <span aria-hidden="true">↗</span>';
+
+        const meta = document.createElement("div");
+        meta.className = "template-meta";
+        const name = document.createElement("strong");
+        name.style.fontWeight = "500";
+        name.textContent = template.name;
+        const type = document.createElement("span");
+        type.textContent = template.category === "type" ? "Typography" : template.category === "loops" ? "Loop" : "Scene";
+
+        preview.append(number, specimen, button);
+        meta.append(name, type);
+        card.append(preview, meta);
+        templateGrid.appendChild(card);
+      });
+
+      function filterTemplates(filter) {
+        let visible = 0;
+        $$(".template-card").forEach(card => {
+          card.hidden = filter !== "all" && card.dataset.category !== filter;
+          if (!card.hidden) visible++;
+        });
+        $$(".filter").forEach(button => {
+          button.setAttribute("aria-pressed", String(button.dataset.filter === filter));
+        });
+        $("#filter-status").textContent = visible + " templates shown.";
+        window.ScrollTrigger?.refresh();
+      }
+
+      $$(".filter").forEach(button => button.addEventListener("click", () => filterTemplates(button.dataset.filter)));
+      $("#browse-all").addEventListener("click", () => {
+        filterTemplates("all");
+        $(".template-filters").scrollIntoView({ behavior: stopped() ? "instant" : "smooth", block: "start" });
+      });
+
+      /* Slow, opposing Swiper marquees. */
+      const wallNames = [
+        { text: "GOOD\nENERGY.", theme: "lime" },
+        { text: "a little\nmovement", theme: "paper serif" },
+        { text: "NEXT\nFRAME", theme: "outline" },
+        { text: "Out of\nordinary.", theme: "serif", photo: "folded-metal-sculpture-with-soft-reflections" },
+        { text: "TYPE\nALIVE", theme: "paper" },
+        { text: "Round\n& round", theme: "serif" },
+        { text: "MAKE\nSOME.", theme: "lime" },
+        { text: "night\nshift", theme: "serif", photo: "blurred-city-lights-through-rainy-glass" }
+      ];
+
+      $$(".wall-row").forEach((row, rowIndex) => {
+        const items = rowIndex ? [...wallNames].reverse() : wallNames;
+        items.forEach(item => {
+          const slide = document.createElement("div");
+          slide.className = "swiper-slide";
+          const card = document.createElement("div");
+          card.className = "wall-card " + item.theme;
+          if (item.photo) {
+            const image = document.createElement("img");
+            image.src = "https://htmlhost.co/photo/landscape/" + item.photo;
+            image.alt = "";
+            image.loading = "lazy";
+            image.width = 490;
+            image.height = 284;
+            card.appendChild(image);
+          }
+          const title = document.createElement("strong");
+          title.style.whiteSpace = "pre-line";
+          title.textContent = item.text;
+          card.appendChild(title);
+          slide.appendChild(card);
+          $(".swiper-wrapper", row).appendChild(slide);
+        });
+      });
+
+      function pauseSwiper(swiper) {
+        if (!swiper || swiper.destroyed) return;
+        const current = swiper.getTranslate();
+        swiper.autoplay?.stop();
+        swiper.setTransition(0);
+        swiper.setTranslate(current);
+      }
+
+      libraries.swiper.then(() => {
+        swipers = $$(".wall-row").map((row, index) => {
+          const swiper = new window.Swiper(row, {
+            slidesPerView: "auto",
+            spaceBetween: 14,
+            speed: 14000,
+            loop: true,
+            allowTouchMove: false,
+            a11y: { enabled: false },
+            autoplay: {
+              delay: 0,
+              disableOnInteraction: false,
+              reverseDirection: Boolean(index),
+              waitForTransition: true
+            }
+          });
+          row.addEventListener("mouseenter", () => pauseSwiper(swiper));
+          row.addEventListener("mouseleave", () => {
+            if (!stopped()) swiper.autoplay.start();
+          });
+          if (stopped()) pauseSwiper(swiper);
+          return swiper;
+        });
+      }).catch(() => {
+        // Static cards are the fallback; no empty carousel.
+      });
+
+      /* Accessible type specimen controls. */
+      const fontFamilies = {
+        sans: ['"Instrument Sans", Arial, sans-serif', "Instrument Sans"],
+        serif: ['"Instrument Serif", Georgia, serif', "Instrument Serif"],
+        tight: ['"Inter Tight", Arial, sans-serif', "Inter Tight"]
+      };
+
+      $$("[data-font]").forEach(button => {
+        button.addEventListener("click", () => {
+          $$("[data-font]").forEach(other => other.setAttribute("aria-pressed", String(other === button)));
+          const [family, name] = fontFamilies[button.dataset.font];
+          $("#glyph-text").style.fontFamily = family;
+          $("#font-caption").textContent = name + " / Live specimen";
+        });
+      });
+
+      /* FAQ: keyboard-native buttons, smooth intrinsic-height panels. */
+      $$(".faq-question").forEach(button => {
+        button.addEventListener("click", () => {
+          const expanded = button.getAttribute("aria-expanded") !== "true";
+          button.setAttribute("aria-expanded", String(expanded));
+          document.getElementById(button.getAttribute("aria-controls")).setAttribute("aria-hidden", String(!expanded));
+          setTimeout(() => window.ScrollTrigger?.refresh(), stopped() ? 0 : 360);
+        });
+      });
+
+      /* GSAP and SplitText progressive enhancement. */
+      const animationDependencies = libraries.gsap.then(() => Promise.all([
+        loadScript("https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"),
+        loadScript("https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"),
+        fontsReady
+      ]));
+
+      function setupMotion() {
+        if (motionContext) {
+          motionContext.revert();
+          motionContext = null;
+        }
+        if (!animationReady || stopped()) return;
+
+        const gsap = window.gsap;
+        const SplitText = window.SplitText;
+
+        motionContext = gsap.context(() => {
+          const hero = new SplitText(".hero-rise", { type: "chars", aria: "none" });
+          gsap.from(hero.chars, {
+            yPercent: 105, opacity: 0, duration: .9,
+            stagger: .035, ease: "power3.out", clearProps: "transform,opacity"
+          });
+          gsap.from(".wave-letter", {
+            yPercent: 80, opacity: 0, duration: .85,
+            stagger: .06, delay: .25, ease: "power3.out",
+            clearProps: "transform,opacity"
+          });
+          gsap.to(".wave-letter", {
+            fontWeight: 700, duration: 1.2, ease: "sine.inOut",
+            stagger: { each: .14, repeat: -1, yoyo: true }, delay: 1.1
+          });
+          gsap.to(".inline-reel", {
+            rotation: 5, scale: 1.045, duration: 2.3,
+            repeat: -1, yoyo: true, ease: "sine.inOut"
+          });
+
+          $$("[data-reveal]").forEach(heading => {
+            const split = new SplitText(heading, { type: "words", aria: "auto" });
+            gsap.from(split.words, {
+              yPercent: 65, opacity: 0, duration: .75,
+              stagger: .055, ease: "power3.out",
+              scrollTrigger: {
+                trigger: heading, start: "top 91%", once: true
+              },
+              clearProps: "transform,opacity"
+            });
+          });
+        });
+      }
+
+      animationDependencies.then(() => {
+        window.gsap.registerPlugin(window.ScrollTrigger, window.SplitText);
+        animationReady = true;
+        setupMotion();
+      }).catch(() => {
+        // Text remains visible if animation libraries cannot be loaded.
+      });
+
+      /* Pause offscreen CSS previews and the sound sequence. */
+      if ("IntersectionObserver" in window) {
+        const regions = new IntersectionObserver(entries => {
+          entries.forEach(entry => entry.target.classList.toggle("in-view", entry.isIntersecting));
+        }, { threshold: .08 });
+        $$(".motion-region").forEach(region => regions.observe(region));
+
+        const soundObserver = new IntersectionObserver(entries => {
+          soundVisible = entries[0].isIntersecting;
+          if (soundVisible && !stopped()) playSoundDemo();
+          else stopSoundDemo();
+        }, { threshold: .35 });
+        soundObserver.observe($("#sound-panel"));
+      } else {
+        $$(".motion-region").forEach(region => region.classList.add("in-view"));
+        soundVisible = true;
+      }
+
+      /* Synthesized audio, encoded as tiny WAVs and played through Howler. */
+      function synthesizedWav(kind) {
+        const sampleRate = 22050;
+        const duration = kind === "click" ? .045 : .095;
+        const count = Math.floor(sampleRate * duration);
+        const buffer = new ArrayBuffer(44 + count * 2);
+        const view = new DataView(buffer);
+
+        function textAt(offset, text) {
+          for (let i = 0; i < text.length; i++) view.setUint8(offset + i, text.charCodeAt(i));
+        }
+
+        textAt(0, "RIFF");
+        view.setUint32(4, 36 + count * 2, true);
+        textAt(8, "WAVE");
+        textAt(12, "fmt ");
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true);
+        view.setUint16(22, 1, true);
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, sampleRate * 2, true);
+        view.setUint16(32, 2, true);
+        view.setUint16(34, 16, true);
+        textAt(36, "data");
+        view.setUint32(40, count * 2, true);
+
+        for (let i = 0; i < count; i++) {
+          const t = i / sampleRate;
+          const fade = Math.exp(-t * (kind === "click" ? 120 : 52));
+          const attack = Math.min(1, t / .002);
+          const signal = kind === "click"
+            ? Math.sin(2 * Math.PI * 1450 * t) * .65 + Math.sin(2 * Math.PI * 3900 * t) * .35
+            : Math.sin(2 * Math.PI * (460 * t - 1100 * t * t));
+          view.setInt16(44 + i * 2, Math.round(signal * fade * attack * 22000), true);
+        }
+
+        let binary = "";
+        const bytes = new Uint8Array(buffer);
+        for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+        return "data:audio/wav;base64," + btoa(binary);
+      }
+
+      function ensureSound() {
+        if (soundLoad) return soundLoad;
+        soundLoad = libraries.howler.then(() => {
+          soundBank = {};
+          return Promise.all(["pop", "click"].map(kind => new Promise((resolve, reject) => {
+            const sound = new window.Howl({
+              src: [synthesizedWav(kind)],
+              format: ["wav"],
+              volume: .32,
+              preload: true,
+              onload: resolve,
+              onloaderror: () => reject(new Error("Audio is unavailable."))
+            });
+            soundBank[kind] = sound;
+          })));
+        });
+        return soundLoad;
+      }
+
+      function stopSoundDemo() {
+        soundTimers.forEach(clearTimeout);
+        soundTimers = [];
+        soundAnimations.forEach(animation => animation.cancel());
+        soundAnimations = [];
+        if (soundBank) Object.values(soundBank).forEach(sound => sound.stop());
+      }
+
+      function letterPop(index) {
+        if (!soundEnabled || document.hidden || !soundBank || !soundVisible) return;
+        const sound = soundBank[$("#sound-style").value];
+        if (sound.state() !== "loaded") return;
+        const id = sound.play();
+        sound.rate(1 + index * .13, id);
+      }
+
+      function playSoundDemo(manual = false) {
+        stopSoundDemo();
+        if ((!soundVisible && !manual) || document.hidden) return;
+
+        const chars = $$(".sound-char");
+        const bounce = $("#move-style").value === "bounce";
+        const gap = 115;
+
+        chars.forEach((char, index) => {
+          if (!stopped() && char.animate) {
+            const frames = bounce
+              ? [
+                  { transform: "translateY(50%) scale(.75)", opacity: 0 },
+                  { transform: "translateY(-13%) scale(1.05)", opacity: 1, offset: .7 },
+                  { transform: "translateY(0) scale(1)", opacity: 1 }
+                ]
+              : [
+                  { transform: "translateY(65%) rotate(7deg)", opacity: 0 },
+                  { transform: "translateY(0) rotate(0deg)", opacity: 1 }
+                ];
+            soundAnimations.push(char.animate(frames, {
+              duration: 480, delay: index * gap,
+              easing: "cubic-bezier(.2,.7,.2,1)", fill: "backwards"
+            }));
+          }
+          // In reduced-motion mode, only an explicit replay may make sound.
+          if (soundEnabled && (!stopped() || manual)) {
+            soundTimers.push(setTimeout(() => letterPop(index), index * gap));
+          }
+        });
+
+        if (!stopped() && soundVisible) {
+          soundTimers.push(setTimeout(() => playSoundDemo(), 3400));
+        }
+      }
+
+      $("#sound-toggle").addEventListener("click", async () => {
+        soundEnabled = !soundEnabled;
+        $("#sound-toggle").setAttribute("aria-pressed", String(soundEnabled));
+        $("#sound-toggle-label").textContent = soundEnabled ? "Sound on" : "Sound off";
+        $("#sound-icon").textContent = soundEnabled ? "♪" : "◌";
+
+        if (!soundEnabled) {
+          stopSoundDemo();
+          $("#sound-status").textContent = "Quiet mode. The letters still have plenty to say.";
+          if (!stopped()) playSoundDemo();
+          return;
+        }
+
+        $("#sound-status").textContent = "Warming up the tiny sound machine…";
+        try {
+          await ensureSound();
+          if (window.Howler?.ctx?.state === "suspended") await window.Howler.ctx.resume();
+          if (!soundEnabled) return;
+          $("#sound-status").textContent = "Sound on. Each letter lands a little higher.";
+          playSoundDemo(true);
+        } catch {
+          soundEnabled = false;
+          $("#sound-toggle").setAttribute("aria-pressed", "false");
+          $("#sound-toggle-label").textContent = "Sound off";
+          $("#sound-icon").textContent = "◌";
+          $("#sound-status").textContent = "Audio couldn’t start in this browser. The visual demo still works.";
+        }
+      });
+
+      $("#replay-sound").addEventListener("click", () => {
+        window.Howler?.ctx?.resume().catch(() => {});
+        playSoundDemo(true);
+      });
+
+      $("#move-style").addEventListener("change", () => playSoundDemo(true));
+      $("#sound-style").addEventListener("change", () => playSoundDemo(true));
+
+      /* Central motion control honors OS preferences and page visibility. */
+      function syncMotion() {
+        document.body.classList.toggle("motion-paused", stopped());
+        const toggle = $("#motion-toggle");
+        toggle.disabled = reduceMotion.matches;
+        toggle.setAttribute("aria-pressed", String(stopped()));
+        toggle.setAttribute("aria-label", stopped() ? "Resume page motion" : "Pause page motion");
+        $("#motion-label").textContent = reduceMotion.matches ? "Reduced motion" : manualPause ? "Motion paused" : "Motion on";
+
+        swipers.forEach(swiper => {
+          if (stopped()) pauseSwiper(swiper);
+          else if (!swiper.el.matches(":hover")) swiper.autoplay.start();
+        });
+
+        setupMotion();
+        if (stopped()) stopSoundDemo();
+        else if (soundVisible) playSoundDemo();
+
+        if ($("#editor-dialog").open) restartEditor();
+      }
+
+      $("#motion-toggle").addEventListener("click", () => {
+        manualPause = !manualPause;
+        syncMotion();
+      });
+      reduceMotion.addEventListener("change", syncMotion);
+      document.addEventListener("visibilitychange", syncMotion);
+
+      /* Dialogs retain native focus trapping and Escape support. */
+      const dialogOpeners = new WeakMap();
+
+      function openDialog(dialog, opener) {
+        dialogOpeners.set(dialog, opener || document.activeElement);
+        dialog.showModal();
+      }
+
+      $$("dialog").forEach(dialog => {
+        $("[data-close]", dialog).addEventListener("click", () => dialog.close());
+        dialog.addEventListener("click", event => {
+          const rect = dialog.getBoundingClientRect();
+          const outside = event.clientX < rect.left || event.clientX > rect.right ||
+                          event.clientY < rect.top || event.clientY > rect.bottom;
+          if (event.target === dialog && outside) dialog.close();
+        });
+        dialog.addEventListener("close", () => {
+          dialogOpeners.get(dialog)?.focus({ preventScroll: true });
+        });
+      });
+
+      const information = {
+        changelog: {
+          title: "Always in motion.",
+          html: "<ul><li><strong>The quick editor</strong><br>Try wave, rise, and pulse presets with your own words.</li><li><strong>A little more audible</strong><br>Two synthesized letter sounds, tuned one character at a time.</li><li><strong>Loops to go</strong><br>Download a four-second video directly from supported browsers.</li><li><strong>A gentler pace</strong><br>Page-wide motion controls and support for reduced-motion preferences.</li></ul>"
+        },
+        privacy: {
+          title: "A little privacy.",
+          html: "<p>The quick editor processes your text and video locally in your browser. It does not upload your canvas or exported video.</p><p>This page loads fonts, images, and scripts from external providers. Those requests share ordinary connection information, such as your IP address, with those providers.</p><p>If you send the contact form, the information you enter is submitted to this website’s host so your request can be delivered.</p>"
+        },
+        terms: {
+          title: "Keep it good.",
+          html: "<p>You’re responsible for having the rights to the words, fonts, and other material you use in your work.</p><p>The browser preview is provided as available. Export support depends on your browser, and you should check downloaded files before using them in a finished project.</p><p>Plan access and any paid subscription are subject to the terms presented when you sign up. Sending a Pro enquiry does not charge you or start a subscription.</p>"
+        }
+      };
+
+      document.addEventListener("click", event => {
+        const infoButton = event.target.closest("[data-info]");
+        if (infoButton) {
+          const content = information[infoButton.dataset.info];
+          $("#info-heading").textContent = content.title;
+          $("#info-copy").innerHTML = content.html;
+          openDialog($("#info-dialog"), infoButton);
+        }
+
+        const contactButton = event.target.closest("[data-contact]");
+        if (contactButton) {
+          const pro = contactButton.dataset.contact === "pro";
+          $("#contact-interest").value = pro ? "Pro plan" : "Support";
+          $("#contact-eyebrow").textContent = pro ? "A little extra everything" : "Say hello";
+          $("#contact-description").textContent = pro
+            ? "Leave your details and we’ll help you get started with Pro. This is an enquiry, not a payment."
+            : "Got a question or an idea? Send it our way.";
+          $("#contact-message").value = pro ? "I’d like to get started with Kinetica Pro." : "";
+          openDialog($("#contact-dialog"), contactButton);
+        }
+
+        const editorButton = event.target.closest("[data-editor]");
+        if (editorButton) {
+          $("#editor-text").value = editorButton.dataset.text || "MAKE MOVES.";
+          $("#editor-preset").value = editorButton.dataset.preset || "wave";
+          $("#editor-status").textContent = "4-second loop · 1280 × 720 · Made right here.";
+          openDialog($("#editor-dialog"), editorButton);
+          editorEpoch = performance.now();
+          restartEditor();
+        }
+      });
+
+      /* A lightweight canvas editor, with real local video export. */
+      const canvas = $("#editor-canvas");
+      const context = canvas.getContext("2d");
+      const editorDialog = $("#editor-dialog");
+      const palettes = {
+        lime: { background: "#C8FF3D", foreground: "#0A0A0A" },
+        bone: { background: "#F4F1EA", foreground: "#0A0A0A" },
+        dark: { background: "#0A0A0A", foreground: "#F4F1EA" }
+      };
+
+      function drawEditor(timestamp) {
+        if (!context) return;
+        const palette = palettes[$("#editor-palette").value];
+        const rawText = $("#editor-text").value.trim() || "MAKE MOVES.";
+        const text = rawText.toUpperCase();
+        const preset = $("#editor-preset").value;
+        const t = stopped() ? 1.4 : ((timestamp - editorEpoch) / 1000) % 4;
+        const fullTurn = Math.PI * 2;
+
+        context.fillStyle = palette.background;
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.fillStyle = palette.foreground;
+
+        context.font = '500 17px "Inter Tight", Arial, sans-serif';
+        context.textAlign = "left";
+        context.textBaseline = "alphabetic";
+        context.fillText("KINETICA / YOUR WORDS IN MOTION", 55, 62);
+        context.textAlign = "right";
+        context.fillText("TYPE STUDY 001", 1225, 62);
+
+        context.globalAlpha = .2;
+        context.fillRect(55, 86, 1170, 1);
+        context.fillRect(55, 634, 1170, 1);
+        context.globalAlpha = 1;
+
+        let size = 185;
+        context.font = `650 ${size}px "Instrument Sans", Arial, sans-serif`;
+        const measured = context.measureText(text).width;
+        if (measured > 1100) size *= 1100 / measured;
+        context.font = `650 ${size}px "Instrument Sans", Arial, sans-serif`;
+        context.textBaseline = "middle";
+
+        const letters = Array.from(text);
+        const widths = letters.map(letter => context.measureText(letter).width);
+        const totalWidth = widths.reduce((sum, width) => sum + width, 0);
+        let x = (1280 - totalWidth) / 2;
+
+        letters.forEach((letter, index) => {
+          let y = 360;
+          let scale = 1;
+          let alpha = 1;
+          const phase = (index / Math.max(letters.length, 1)) * fullTurn;
+
+          if (preset === "wave") {
+            y += Math.sin(t / 4 * fullTurn - phase) * 30;
+            scale = 1 + Math.sin(t / 4 * fullTurn - phase) * .075;
+          } else if (preset === "rise") {
+            const delay = index / Math.max(letters.length, 1) * .75;
+            const progress = Math.max(0, Math.min(1, (t - delay) / .6));
+            const eased = 1 - Math.pow(1 - progress, 3);
+            y += (1 - eased) * 90;
+            alpha = eased;
+            if (t > 3.5) alpha *= Math.max(0, (4 - t) / .5);
+          } else {
+            scale = 1 + Math.sin(t / 4 * fullTurn) * .12;
+          }
+
+          context.save();
+          context.globalAlpha = alpha;
+          context.translate(x + widths[index] / 2, y);
+          context.scale(scale, scale);
+          context.textAlign = "center";
+          context.fillText(letter, 0, 0);
+          context.restore();
+          x += widths[index];
+        });
+
+        context.textBaseline = "alphabetic";
+        context.font = '500 17px "Inter Tight", Arial, sans-serif';
+        context.textAlign = "left";
+        context.fillText("GOOD TYPE. GREAT MOVES.", 55, 678);
+        context.textAlign = "right";
+        context.fillText(preset.toUpperCase() + " / 04 SECONDS", 1225, 678);
+
+        if (editorDialog.open && (!stopped() || recorder?.state === "recording")) {
+          editorFrame = requestAnimationFrame(drawEditor);
+        }
+      }
+
+      function restartEditor() {
+        cancelAnimationFrame(editorFrame);
+        if (editorDialog.open) drawEditor(performance.now());
+      }
+
+      $$("#editor-dialog input, #editor-dialog select").forEach(control => {
+        control.addEventListener("input", () => {
+          canvas.setAttribute("aria-label", "Animated typography preview: " + ($("#editor-text").value || "MAKE MOVES."));
+          restartEditor();
+        });
+      });
+
+      fontsReady.then(() => {
+        if (editorDialog.open) restartEditor();
+      });
+
+      editorDialog.addEventListener("close", () => {
+        cancelAnimationFrame(editorFrame);
+        clearTimeout(exportTimer);
+        if (recorder?.state === "recording") {
+          exportDiscarded = true;
+          recorder.stop();
+        }
+      });
+
+      $("#export-button").addEventListener("click", async () => {
+        const exportButton = $("#export-button");
+        const status = $("#editor-status");
+
+        if (!canvas.captureStream || !window.MediaRecorder) {
+          status.textContent = "Video export isn’t available in this browser. Try a recent Chrome, Edge, Firefox, or Safari.";
+          return;
+        }
+
+        const candidates = [
+          "video/webm;codecs=vp9",
+          "video/webm;codecs=vp8",
+          "video/webm",
+          "video/mp4"
+        ];
+        const mimeType = candidates.find(type => MediaRecorder.isTypeSupported(type));
+        if (!mimeType) {
+          status.textContent = "This browser doesn’t offer a supported video encoder.";
+          return;
+        }
+
+        await fontsReady;
+        if (!editorDialog.open || recorder?.state === "recording") return;
+
+        let stream;
+        try {
+          exportDiscarded = false;
+          exportButton.disabled = true;
+          $$(".editor-controls input, .editor-controls select").forEach(control => control.disabled = true);
+          status.textContent = "Recording your four-second loop… keep this tab open.";
+          editorEpoch = performance.now();
+          stream = canvas.captureStream(30);
+
+          const chunks = [];
+          recorder = new MediaRecorder(stream, {
+            mimeType,
+            videoBitsPerSecond: 6000000
+          });
+
+          recorder.addEventListener("dataavailable", event => {
+            if (event.data.size) chunks.push(event.data);
+          });
+
+          recorder.addEventListener("stop", () => {
+            clearTimeout(exportTimer);
+            stream.getTracks().forEach(track => track.stop());
+            exportButton.disabled = false;
+            $$(".editor-controls input, .editor-controls select").forEach(control => control.disabled = false);
+
+            if (!exportDiscarded && chunks.length) {
+              const blob = new Blob(chunks, { type: mimeType });
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement("a");
+              link.href = url;
+              link.download = "kinetica-" + Date.now() + (mimeType.includes("mp4") ? ".mp4" : ".webm");
+              document.body.appendChild(link);
+              link.click();
+              link.remove();
+              setTimeout(() => URL.revokeObjectURL(url), 30000);
+              status.textContent = "Your loop is ready. Go give it somewhere to live.";
+            } else if (!exportDiscarded) {
+              status.textContent = "No frames were recorded. Please try exporting again.";
+            }
+
+            recorder = null;
+            restartEditor();
+          }, { once: true });
+
+          recorder.addEventListener("error", () => {
+            exportDiscarded = true;
+            status.textContent = "The recording couldn’t finish. Please try again.";
+            if (recorder?.state === "recording") recorder.stop();
+          });
+
+          recorder.start(100);
+          restartEditor();
+          exportTimer = setTimeout(() => {
+            if (recorder?.state === "recording") recorder.stop();
+          }, 4000);
+        } catch {
+          stream?.getTracks().forEach(track => track.stop());
+          recorder = null;
+          exportButton.disabled = false;
+          $$(".editor-controls input, .editor-controls select").forEach(control => control.disabled = false);
+          status.textContent = "Export couldn’t start. Try another browser or choose a shorter line.";
+          restartEditor();
+        }
+      });
+
+      // Graceful image fallback keeps typography and fixed-ratio frames intact.
+      document.addEventListener("error", event => {
+        if (event.target instanceof HTMLImageElement) {
+          event.target.style.opacity = "0";
+        }
+      }, true);
+
+      syncMotion();
+    })();
+  </script>
+</body>
+</html>

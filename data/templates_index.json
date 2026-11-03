@@ -1,0 +1,366 @@
+{
+  "adventure-travel-tours": {
+    "slug": "adventure-travel-tours",
+    "title": "Adventure Travel Tours",
+    "category": "Landing Page",
+    "description": "A six-page travel tour template for small-group trips, with trip search, filterable tours, detailed itineraries, guide profiles, booking and contact forms.",
+    "badge": "Pro",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "adventure-travel-tours.html"
+  },
+  "ai-observability-dashboard": {
+    "slug": "ai-observability-dashboard",
+    "title": "AI Observability Dashboard",
+    "category": "Technology",
+    "description": "A dark, single-page product site for a model observability platform, with trace timeline, evaluations, replay, pricing tiers, FAQ and email signup.",
+    "badge": "Pro",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "ai-observability-dashboard.html"
+  },
+  "auto-parts-marketplace-nigeria": {
+    "slug": "auto-parts-marketplace-nigeria",
+    "title": "Auto Parts Marketplace",
+    "category": "Ecommerce",
+    "description": "A one-page auto parts marketplace with brand and category browsing, vehicle fitment filters, product reviews, cart and checkout for Nigerian buyers.",
+    "badge": "Free",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "auto-parts-marketplace-nigeria.html"
+  },
+  "bole-festival-landing-port-harcourt": {
+    "slug": "bole-festival-landing-port-harcourt",
+    "title": "Bole Festival Landing",
+    "category": "Events",
+    "description": "A vibrant single-page festival template with a regional food menu, a three-day programme, pass options and an enquiry form — for food and cultural events.",
+    "badge": "Free",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "bole-festival-landing-port-harcourt.html"
+  },
+  "brand-coaching-landing": {
+    "slug": "brand-coaching-landing",
+    "title": "Brand Coaching Landing",
+    "category": "Landing Page",
+    "description": "A dark, high-contrast landing page for brand coaching services, with results, a 90-day method, testimonials, blog teasers and a consult booking form.",
+    "badge": "Pro",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "brand-coaching-landing.html"
+  },
+  "brand-logos-download-free-svg-png-vector": {
+    "slug": "brand-logos-download-free-svg-png-vector",
+    "title": "Brand Logos Download",
+    "category": "Landing Page",
+    "description": "A dark single-page template for a free brand logo library, with search, industry filters, trending logos, format guides and an email signup form.",
+    "badge": "Free",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "brand-logos-download-free-svg-png-vector.html"
+  },
+  "brickstone-construction-template": {
+    "slug": "brickstone-construction-template",
+    "title": "BrickStone Construction Template",
+    "category": "Landing Page",
+    "description": "A one-page construction and development site for builders and contractors: services, project gallery, six-step process, testimonials and a quote form.",
+    "badge": "Free",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "brickstone-construction-template.html"
+  },
+  "business-web-studio": {
+    "slug": "business-web-studio",
+    "title": "Business Web Studio",
+    "category": "Landing Page",
+    "description": "A one-page website for a web studio, with services, portfolio, process, testimonials, FAQ and a project enquiry form — suited to small agencies.",
+    "badge": "Free",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "business-web-studio.html"
+  },
+  "creative-playground-landing": {
+    "slug": "creative-playground-landing",
+    "title": "Creative Playground Landing",
+    "category": "Technology",
+    "description": "A single-page early-access landing template for a playful creative tool, with a bold hero, three-step explanation, statement section and sign-up form.",
+    "badge": "Free",
+    "tags": [
+      "02",
+      "4",
+      "01",
+      "03"
+    ],
+    "file": "creative-playground-landing.html"
+  },
+  "dabira-stars-brainy-play-sing-learn": {
+    "slug": "dabira-stars-brainy-play-sing-learn",
+    "title": "Dabira Stars Brainy",
+    "category": "Landing Page",
+    "description": "A playful early-learning landing page for preschool and nursery children, with subjects, sing-along rhymes, three mini games and a learning path.",
+    "badge": "Free",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "dabira-stars-brainy-play-sing-learn.html"
+  },
+  "elevated-fashion-storefront": {
+    "slug": "elevated-fashion-storefront",
+    "title": "Elevated Fashion Storefront",
+    "category": "Fashion",
+    "description": "One-page fashion and home accessories storefront with a curated product edit, brand story, FAQs and a friendly personal enquiry form for shoppers.",
+    "badge": "Free",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "elevated-fashion-storefront.html"
+  },
+  "everyday-imports-storefront": {
+    "slug": "everyday-imports-storefront",
+    "title": "Everyday Imports Storefront",
+    "category": "Ecommerce",
+    "description": "A two-page ecommerce template for everyday fashion and goods, with a cream-and-green homepage, filterable product picks, FAQ and email signup.",
+    "badge": "Pro",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "everyday-imports-storefront.html"
+  },
+  "jewelry-store-template": {
+    "slug": "jewelry-store-template",
+    "title": "Jewelry Store Template",
+    "category": "Jewelry",
+    "description": "A six-page jewellery store template with a home page, about, products, blog, testimonials and contact form, styled in white and gold with bold type.",
+    "badge": "Free",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "jewelry-store-template.html"
+  },
+  "kinetica-motion-typography": {
+    "slug": "kinetica-motion-typography",
+    "title": "Kinetica Motion Typography",
+    "category": "Technology",
+    "description": "A dark, motion-led landing page for a browser-based type animation tool, with live preset demos, a template carousel, FAQs and a contact form.",
+    "badge": "Pro",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "kinetica-motion-typography.html"
+  },
+  "leica-photography-showcase": {
+    "slug": "leica-photography-showcase",
+    "title": "Leica Photography Showcase",
+    "category": "Technology",
+    "description": "A one-page landing template for a camera optics or imaging technology brand, with a hero, hardware overview and four precision-focused feature blocks.",
+    "badge": "Free",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "leica-photography-showcase.html"
+  },
+  "photographer-portfolio-earth-xpression": {
+    "slug": "photographer-portfolio-earth-xpression",
+    "title": "Photographer Portfolio",
+    "category": "Portfolio",
+    "description": "A one-page portfolio template for photographers, pairing a dark editorial look with a categorised gallery, biography, services, CV and contact invitation.",
+    "badge": "Free",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "photographer-portfolio-earth-xpression.html"
+  },
+  "plenrik-ai-influencer-marketing": {
+    "slug": "plenrik-ai-influencer-marketing",
+    "title": "Plenrik AI Marketing",
+    "category": "Landing Page",
+    "description": "A six-page marketing site for a creator-led growth platform, with product, customer stories, resources, pricing and contact pages for DTC brands.",
+    "badge": "Free",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "plenrik-ai-influencer-marketing.html"
+  },
+  "prompt-scaffolding-spec-senior-designers": {
+    "slug": "prompt-scaffolding-spec-senior-designers",
+    "title": "Spec - AI Prompt Scaffolding Tool",
+    "category": "Technology",
+    "description": "A dark, single-page prompt scaffolding tool for senior designers: a structured spec builder with grouped controls for type, colour, layout, motion and stack.",
+    "badge": "Free",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "prompt-scaffolding-spec-senior-designers.html"
+  },
+  "quarterly-review-report": {
+    "slug": "quarterly-review-report",
+    "title": "Quarterly Review Report",
+    "category": "Events",
+    "description": "A dark, editorial quarterly review landing page for teams to recap the quarter with numbers, agenda, team voices, speakers, and an RSVP close.",
+    "badge": "Free",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "01"
+    ],
+    "file": "quarterly-review-report.html"
+  },
+  "royal-wedding-invitation": {
+    "slug": "royal-wedding-invitation",
+    "title": "Royal Wedding Invitation",
+    "category": "Events",
+    "description": "A romantic single-page wedding invitation in emerald and gold, with a love-story timeline, countdown, photo gallery, RSVP form and guest FAQs.",
+    "badge": "Pro",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "royal-wedding-invitation.html"
+  },
+  "savora-modern-dining": {
+    "slug": "savora-modern-dining",
+    "title": "Savora Modern Dining",
+    "category": "Restaurant",
+    "description": "A modern one-page restaurant landing template with a reservation form, seasonal menu highlights, chef story and guest quote, in warm earthy tones.",
+    "badge": "Free",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "savora-modern-dining.html"
+  },
+  "smartspend-financial-dashboard": {
+    "slug": "smartspend-financial-dashboard",
+    "title": "SmartSpend Financial Dashboard",
+    "category": "Dashboard",
+    "description": "A personal finance dashboard template with cash flow charts, budget limits, transaction filters, savings goals and preferences — all on one responsive page.",
+    "badge": "Pro",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "smartspend-financial-dashboard.html"
+  },
+  "svarna-jewellery-brand-landing": {
+    "slug": "svarna-jewellery-brand-landing",
+    "title": "Jewellery Brand Landing",
+    "category": "Jewelry",
+    "description": "A single-page jewellery brand landing site with a warm dark backdrop, gold accents, a heritage story and clear catalogue and appointment buttons.",
+    "badge": "Free",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "svarna-jewellery-brand-landing.html"
+  },
+  "vaultera-labs-innovation-open-tech": {
+    "slug": "vaultera-labs-innovation-open-tech",
+    "title": "Vaultera Labs Innovation",
+    "category": "Technology",
+    "description": "A single-page corporate landing template for a research-driven deep tech lab, with product previews, focus areas, company story, team and FAQ.",
+    "badge": "Free",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "vaultera-labs-innovation-open-tech.html"
+  },
+  "zaza-fashion-store": {
+    "slug": "zaza-fashion-store",
+    "title": "ZAZA Fashion Store",
+    "category": "Fashion",
+    "description": "A five-page fashion store template for clothing, footwear and accessory brands, with a shop catalogue, editorial home page, brand story, FAQ and contact form.",
+    "badge": "Pro",
+    "tags": [
+      "02",
+      "4",
+      "07",
+      "5"
+    ],
+    "file": "zaza-fashion-store.html"
+  },
+  "futuristic-dark-landing": {
+    "slug": "futuristic-dark-landing",
+    "title": "Futuristic Dark Landing",
+    "category": "Technology",
+    "description": "A sleek, dark-themed landing page template with interactive flame pointer and modern navigation.",
+    "badge": "Pro",
+    "tags": [
+      "dark",
+      "interactive",
+      "modern",
+      "technology"
+    ],
+    "file": "futuristic-dark-landing.html"
+  }
+}

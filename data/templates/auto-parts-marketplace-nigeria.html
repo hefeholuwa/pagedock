@@ -1,0 +1,4247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CoParts NG — Genuine Auto Parts Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #FFFFFF;
+    --surface: #F4F4F4;
+    --surface-alt: #FAFAFA;
+    --fg: #171A20;
+    --muted: #393C41;
+    --tertiary: #5C5E62;
+    --placeholder: #8E8E8E;
+    --border: #EEEEEE;
+    --border-strong: #D0D1D2;
+    --accent: #3E6AE1;
+    --accent-hover: #3457C7;
+    --success: #1B7A4B;
+    --warning: #B45309;
+    --danger: #C2362F;
+
+    --font: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+
+    --radius: 4px;
+    --radius-lg: 12px;
+    --transition: 0.33s cubic-bezier(0.5, 0, 0, 0.75);
+
+    --nav-h: 56px;
+    --max-w: 1400px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--fg);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  img, svg { display: block; max-width: 100%; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+  input, select, textarea { font-family: inherit; }
+  a { color: inherit; text-decoration: none; }
+
+  .mobile-only { display: none; }
+
+  /* ============ Nav ============ */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 24px;
+    height: var(--nav-h);
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    font-size: 14px;
+    color: var(--fg);
+    text-transform: uppercase;
+  }
+  .brand-mark {
+    width: 22px; height: 22px;
+    background: var(--fg);
+    color: #fff;
+    display: grid; place-items: center;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0;
+    border-radius: 3px;
+  }
+  .brand small {
+    font-size: 9px;
+    color: var(--tertiary);
+    font-weight: 500;
+    letter-spacing: 0.2em;
+  }
+  .nav-search {
+    flex: 1;
+    max-width: 560px;
+    position: relative;
+  }
+  .nav-search input {
+    width: 100%;
+    height: 36px;
+    padding: 0 12px 0 36px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: var(--surface-alt);
+    font-size: 13px;
+    color: var(--fg);
+    transition: var(--transition);
+  }
+  .nav-search input::placeholder { color: var(--placeholder); }
+  .nav-search input:focus {
+    outline: none;
+    background: #fff;
+    border-color: var(--accent);
+  }
+  .nav-search-icon {
+    position: absolute;
+    left: 12px; top: 50%;
+    transform: translateY(-50%);
+    width: 14px; height: 14px;
+    color: var(--tertiary);
+  }
+  .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+  .nav-links button {
+    height: 32px;
+    padding: 0 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    border-radius: var(--radius);
+    transition: var(--transition);
+    position: relative;
+  }
+  .nav-links button:hover { background: var(--surface); color: var(--fg); }
+  .nav-links button.active { color: var(--fg); }
+  .nav-links button.active::after {
+    content: '';
+    position: absolute;
+    left: 12px; right: 12px; bottom: -10px;
+    height: 2px;
+    background: var(--accent);
+  }
+  .nav-meta {
+    display: flex; align-items: center; gap: 4px;
+    margin-left: auto;
+  }
+  .icon-btn {
+    width: 36px; height: 36px;
+    display: grid; place-items: center;
+    border-radius: var(--radius);
+    color: var(--muted);
+    transition: var(--transition);
+    position: relative;
+  }
+  .icon-btn:hover { background: var(--surface); color: var(--fg); }
+  .cart-badge {
+    position: absolute;
+    top: 4px; right: 4px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: 8px;
+    min-width: 16px;
+    text-align: center;
+  }
+
+  /* ============ Buttons ============ */
+  .btn {
+    height: 40px;
+    padding: 0 20px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: var(--transition);
+    white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-secondary {
+    background: rgba(244,244,244,0.95);
+    color: var(--fg);
+    border: 1px solid var(--border-strong);
+  }
+  .btn-secondary:hover { background: #fff; border-color: var(--fg); }
+  .btn-dark {
+    background: var(--fg);
+    color: #fff;
+  }
+  .btn-dark:hover { background: var(--muted); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--fg);
+  }
+  .btn-ghost:hover { background: var(--surface); }
+  .btn-sm { height: 32px; padding: 0 14px; font-size: 12px; }
+  .btn-lg { height: 48px; padding: 0 28px; font-size: 14px; }
+  .btn-block { width: 100%; }
+
+  /* ============ Layout ============ */
+  .page {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ============ Home: Hero ============ */
+  .hero {
+    padding: 64px 0 48px;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 56px;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+  .hero-kicker span.dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+  .hero h1 {
+    font-size: 48px;
+    line-height: 1.05;
+    font-weight: 600;
+    margin: 0 0 18px;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+  }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero p {
+    font-size: 16px;
+    color: var(--muted);
+    margin: 0 0 28px;
+    line-height: 1.55;
+    max-width: 480px;
+  }
+  .hero-search {
+    background: #fff;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    padding: 6px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 1px;
+    margin-bottom: 18px;
+    max-width: 560px;
+  }
+  .hero-search select {
+    height: 44px;
+    padding: 0 14px;
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--fg);
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'><path d='M1 1l4 4 4-4' stroke='%235C5E62' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 32px;
+    border-right: 1px solid var(--border);
+  }
+  .hero-search select:last-of-type { border-right: none; }
+  .hero-search button {
+    background: var(--accent);
+    color: #fff;
+    height: 44px;
+    padding: 0 20px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .hero-search button:hover { background: var(--accent-hover); }
+  .hero-trust {
+    display: flex;
+    gap: 24px;
+    font-size: 12px;
+    color: var(--tertiary);
+    flex-wrap: wrap;
+  }
+  .hero-trust span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .hero-trust svg { width: 14px; height: 14px; color: var(--accent); }
+
+  .hero-visual {
+    position: relative;
+    aspect-ratio: 5/4;
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .hero-visual::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 60% 40%, rgba(62,106,225,0.18), transparent 55%),
+      radial-gradient(ellipse at 30% 80%, rgba(23,26,32,0.10), transparent 60%),
+      linear-gradient(180deg, #F4F4F4 0%, #E8E8E8 100%);
+  }
+  .hero-card {
+    position: absolute;
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .hero-card-1 {
+    top: 32px; left: 32px;
+  }
+  .hero-card-2 {
+    bottom: 32px; right: 32px;
+  }
+  .hero-card-3 {
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px 24px;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 200px;
+  }
+  .hero-card-3 .part-img {
+    width: 100%;
+    height: 100px;
+    background:
+      radial-gradient(ellipse at center, #2A2D33 0%, #171A20 70%);
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-card-3 .part-img::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 30% 40%, rgba(255,255,255,0.15) 0%, transparent 40%),
+      radial-gradient(circle at 70% 60%, rgba(62,106,225,0.10) 0%, transparent 50%);
+  }
+  .hero-card-3 .label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--tertiary);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .hero-card-3 .name { font-size: 14px; font-weight: 600; }
+  .hero-card-3 .price { font-size: 16px; font-weight: 600; color: var(--fg); margin-top: 6px; }
+  .hero-card-3 .meta { font-size: 11px; color: var(--tertiary); margin-top: 2px; }
+
+  .hero-card .check {
+    width: 24px; height: 24px;
+    background: var(--success);
+    color: #fff;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    flex-shrink: 0;
+  }
+  .hero-card .check svg { width: 12px; height: 12px; }
+  .hero-card-1 strong { font-size: 13px; font-weight: 600; display: block; }
+  .hero-card-1 small { font-size: 11px; color: var(--tertiary); }
+
+  .hero-card-2 .ng-flag {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(90deg, #008753 0%, #008753 33%, #fff 33%, #fff 66%, #008753 66%, #008753 100%);
+    flex-shrink: 0;
+  }
+
+  /* ============ Section primitives ============ */
+  section { padding: 64px 0; border-bottom: 1px solid var(--border); }
+  section:last-child { border-bottom: none; }
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 32px;
+    gap: 24px;
+  }
+  .section-head h2 {
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0 0 6px;
+    letter-spacing: -0.015em;
+  }
+  .section-head p {
+    font-size: 14px;
+    color: var(--tertiary);
+    margin: 0;
+  }
+  .section-head .link {
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .section-head .link:hover { text-decoration: underline; }
+
+  /* ============ Brand grid ============ */
+  .brand-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 12px;
+  }
+  .brand-tile {
+    aspect-ratio: 1;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: var(--transition);
+    cursor: pointer;
+    text-align: center;
+    padding: 12px;
+  }
+  .brand-tile:hover {
+    background: #fff;
+    border-color: var(--fg);
+    transform: none;
+  }
+  .brand-logo {
+    width: 56px; height: 38px;
+    display: grid; place-items: center;
+    color: var(--fg);
+    border: 1.5px solid var(--fg);
+    border-radius: 2px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    background: #fff;
+  }
+  .brand-tile span {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .brand-tile small {
+    font-size: 10px;
+    color: var(--tertiary);
+  }
+
+  /* ============ Category rail ============ */
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 12px;
+  }
+  .cat-tile {
+    aspect-ratio: 1;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: #fff;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .cat-tile:hover {
+    border-color: var(--fg);
+  }
+  .cat-tile svg { width: 28px; height: 28px; color: var(--accent); }
+  .cat-tile-name { font-size: 13px; font-weight: 600; line-height: 1.2; }
+  .cat-tile-count { font-size: 11px; color: var(--tertiary); margin-top: 2px; }
+
+  /* ============ Trust strip ============ */
+  .trust-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    padding: 40px 32px;
+    background: var(--surface-alt);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+  }
+  .trust-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .trust-icon {
+    width: 36px; height: 36px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: grid;
+    place-items: center;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .trust-icon svg { width: 18px; height: 18px; }
+  .trust-item h3 { font-size: 13px; font-weight: 600; margin: 0 0 4px; }
+  .trust-item p { font-size: 12px; color: var(--tertiary); margin: 0; line-height: 1.45; }
+
+  /* ============ Product cards ============ */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .product-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: var(--transition);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+  }
+  .product-card:hover { border-color: var(--border-strong); }
+  .product-image {
+    aspect-ratio: 4/3;
+    background: var(--surface-alt);
+    position: relative;
+    border-bottom: 1px solid var(--border);
+  }
+  .product-image .badge {
+    position: absolute;
+    top: 10px; left: 10px;
+    background: var(--fg);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 3px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .product-image .badge.genuine {
+    background: var(--success);
+  }
+  .product-image .wishlist {
+    position: absolute;
+    top: 10px; right: 10px;
+    width: 30px; height: 30px;
+    background: rgba(255,255,255,0.92);
+    border-radius: 50%;
+    display: grid; place-items: center;
+    color: var(--tertiary);
+    transition: var(--transition);
+  }
+  .product-image .wishlist:hover { color: var(--accent); }
+  .product-image .wishlist svg { width: 14px; height: 14px; }
+  .product-body {
+    padding: 14px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .product-brand {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .product-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--fg);
+    line-height: 1.35;
+    margin: 0;
+    text-wrap: pretty;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .product-fits {
+    font-size: 11px;
+    color: var(--tertiary);
+    line-height: 1.4;
+  }
+  .product-rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--tertiary);
+  }
+  .stars { color: #F5A623; letter-spacing: 1px; font-size: 12px; }
+  .product-price-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 8px;
+  }
+  .product-price {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--fg);
+    font-variant-numeric: tabular-nums;
+  }
+  .product-price-old {
+    font-size: 12px;
+    color: var(--placeholder);
+    text-decoration: line-through;
+    font-variant-numeric: tabular-nums;
+  }
+  .product-vendor {
+    font-size: 10px;
+    color: var(--tertiary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .product-vendor .verified {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* PCB-style image fallback for parts */
+  .part-img-fill {
+    position: absolute; inset: 0;
+    display: grid; place-items: center;
+    color: var(--tertiary);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .part-img-fill.gear {
+    background:
+      radial-gradient(ellipse at 50% 50%, #E0E0E0 0%, #C8C8C8 60%, #B0B0B0 100%);
+  }
+  .part-img-fill.brake {
+    background:
+      radial-gradient(circle at 50% 50%, #5C5E62 0%, #393C41 70%, #171A20 100%);
+  }
+  .part-img-fill.filter {
+    background:
+      repeating-linear-gradient(90deg, #F0EBD8, #F0EBD8 4px, #E8E0C8 4px, #E8E0C8 8px);
+  }
+  .part-img-fill.battery {
+    background:
+      linear-gradient(135deg, #2A2D33 0%, #393C41 100%);
+  }
+  .part-img-fill.spark {
+    background:
+      linear-gradient(135deg, #D4D4D4 0%, #B0B0B0 50%, #8E8E8E 100%);
+  }
+  .part-img-fill.suspension {
+    background:
+      linear-gradient(180deg, #393C41 0%, #5C5E62 50%, #393C41 100%);
+  }
+  .part-img-fill.tire {
+    background:
+      radial-gradient(circle at 50% 50%, transparent 30%, #171A20 30%, #171A20 31%, #2A2D33 60%);
+  }
+  .part-img-fill.alternator {
+    background:
+      radial-gradient(circle at 30% 50%, #C8C8C8 0%, #8E8E8E 60%, #5C5E62 100%);
+  }
+  .part-img-fill::after {
+    content: attr(data-name);
+    position: absolute;
+    bottom: 8px; left: 8px;
+    color: rgba(255,255,255,0.6);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+  }
+
+  /* ============ Footer ============ */
+  footer {
+    background: var(--fg);
+    color: #fff;
+    padding: 56px 0 32px;
+  }
+  .footer-inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.4fr repeat(4, 1fr);
+    gap: 40px;
+    margin-bottom: 40px;
+  }
+  .footer-grid h4 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.5);
+    margin: 0 0 16px;
+    font-weight: 600;
+  }
+  .footer-grid ul { list-style: none; padding: 0; margin: 0; }
+  .footer-grid ul li { margin-bottom: 8px; }
+  .footer-grid ul li a {
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    transition: var(--transition);
+  }
+  .footer-grid ul li a:hover { color: #fff; }
+  .footer-about p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.55;
+    margin: 12px 0 16px;
+  }
+  .footer-about .brand { color: #fff; margin-bottom: 8px; }
+  .footer-about .brand small { color: rgba(255,255,255,0.4); }
+  .footer-bottom {
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .footer-bottom .legal-links { display: flex; gap: 20px; }
+  .footer-bottom .legal-links a:hover { color: #fff; }
+
+  /* ============ Browse by car ============ */
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 0;
+    font-size: 12px;
+    color: var(--tertiary);
+  }
+  .breadcrumb a:hover { color: var(--fg); }
+  .breadcrumb span.sep { color: var(--border-strong); }
+
+  .car-selector {
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    margin: 16px 0 32px;
+  }
+  .car-selector h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  .car-selector p {
+    font-size: 13px;
+    color: var(--tertiary);
+    margin: 0 0 20px;
+  }
+  .selector-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr) auto;
+    gap: 12px;
+  }
+  .selector-field { position: relative; }
+  .selector-field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+  .selector-field select {
+    width: 100%;
+    height: 44px;
+    padding: 0 36px 0 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--fg);
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%235C5E62' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    transition: var(--transition);
+  }
+  .selector-field select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .selector-row .btn { height: 44px; align-self: flex-end; }
+
+  .selected-vehicle {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    background: rgba(62,106,225,0.06);
+    border: 1px solid rgba(62,106,225,0.18);
+    border-radius: var(--radius);
+    margin-bottom: 24px;
+  }
+  .selected-vehicle svg { color: var(--accent); width: 20px; height: 20px; }
+  .selected-vehicle .text { font-size: 13px; }
+  .selected-vehicle .text strong { display: block; font-weight: 600; }
+  .selected-vehicle .text small { color: var(--tertiary); }
+  .selected-vehicle .change {
+    margin-left: auto;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .selected-vehicle .change:hover { text-decoration: underline; }
+
+  /* Results layout */
+  .results-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 32px;
+    align-items: flex-start;
+  }
+  .filter-rail {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: sticky;
+    top: calc(var(--nav-h) + 16px);
+  }
+  .filter-rail h3 {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin: 0 0 12px;
+  }
+  .filter-group {
+    padding: 16px 0;
+    border-top: 1px solid var(--border);
+  }
+  .filter-group:first-of-type { border-top: none; padding-top: 0; }
+  .filter-group h4 {
+    font-size: 12px;
+    font-weight: 600;
+    margin: 0 0 10px;
+    color: var(--fg);
+  }
+  .filter-list { list-style: none; padding: 0; margin: 0; }
+  .filter-list li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .filter-list li:hover { color: var(--fg); }
+  .filter-list input[type="checkbox"] {
+    width: 14px; height: 14px;
+    accent-color: var(--accent);
+  }
+  .filter-list .count {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--placeholder);
+    font-variant-numeric: tabular-nums;
+  }
+  .filter-price {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .filter-price input {
+    height: 32px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    padding: 0 8px;
+    font-size: 12px;
+    width: 100%;
+  }
+
+  .results-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .results-head .count {
+    font-size: 13px;
+    color: var(--tertiary);
+  }
+  .results-head .count strong { color: var(--fg); font-weight: 600; }
+  .results-sort {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--tertiary);
+  }
+  .results-sort select {
+    height: 32px;
+    padding: 0 28px 0 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%235C5E62' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+  }
+  .results .product-grid { grid-template-columns: repeat(3, 1fr); }
+
+  /* ============ Product detail ============ */
+  .pdp {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 48px;
+    padding: 24px 0 48px;
+  }
+  .pdp-gallery { display: flex; gap: 12px; }
+  .thumbs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 64px;
+    flex-shrink: 0;
+  }
+  .thumb {
+    aspect-ratio: 1;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface-alt);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+  }
+  .thumb.active { border-color: var(--fg); }
+  .thumb:hover { border-color: var(--muted); }
+  .main-image {
+    flex: 1;
+    aspect-ratio: 1;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pdp-info h1 {
+    font-size: 26px;
+    font-weight: 600;
+    margin: 0 0 10px;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .pdp-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .pdp-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 0;
+    font-size: 12px;
+    color: var(--tertiary);
+    border-bottom: 1px solid var(--border);
+  }
+  .pdp-rating { display: inline-flex; align-items: center; gap: 6px; }
+  .pdp-rating strong { color: var(--fg); font-weight: 600; }
+  .pdp-sku { font-variant-numeric: tabular-nums; }
+
+  .pdp-price-block {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .pdp-price {
+    font-size: 32px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+  .pdp-price-old {
+    font-size: 14px;
+    color: var(--placeholder);
+    text-decoration: line-through;
+    margin-left: 10px;
+    font-variant-numeric: tabular-nums;
+  }
+  .pdp-save {
+    display: inline-block;
+    margin-left: 10px;
+    background: rgba(27,122,75,0.10);
+    color: var(--success);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 3px;
+  }
+  .pdp-price-meta { font-size: 12px; color: var(--tertiary); margin-top: 6px; }
+
+  .pdp-compatibility {
+    margin: 20px 0;
+    padding: 14px 16px;
+    border: 1px solid rgba(27,122,75,0.25);
+    background: rgba(27,122,75,0.05);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .pdp-compatibility .check {
+    width: 28px; height: 28px;
+    background: var(--success);
+    color: #fff;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    flex-shrink: 0;
+  }
+  .pdp-compatibility .check svg { width: 14px; height: 14px; }
+  .pdp-compatibility .text strong { font-size: 13px; font-weight: 600; display: block; }
+  .pdp-compatibility .text small { font-size: 12px; color: var(--tertiary); }
+
+  .pdp-qty-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .qty {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .qty button {
+    width: 36px; height: 40px;
+    font-size: 16px;
+    color: var(--muted);
+    transition: var(--transition);
+  }
+  .qty button:hover { background: var(--surface); color: var(--fg); }
+  .qty input {
+    width: 44px;
+    height: 40px;
+    border: none;
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  .qty input:focus { outline: none; }
+  .qty-meta { font-size: 12px; color: var(--tertiary); }
+  .qty-meta .in-stock { color: var(--success); font-weight: 500; }
+
+  .pdp-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .pdp-actions .btn { height: 48px; }
+
+  .pdp-vendor {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .vendor-logo {
+    width: 44px; height: 44px;
+    border-radius: var(--radius);
+    background: var(--fg);
+    color: #fff;
+    display: grid; place-items: center;
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .vendor-info { flex: 1; }
+  .vendor-info strong { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+  .vendor-info .verified-pill {
+    background: rgba(62,106,225,0.10);
+    color: var(--accent);
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 2px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .vendor-info small {
+    display: block;
+    font-size: 11px;
+    color: var(--tertiary);
+    margin-top: 2px;
+  }
+  .vendor-rating { font-size: 11px; color: var(--tertiary); display: flex; align-items: center; gap: 4px; margin-top: 4px; }
+
+  .pdp-delivery {
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+  .delivery-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 12px;
+  }
+  .delivery-row svg { width: 16px; height: 16px; color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+  .delivery-row strong { font-weight: 600; }
+  .delivery-row small { color: var(--tertiary); display: block; }
+
+  .pdp-tabs {
+    border-top: 1px solid var(--border);
+    margin-top: 32px;
+    padding-top: 32px;
+  }
+  .tab-bar {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .tab-btn {
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--tertiary);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: var(--transition);
+  }
+  .tab-btn.active { color: var(--fg); border-color: var(--accent); }
+  .tab-btn:hover { color: var(--fg); }
+  .pdp-tabs-content { padding-bottom: 32px; }
+  .specs-table {
+    width: 100%;
+    border-collapse: collapse;
+    max-width: 720px;
+  }
+  .specs-table tr { border-bottom: 1px solid var(--border); }
+  .specs-table td {
+    padding: 12px 16px;
+    font-size: 13px;
+    vertical-align: top;
+  }
+  .specs-table td:first-child {
+    color: var(--tertiary);
+    width: 200px;
+    font-weight: 500;
+  }
+  .specs-table td:last-child {
+    color: var(--fg);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .reviews-summary {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 40px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .review-score {
+    text-align: center;
+  }
+  .review-score .num {
+    font-size: 48px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .review-score .stars { font-size: 16px; margin: 6px 0; }
+  .review-score .count { font-size: 12px; color: var(--tertiary); }
+  .review-bars { display: flex; flex-direction: column; gap: 6px; }
+  .review-bar {
+    display: grid;
+    grid-template-columns: 40px 1fr 32px;
+    gap: 10px;
+    align-items: center;
+    font-size: 12px;
+  }
+  .review-bar .label { color: var(--tertiary); }
+  .review-bar .bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .review-bar .fill { height: 100%; background: #F5A623; }
+  .review-bar .num { text-align: right; color: var(--tertiary); font-variant-numeric: tabular-nums; }
+  .review-item {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .review-item:last-child { border-bottom: none; }
+  .review-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .review-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: grid; place-items: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .review-author { font-size: 13px; font-weight: 600; }
+  .review-date { font-size: 11px; color: var(--tertiary); margin-left: auto; }
+  .review-meta { font-size: 11px; color: var(--tertiary); }
+  .review-stars { font-size: 12px; margin: 2px 0 6px; }
+  .review-body { font-size: 13px; color: var(--muted); line-height: 1.55; max-width: 720px; }
+
+  /* ============ Cart ============ */
+  .cart-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 32px;
+    padding: 16px 0 48px;
+    align-items: flex-start;
+  }
+  .cart-steps {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--tertiary);
+  }
+  .step .num {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 1px solid var(--border-strong);
+    color: var(--tertiary);
+    background: #fff;
+    display: grid; place-items: center;
+    font-weight: 600;
+    font-size: 11px;
+  }
+  .step.active { color: var(--fg); font-weight: 600; }
+  .step.active .num {
+    background: var(--accent); border-color: var(--accent); color: #fff;
+  }
+  .step.done .num {
+    background: var(--fg); border-color: var(--fg); color: #fff;
+  }
+  .step-sep {
+    width: 32px;
+    height: 1px;
+    background: var(--border-strong);
+  }
+
+  .cart-section {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .cart-section h2 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 16px;
+    letter-spacing: -0.005em;
+  }
+  .cart-item {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .cart-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .cart-item:first-child { padding-top: 0; }
+  .cart-img {
+    width: 80px; height: 80px;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    position: relative;
+    overflow: hidden;
+  }
+  .cart-item-body { display: flex; flex-direction: column; gap: 4px; }
+  .cart-item-body .brand { font-size: 10px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; }
+  .cart-item-body .title { font-size: 13px; font-weight: 500; margin: 0; }
+  .cart-item-body .fits { font-size: 11px; color: var(--tertiary); }
+  .cart-item-body .vendor { font-size: 11px; color: var(--tertiary); margin-top: auto; padding-top: 4px; }
+  .cart-item-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+  .cart-item-controls .price {
+    font-size: 15px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .cart-item-controls .remove {
+    font-size: 11px;
+    color: var(--tertiary);
+    margin-top: 8px;
+    text-decoration: underline;
+  }
+  .cart-item-controls .remove:hover { color: var(--danger); }
+
+  .address-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: #fff;
+    font-size: 13px;
+    color: var(--fg);
+    transition: var(--transition);
+  }
+  .field textarea {
+    height: auto;
+    padding: 10px 12px;
+    resize: vertical;
+    min-height: 72px;
+  }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .field input::placeholder { color: var(--placeholder); }
+  .field-full { grid-column: 1 / -1; }
+  .field select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%235C5E62' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+
+  .delivery-options { display: flex; flex-direction: column; gap: 8px; }
+  .delivery-opt,
+  .payment-opt {
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .delivery-opt:hover, .payment-opt:hover {
+    border-color: var(--muted);
+  }
+  .delivery-opt.selected,
+  .payment-opt.selected {
+    border-color: var(--accent);
+    background: rgba(62,106,225,0.04);
+  }
+  .delivery-opt .radio,
+  .payment-opt .radio {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-strong);
+    flex-shrink: 0;
+    position: relative;
+    transition: var(--transition);
+  }
+  .delivery-opt.selected .radio,
+  .payment-opt.selected .radio {
+    border-color: var(--accent);
+  }
+  .delivery-opt.selected .radio::after,
+  .payment-opt.selected .radio::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+  .delivery-opt .info { flex: 1; }
+  .delivery-opt strong, .payment-opt strong { font-size: 13px; font-weight: 600; display: block; }
+  .delivery-opt small, .payment-opt small { font-size: 11px; color: var(--tertiary); }
+  .delivery-opt .price-tag {
+    font-size: 13px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .payment-opt .logo {
+    width: 36px; height: 24px;
+    border-radius: 3px;
+    background: var(--surface);
+    display: grid; place-items: center;
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  .payment-opt .info { flex: 1; }
+  .payment-options { display: flex; flex-direction: column; gap: 8px; }
+
+  .cart-summary {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    position: sticky;
+    top: calc(var(--nav-h) + 16px);
+  }
+  .cart-summary h2 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 16px;
+  }
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 13px;
+  }
+  .summary-row .label { color: var(--tertiary); }
+  .summary-row .val {
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  .summary-row.discount .val { color: var(--success); }
+  .summary-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 16px 0;
+    margin: 8px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .summary-total .label { font-size: 14px; font-weight: 600; }
+  .summary-total .val {
+    font-size: 22px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .summary-total .vat {
+    font-size: 11px;
+    color: var(--tertiary);
+    margin-top: 2px;
+  }
+
+  .promo-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    margin: 16px 0 20px;
+  }
+  .promo-row input {
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    font-size: 13px;
+  }
+  .promo-row button {
+    min-width: 88px;
+    height: 44px;
+    padding: 0 16px;
+    border-radius: var(--radius);
+    background: var(--fg);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .summary-trust {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .summary-trust .row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--tertiary);
+  }
+  .summary-trust .row svg {
+    width: 16px;
+    height: 16px;
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .helpbar {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: rgba(255,255,255,0.96);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 12px 32px rgba(23,26,32,0.10);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+  .helpbar.hidden { display: none !important; }
+  .helpbar .pill {
+    min-height: 44px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    text-align: left;
+  }
+  .helpbar .pill svg,
+  .helpbar .schedule svg,
+  .helpbar .close svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+  .helpbar .pill strong {
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .helpbar .pill span {
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .helpbar .schedule {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: var(--fg);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .helpbar .close {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+
+  .auth-page {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .auth-form {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 32px 24px 120px;
+  }
+  .auth-tabs {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px;
+    background: var(--surface);
+    border-radius: 999px;
+    margin-bottom: 24px;
+  }
+  .auth-tab {
+    min-height: 44px;
+    padding: 0 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--tertiary);
+  }
+  .auth-tab.active {
+    background: #fff;
+    color: var(--fg);
+    box-shadow: 0 1px 2px rgba(23,26,32,0.08);
+  }
+  .auth-form h1 {
+    font-size: 32px;
+    line-height: 1.1;
+    margin: 0 0 10px;
+    letter-spacing: -0.02em;
+  }
+  .auth-form > p {
+    font-size: 14px;
+    color: var(--tertiary);
+    margin: 0 0 24px;
+    max-width: 44ch;
+  }
+  .auth-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .forgot {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 12px;
+  }
+  .forgot a { color: var(--accent); }
+  .auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 24px 0;
+    font-size: 12px;
+    color: var(--placeholder);
+  }
+  .auth-divider::before,
+  .auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .social-buttons {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .social-btn {
+    min-height: 48px;
+    padding: 0 16px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .social-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+  .auth-foot {
+    margin-top: 24px;
+    font-size: 12px;
+    color: var(--tertiary);
+  }
+  .auth-foot a { color: var(--accent); }
+  .auth-side {
+    display: none;
+    background: linear-gradient(180deg, #171A20 0%, #232833 100%);
+    color: #fff;
+    position: relative;
+  }
+  .auth-side-inner {
+    padding: 40px 32px;
+    max-width: 560px;
+  }
+  .auth-side h2 {
+    font-size: 40px;
+    line-height: 1.05;
+    margin: 24px 0 16px;
+    letter-spacing: -0.03em;
+  }
+  .auth-side h2 em { font-style: normal; color: #8fb0ff; }
+  .auth-side p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.72);
+    margin: 0 0 28px;
+  }
+  .auth-perks {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .auth-perks li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    color: rgba(255,255,255,0.78);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .auth-perks li svg {
+    width: 18px;
+    height: 18px;
+    color: #8fb0ff;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .auth-perks strong {
+    display: block;
+    color: #fff;
+    margin-bottom: 2px;
+  }
+  .auth-side-foot {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 20px 32px 28px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+  }
+
+  @media (max-width: 479px) {
+    .page,
+    .footer-inner,
+    .nav-inner {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    .nav-inner {
+      height: auto;
+      min-height: var(--nav-h);
+      padding-top: 10px;
+      padding-bottom: 10px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .brand { font-size: 13px; }
+    .nav-search {
+      order: 3;
+      flex: 1 1 100%;
+      max-width: none;
+    }
+    .nav-search input,
+    .nav-links button,
+    .icon-btn,
+    .btn,
+    .hero-search button,
+    .selector-row .btn,
+    .results-sort select,
+    .field input,
+    .field select,
+    .qty button,
+    .qty input {
+      min-height: 44px;
+    }
+    .nav-links {
+      order: 4;
+      width: 100%;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      padding-bottom: 2px;
+    }
+    .nav-links button {
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+    .nav-links button.active::after { bottom: -6px; }
+
+    .hero {
+      grid-template-columns: 1fr;
+      gap: 24px;
+      padding: 32px 0;
+    }
+    .hero h1 {
+      font-size: 34px;
+      line-height: 1.08;
+    }
+    .hero p {
+      font-size: 15px;
+      max-width: none;
+    }
+    .hero-search {
+      grid-template-columns: 1fr;
+      max-width: none;
+      gap: 8px;
+      padding: 8px;
+    }
+    .hero-search select {
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      border-radius: 0;
+    }
+    .hero-search select:last-of-type {
+      border-bottom: none;
+    }
+    .hero-card-1,
+    .hero-card-2 {
+      position: static;
+    }
+    .hero-card-3 {
+      left: 16px;
+      right: 16px;
+      top: 50%;
+      min-width: 0;
+      width: auto;
+    }
+
+    section { padding: 40px 0; }
+    .section-head {
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+    .section-head h2 { font-size: 24px; }
+
+    .brand-grid,
+    .cat-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .trust-strip {
+      grid-template-columns: 1fr;
+      gap: 20px;
+      padding: 24px 20px;
+    }
+    .product-grid,
+    .results .product-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .selector-row,
+    .results-layout,
+    .pdp,
+    .cart-layout,
+    .footer-grid,
+    .reviews-summary,
+    .address-grid {
+      grid-template-columns: 1fr;
+    }
+    .car-selector,
+    .cart-section,
+    .cart-summary {
+      padding: 20px;
+    }
+    .selected-vehicle {
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .selected-vehicle .change {
+      margin-left: 0;
+    }
+    .results-head {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .results-sort {
+      width: 100%;
+      justify-content: space-between;
+    }
+    .results-sort select {
+      flex: 1;
+      max-width: 220px;
+    }
+    .filter-rail {
+      position: static;
+      top: auto;
+      padding: 16px;
+    }
+
+    .pdp-gallery {
+      flex-direction: column-reverse;
+    }
+    .thumbs {
+      width: 100%;
+      flex-direction: row;
+      overflow-x: auto;
+    }
+    .thumb {
+      width: 64px;
+      min-width: 64px;
+    }
+    .pdp-info h1 { font-size: 24px; }
+    .pdp-meta,
+    .pdp-qty-row,
+    .pdp-actions,
+    .tab-bar,
+    .footer-bottom,
+    .cart-steps,
+    .cart-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .pdp-actions {
+      grid-template-columns: 1fr;
+    }
+    .pdp-vendor {
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+    .specs-table,
+    .specs-table tbody,
+    .specs-table tr,
+    .specs-table td {
+      display: block;
+      width: 100%;
+    }
+    .specs-table td {
+      padding: 10px 0;
+    }
+    .specs-table td:first-child {
+      width: auto;
+      padding-bottom: 4px;
+    }
+
+    .cart-item {
+      grid-template-columns: 64px 1fr;
+    }
+    .cart-item-controls {
+      grid-column: 1 / -1;
+      width: 100%;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .promo-row {
+      grid-template-columns: 1fr;
+    }
+    .helpbar {
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      padding: 10px;
+      flex-wrap: wrap;
+    }
+    .helpbar .pill {
+      width: 100%;
+    }
+    .helpbar .schedule {
+      flex: 1;
+    }
+    .helpbar .pill span {
+      display: none;
+    }
+  }
+
+  @media (min-width: 480px) and (max-width: 767px) {
+    .page,
+    .footer-inner,
+    .nav-inner {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+    .nav-inner {
+      height: auto;
+      min-height: var(--nav-h);
+      padding-top: 10px;
+      padding-bottom: 10px;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .nav-search {
+      order: 3;
+      flex: 1 1 100%;
+      max-width: none;
+    }
+    .nav-links {
+      order: 4;
+      width: 100%;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+    }
+    .nav-links button {
+      min-height: 44px;
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+    .icon-btn,
+    .btn,
+    .hero-search button,
+    .selector-row .btn,
+    .field input,
+    .field select {
+      min-height: 44px;
+    }
+
+    .hero,
+    .pdp,
+    .cart-layout,
+    .results-layout,
+    .footer-grid,
+    .reviews-summary {
+      grid-template-columns: 1fr;
+    }
+    .hero {
+      gap: 28px;
+      padding: 40px 0 32px;
+    }
+    .hero h1 { font-size: 38px; }
+    .hero-search {
+      grid-template-columns: 1fr 1fr;
+      max-width: none;
+    }
+    .hero-search button {
+      grid-column: 1 / -1;
+    }
+
+    .brand-grid,
+    .cat-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .trust-strip {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      padding: 28px 24px;
+    }
+    .product-grid,
+    .results .product-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .selector-row,
+    .address-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .selector-row .btn,
+    .field-full {
+      grid-column: 1 / -1;
+    }
+    .filter-rail,
+    .cart-summary {
+      position: static;
+      top: auto;
+    }
+    .pdp-gallery {
+      flex-direction: column-reverse;
+    }
+    .thumbs {
+      width: 100%;
+      flex-direction: row;
+    }
+    .thumb {
+      width: 72px;
+      min-width: 72px;
+    }
+    .pdp-actions {
+      grid-template-columns: 1fr;
+    }
+    .cart-item {
+      grid-template-columns: 72px 1fr;
+    }
+    .cart-item-controls {
+      grid-column: 1 / -1;
+      width: 100%;
+      flex-direction: row;
+      align-items: center;
+    }
+    .helpbar {
+      flex-wrap: wrap;
+    }
+    .helpbar .pill {
+      width: 100%;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .hero,
+    .pdp,
+    .cart-layout,
+    .results-layout,
+    .footer-grid {
+      grid-template-columns: 1fr;
+    }
+    .hero {
+      gap: 32px;
+    }
+    .hero h1 { font-size: 42px; }
+    .brand-grid,
+    .cat-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .trust-strip {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+    .product-grid,
+    .results .product-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .selector-row {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .selector-row .btn {
+      grid-column: 1 / -1;
+      justify-self: start;
+    }
+    .filter-rail,
+    .cart-summary {
+      position: static;
+      top: auto;
+    }
+    .reviews-summary {
+      grid-template-columns: 200px 1fr;
+      gap: 24px;
+    }
+    .auth-page {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .auth-page {
+      grid-template-columns: minmax(0, 520px) 1fr;
+    }
+    .auth-form {
+      max-width: none;
+      padding: 48px 40px 120px;
+    }
+    .auth-side {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+  }c: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+  .summary-total .vat { font-size: 11px; color: var(--tertiary); font-weight: 400; display: block; }
+  .promo-row {
+    display: flex;
+    gap: 8px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+  .promo-row input {
+    flex: 1;
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    font-size: 12px;
+  }
+  .promo-row button { font-size: 12px; padding: 0 14px; height: 36px; border-radius: var(--radius); border: 1px solid var(--border-strong); }
+  .summary-trust {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .summary-trust .row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--tertiary);
+  }
+  .summary-trust svg { width: 14px; height: 14px; color: var(--accent); }
+
+  /* ============ Auth ============ */
+  .auth-page {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: calc(100vh - var(--nav-h));
+  }
+  .auth-form {
+    padding: 64px 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 540px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .auth-tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  .auth-tab {
+    padding: 12px 0;
+    margin-right: 24px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--tertiary);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .auth-tab.active { color: var(--fg); border-color: var(--accent); }
+  .auth-form h1 {
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0 0 6px;
+    letter-spacing: -0.015em;
+  }
+  .auth-form > p {
+    font-size: 13px;
+    color: var(--tertiary);
+    margin: 0 0 28px;
+  }
+  .auth-fields { display: flex; flex-direction: column; gap: 14px; }
+  .auth-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+    font-size: 11px;
+    color: var(--placeholder);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .auth-divider::before, .auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .social-buttons { display: flex; flex-direction: column; gap: 8px; }
+  .social-btn {
+    height: 44px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--fg);
+    transition: var(--transition);
+  }
+  .social-btn:hover { background: var(--surface-alt); border-color: var(--muted); }
+  .social-btn svg { width: 18px; height: 18px; }
+  .auth-foot {
+    margin-top: 20px;
+    font-size: 12px;
+    color: var(--tertiary);
+    text-align: center;
+  }
+  .auth-foot a { color: var(--accent); font-weight: 500; }
+  .auth-foot a:hover { text-decoration: underline; }
+  .forgot {
+    text-align: right;
+    margin-top: -4px;
+  }
+  .forgot a { font-size: 12px; color: var(--accent); }
+
+  .auth-side {
+    background: var(--fg);
+    color: #fff;
+    padding: 72px 64px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+  .auth-side::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(62,106,225,0.30), transparent 60%);
+    pointer-events: none;
+  }
+  .auth-side::after {
+    content: '';
+    position: absolute;
+    bottom: -150px; left: -50px;
+    width: 350px; height: 350px;
+    background: radial-gradient(circle, rgba(62,106,225,0.15), transparent 65%);
+    pointer-events: none;
+  }
+  .auth-side-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 480px;
+  }
+  .auth-side h2 {
+    font-size: 36px;
+    font-weight: 600;
+    margin: 32px 0 16px;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  .auth-side h2 em { font-style: normal; color: #92AFFA; }
+  .auth-side > .auth-side-inner > p {
+    font-size: 15px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.55;
+    margin: 0 0 36px;
+  }
+  .auth-perks { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
+  .auth-perks li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.85);
+  }
+  .auth-perks li svg {
+    width: 18px; height: 18px;
+    color: #92AFFA;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .auth-perks li strong { display: block; font-weight: 600; color: #fff; font-size: 14px; margin-bottom: 2px; }
+  .auth-side-foot {
+    position: relative; z-index: 1;
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* ============ Help bar ============ */
+  .helpbar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: #fff;
+    border-top: 1px solid var(--border);
+    padding: 10px 24px;
+    z-index: 90;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    transition: var(--transition);
+  }
+  .helpbar.hidden { transform: translateY(100%); }
+  .helpbar .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface-alt);
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .helpbar .pill:hover { border-color: var(--muted); background: #fff; }
+  .helpbar .pill svg { width: 14px; height: 14px; color: var(--accent); }
+  .helpbar .pill strong { font-weight: 600; color: var(--fg); }
+  .helpbar .schedule {
+    color: var(--accent);
+    font-weight: 500;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .helpbar .schedule:hover { text-decoration: underline; }
+  .helpbar .close {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    color: var(--tertiary);
+  }
+  .helpbar .close:hover { background: var(--surface); }
+
+  /* ============ View nav (prototype switcher) ============ */
+  .proto-switcher {
+    position: fixed;
+    top: 80px;
+    right: 16px;
+    z-index: 95;
+    background: var(--fg);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 11px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    max-width: 200px;
+  }
+  .proto-switcher .ps-head {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.5);
+    padding: 8px 12px 4px;
+    font-weight: 600;
+  }
+  .proto-switcher button {
+    text-align: left;
+    padding: 8px 12px;
+    color: rgba(255,255,255,0.7);
+    border-radius: 3px;
+    transition: var(--transition);
+    font-size: 11px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .proto-switcher button .num {
+    font-size: 9px;
+    color: rgba(255,255,255,0.4);
+    font-variant-numeric: tabular-nums;
+    width: 10px;
+  }
+  .proto-switcher button:hover { background: rgba(255,255,255,0.06); color: #fff; }
+  .proto-switcher button.active {
+    background: var(--accent);
+    color: #fff;
+  }
+  .proto-switcher button.active .num { color: rgba(255,255,255,0.7); }
+
+  /* page tail spacing for helpbar */
+  body { padding-bottom: 64px; }
+</style>
+</head>
+<body>
+
+  <!-- ============ NAV ============ -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="brand">
+        <div class="brand-mark">C</div>
+        CoParts <small style="margin-left:2px;">NG</small>
+      </div>
+      <div class="nav-search">
+        <svg class="nav-search-icon" viewBox="0 0 16 16" fill="none">
+          <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input type="text" placeholder="Search by part name, number, or vehicle…" />
+      </div>
+      <div class="nav-links">
+        <button data-go="home" class="active">Home</button>
+        <button data-go="browse-car">Shop by car</button>
+        <button data-go="browse-category">Categories</button>
+        <button data-go="product">Sell on CoParts</button>
+      </div>
+      <div class="nav-meta">
+        <button class="icon-btn" title="Help">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M9.5 9a2.5 2.5 0 015 0c0 1.5-2.5 2-2.5 4M12 16h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button class="icon-btn" data-go="signin" title="Account">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button class="icon-btn" data-go="cart" title="Cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M3 3h2l2.5 12.5a2 2 0 002 1.5h8.5a2 2 0 002-1.6L21 7H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="9" cy="20" r="1.5" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="18" cy="20" r="1.5" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+          <span class="cart-badge">3</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============ PROTOTYPE SWITCHER ============ -->
+  <div class="proto-switcher">
+    <div class="ps-head">Prototype views</div>
+    <button data-go="home" class="active"><span class="num">01</span>Home</button>
+    <button data-go="browse-car"><span class="num">02</span>Shop by car</button>
+    <button data-go="browse-category"><span class="num">03</span>Categories</button>
+    <button data-go="product"><span class="num">04</span>Product detail</button>
+    <button data-go="cart"><span class="num">05</span>Cart & checkout</button>
+    <button data-go="signin"><span class="num">06</span>Sign in / Register</button>
+  </div>
+
+  <!-- ============ VIEW: HOME ============ -->
+  <main class="view active" data-view="home">
+    <div class="page">
+
+      <!-- Hero -->
+      <section class="hero" style="border-bottom: none;">
+        <div class="hero-text">
+          <div class="hero-kicker"><span class="dot"></span>Now serving Lagos, Abuja & Port Harcourt</div>
+          <h1>Genuine parts. <em>For every car</em> on Nigerian roads.</h1>
+          <p>Find OEM and verified aftermarket parts for Toyota, Honda, Mercedes-Benz and more — from rated vendors across Nigeria. No fakes. Naira pricing.</p>
+          <div class="hero-search">
+            <select aria-label="Year">
+              <option>Year</option>
+              <option>2024</option><option>2023</option><option>2022</option><option>2021</option>
+              <option>2020</option><option>2019</option><option>2018</option><option>2017</option>
+              <option>2016</option><option>2015</option><option>2014</option><option>2013</option>
+            </select>
+            <select aria-label="Make">
+              <option>Make</option>
+              <option>Toyota</option><option>Honda</option><option>Lexus</option>
+              <option>Mercedes-Benz</option><option>BMW</option><option>Hyundai</option>
+              <option>Nissan</option><option>Ford</option>
+            </select>
+            <select aria-label="Model">
+              <option>Model</option>
+              <option>Camry</option><option>Corolla</option><option>RAV4</option>
+              <option>Highlander</option><option>Avalon</option>
+            </select>
+            <button>Find parts</button>
+          </div>
+          <div class="hero-trust">
+            <span>
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Genuine parts verified
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+              48-hour Lagos delivery
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none"><path d="M3 7h13l-1.5 8H6L4 5H2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="18" r="1.5" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="18" r="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M16 10h5v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+              Pay on delivery
+            </span>
+          </div>
+        </div>
+        <div class="hero-visual">
+  <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1200&q=80" alt="Silver car" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1;">
+  <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(23,26,32,0.08) 0%, rgba(23,26,32,0.18) 100%); z-index:2;"></div>
+  <div class="hero-card hero-card-1" style="z-index:3;">
+    <div class="check">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div>
+      <strong>Part fits your car</strong>
+      <small>2019 Toyota Camry SE</small>
+    </div>
+  </div>
+  <div class="hero-card hero-card-3" style="z-index:3;">
+    <div class="part-img" style="background-image:url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=800&q=80'); background-size:cover; background-position:center;"></div>
+    <div class="label">Brake Pad Set · Front</div>
+    <div class="name">Akebono ProACT</div>
+    <div class="price">₦42,500</div>
+    <div class="meta">★ 4.8 · sold by AutoSpares LAG</div>
+  </div>
+  <div class="hero-card hero-card-2" style="z-index:3;">
+    <div class="ng-flag"></div>
+    <div>
+      <strong style="font-size: 13px; font-weight: 600;">₦ Naira pricing</strong>
+      <small>VAT inclusive · No FX surprises</small>
+    </div>
+  </div>
+</div>
+      </section>
+
+      <!-- Brands -->
+      <section>
+        <div class="section-head">
+          <div>
+            <h2>Shop by brand</h2>
+            <p>Original parts for the most common cars on Nigerian roads.</p>
+          </div>
+          <a class="link" href="#">All 24 brands →</a>
+        </div>
+        <div class="brand-grid">
+          <button class="brand-tile" data-go="browse-car">
+            <div class="brand-logo">TOYOTA</div>
+            <span>Toyota</span>
+            <small>2,840 parts</small>
+          </button>
+          <button class="brand-tile" data-go="browse-car">
+            <div class="brand-logo">HONDA</div>
+            <span>Honda</span>
+            <small>1,920 parts</small>
+          </button>
+          <button class="brand-tile" data-go="browse-car">
+            <div class="brand-logo">LEXUS</div>
+            <span>Lexus</span>
+            <small>1,210 parts</small>
+          </button>
+          <button class="brand-tile" data-go="browse-car">
+            <div class="brand-logo" style="font-size: 11px;">MERCEDES</div>
+            <span>Mercedes-Benz</span>
+            <small>1,560 parts</small>
+          </button>
+          <button class="brand-tile" data-go="browse-car">
+            <div class="brand-logo">BMW</div>
+            <span>BMW</span>
+            <small>1,330 parts</small>
+          </button>
+          <button class="brand-tile" data-go="browse-car">
+            <div class="brand-logo" style="font-size: 11px;">HYUNDAI</div>
+            <span>Hyundai</span>
+            <small>980 parts</small>
+          </button>
+          <button class="brand-tile" data-go="browse-car">
+            <div class="brand-logo">NISSAN</div>
+            <span>Nissan</span>
+            <small>1,140 parts</small>
+          </button>
+          <button class="brand-tile" data-go="browse-car">
+            <div class="brand-logo">FORD</div>
+            <span>Ford</span>
+            <small>720 parts</small>
+          </button>
+        </div>
+      </section>
+
+      <!-- Categories -->
+      <section>
+        <div class="section-head">
+          <div>
+            <h2>Shop by category</h2>
+            <p>Every system on your vehicle — engine to interior.</p>
+          </div>
+          <a class="link" data-go="browse-category" href="#">All categories →</a>
+        </div>
+        <div class="cat-grid">
+          <button class="cat-tile" data-go="browse-category">
+            <svg viewBox="0 0 32 32" fill="none"><rect x="6" y="10" width="20" height="14" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="9" y="13" width="6" height="8" stroke="currentColor" stroke-width="1.6"/><rect x="17" y="13" width="6" height="8" stroke="currentColor" stroke-width="1.6"/><path d="M11 10V6h4M17 10V6h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <div>
+              <div class="cat-tile-name">Engine & Drivetrain</div>
+              <div class="cat-tile-count">8,420 parts</div>
+            </div>
+          </button>
+          <button class="cat-tile" data-go="browse-category">
+            <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="11" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="16" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M16 5v3M16 24v3M5 16h3M24 16h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <div>
+              <div class="cat-tile-name">Brakes</div>
+              <div class="cat-tile-count">3,260 parts</div>
+            </div>
+          </button>
+          <button class="cat-tile" data-go="browse-category">
+            <svg viewBox="0 0 32 32" fill="none"><rect x="8" y="6" width="16" height="20" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M10 10h12M10 14h12M10 18h12M10 22h12" stroke="currentColor" stroke-width="1.6"/></svg>
+            <div>
+              <div class="cat-tile-name">Filters</div>
+              <div class="cat-tile-count">1,820 parts</div>
+            </div>
+          </button>
+          <button class="cat-tile" data-go="browse-category">
+            <svg viewBox="0 0 32 32" fill="none"><path d="M16 4v8M16 20v8M8 16H4M28 16h-4M10.5 10.5L8 8M24 24l-2.5-2.5M10.5 21.5L8 24M24 8l-2.5 2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="16" cy="16" r="4" stroke="currentColor" stroke-width="1.6"/></svg>
+            <div>
+              <div class="cat-tile-name">Suspension</div>
+              <div class="cat-tile-count">2,140 parts</div>
+            </div>
+          </button>
+          <button class="cat-tile" data-go="browse-category">
+            <svg viewBox="0 0 32 32" fill="none"><path d="M14 4l-6 14h6l-2 10 10-14h-6l4-10h-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            <div>
+              <div class="cat-tile-name">Electrical</div>
+              <div class="cat-tile-count">2,680 parts</div>
+            </div>
+          </button>
+          <button class="cat-tile" data-go="browse-category">
+            <svg viewBox="0 0 32 32" fill="none"><rect x="4" y="10" width="24" height="12" rx="1.5" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="22" r="3" stroke="currentColor" stroke-width="1.6"/><circle cx="22" cy="22" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M4 10l4-5h16l4 5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            <div>
+              <div class="cat-tile-name">Body & Exterior</div>
+              <div class="cat-tile-count">1,640 parts</div>
+            </div>
+          </button>
+          <button class="cat-tile" data-go="browse-category">
+            <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="11" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="16" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M16 5l1.5 6L16 13l-1.5-2L16 5zM16 27l-1.5-6L16 19l1.5 2L16 27zM5 16l6-1.5L13 16l-2 1.5L5 16zM27 16l-6 1.5L19 16l2-1.5L27 16z" fill="currentColor"/></svg>
+            <div>
+              <div class="cat-tile-name">Tires & Wheels</div>
+              <div class="cat-tile-count">1,040 parts</div>
+            </div>
+          </button>
+          <button class="cat-tile" data-go="browse-category">
+            <svg viewBox="0 0 32 32" fill="none"><path d="M16 4c-3 5-7 8-7 13a7 7 0 0014 0c0-5-4-8-7-13z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            <div>
+              <div class="cat-tile-name">Fluids & Oils</div>
+              <div class="cat-tile-count">820 parts</div>
+            </div>
+          </button>
+        </div>
+      </section>
+
+      <!-- Trust strip -->
+      <section>
+        <div class="trust-strip">
+          <div class="trust-item">
+            <div class="trust-icon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <h3>Genuine parts, verified</h3>
+              <p>Every vendor on CoParts is vetted. Every part is traceable to source — OEM, Tier-1, or warrantied aftermarket.</p>
+            </div>
+          </div>
+          <div class="trust-item">
+            <div class="trust-icon">
+              <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="7" width="18" height="12" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M3 10h18M7 15h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <h3>Naira escrow</h3>
+              <p>Your payment is held safely until you confirm the part is correct. Refunds in Naira, no FX nonsense.</p>
+            </div>
+          </div>
+          <div class="trust-item">
+            <div class="trust-icon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M3 7h13l-1.5 8H6L4 5H2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="18" r="1.5" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="18" r="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M16 10h5v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <h3>48-hour delivery</h3>
+              <p>Same-day in Lagos Mainland & Island. Next-day to Abuja & Port Harcourt. Pay on delivery available.</p>
+            </div>
+          </div>
+          <div class="trust-item">
+            <div class="trust-icon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M21 12a9 9 0 11-3-6.7L21 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M21 3v5h-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <h3>14-day returns</h3>
+              <p>Wrong part? Doesn't fit? Return within 14 days for a full refund. Pickup arranged for you.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Popular parts -->
+      <section>
+        <div class="section-head">
+          <div>
+            <h2>Trending this week</h2>
+            <p>Most-ordered parts by mechanics & owners across Nigeria.</p>
+          </div>
+          <a class="link" href="#">View all →</a>
+        </div>
+        <div class="product-grid">
+          <article class="product-card" data-go="product">
+            <div class="product-image">
+              <span class="badge genuine">GENUINE OEM</span>
+              <button class="wishlist"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.7A4 4 0 0119 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.6"/></svg></button>
+              <div class="part-img-fill brake" data-name="BRAKE PAD"></div>
+            </div>
+            <div class="product-body">
+              <span class="product-brand">Toyota OEM</span>
+              <h3 class="product-title">Front Brake Pad Set — Ceramic</h3>
+              <span class="product-fits">Fits Camry 2018–2022, Avalon 2019+</span>
+              <div class="product-rating"><span class="stars">★★★★★</span> <span>4.8 · 312 reviews</span></div>
+              <div class="product-price-row">
+                <div>
+                  <div class="product-price">₦42,500</div>
+                  <div class="product-vendor">by <span class="verified">AutoSpares LAG ✓</span></div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="product-card" data-go="product">
+            <div class="product-image">
+              <span class="badge">BESTSELLER</span>
+              <button class="wishlist"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.7A4 4 0 0119 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.6"/></svg></button>
+              <div class="part-img-fill filter" data-name="AIR FILTER"></div>
+            </div>
+            <div class="product-body">
+              <span class="product-brand">Bosch</span>
+              <h3 class="product-title">Engine Air Filter — High-Flow</h3>
+              <span class="product-fits">Fits Honda Accord 2018–2023</span>
+              <div class="product-rating"><span class="stars">★★★★★</span> <span>4.7 · 184 reviews</span></div>
+              <div class="product-price-row">
+                <div>
+                  <div class="product-price">₦12,800 <span class="product-price-old">₦16,000</span></div>
+                  <div class="product-vendor">by <span class="verified">PartHub Abuja ✓</span></div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="product-card" data-go="product">
+            <div class="product-image">
+              <span class="badge genuine">GENUINE OEM</span>
+              <button class="wishlist"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.7A4 4 0 0119 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.6"/></svg></button>
+              <div class="part-img-fill alternator" data-name="ALTERNATOR"></div>
+            </div>
+            <div class="product-body">
+              <span class="product-brand">Bosch · Mercedes</span>
+              <h3 class="product-title">Alternator — 180A Remanufactured</h3>
+              <span class="product-fits">Fits C-Class W205 2014–2021</span>
+              <div class="product-rating"><span class="stars">★★★★☆</span> <span>4.5 · 47 reviews</span></div>
+              <div class="product-price-row">
+                <div>
+                  <div class="product-price">₦268,000</div>
+                  <div class="product-vendor">by <span class="verified">EuroParts NG ✓</span></div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="product-card" data-go="product">
+            <div class="product-image">
+              <span class="badge">FAST SHIP</span>
+              <button class="wishlist"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.7A4 4 0 0119 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.6"/></svg></button>
+              <div class="part-img-fill spark" data-name="SPARK PLUG"></div>
+            </div>
+            <div class="product-body">
+              <span class="product-brand">NGK Iridium</span>
+              <h3 class="product-title">Spark Plug Set — IX (Set of 6)</h3>
+              <span class="product-fits">Fits BMW X5 N55 2011–2018</span>
+              <div class="product-rating"><span class="stars">★★★★★</span> <span>4.9 · 220 reviews</span></div>
+              <div class="product-price-row">
+                <div>
+                  <div class="product-price">₦38,400</div>
+                  <div class="product-vendor">by <span class="verified">Castrol Direct ✓</span></div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="product-card" data-go="product">
+            <div class="product-image">
+              <span class="badge">NEW</span>
+              <button class="wishlist"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.7A4 4 0 0119 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.6"/></svg></button>
+              <div class="part-img-fill battery" data-name="BATTERY"></div>
+            </div>
+            <div class="product-body">
+              <span class="product-brand">Exide</span>
+              <h3 class="product-title">EFB Battery 75Ah — Stop/Start</h3>
+              <span class="product-fits">Fits Lexus RX 350 2016–2022</span>
+              <div class="product-rating"><span class="stars">★★★★☆</span> <span>4.6 · 91 reviews</span></div>
+              <div class="product-price-row">
+                <div>
+                  <div class="product-price">₦115,000</div>
+                  <div class="product-vendor">by <span class="verified">PowerCell NG ✓</span></div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="product-card" data-go="product">
+            <div class="product-image">
+              <span class="badge genuine">GENUINE OEM</span>
+              <button class="wishlist"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.7A4 4 0 0119 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.6"/></svg></button>
+              <div class="part-img-fill suspension" data-name="STRUT"></div>
+            </div>
+            <div class="product-body">
+              <span class="product-brand">KYB Excel-G</span>
+              <h3 class="product-title">Strut Assembly — Front Right</h3>
+              <span class="product-fits">Fits Hyundai Sonata 2015–2019</span>
+              <div class="product-rating"><span class="stars">★★★★★</span> <span>4.7 · 64 reviews</span></div>
+              <div class="product-price-row">
+                <div>
+                  <div class="product-price">₦78,500</div>
+                  <div class="product-vendor">by <span class="verified">SuspensionWorks ✓</span></div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="product-card" data-go="product">
+            <div class="product-image">
+              <button class="wishlist"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.7A4 4 0 0119 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.6"/></svg></button>
+              <div class="part-img-fill tire" data-name="TIRE"></div>
+            </div>
+            <div class="product-body">
+              <span class="product-brand">Michelin</span>
+              <h3 class="product-title">Primacy 4 — 225/55 R17</h3>
+              <span class="product-fits">Fits sedans & crossovers</span>
+              <div class="product-rating"><span class="stars">★★★★★</span> <span>4.8 · 312 reviews</span></div>
+              <div class="product-price-row">
+                <div>
+                  <div class="product-price">₦142,000 <span class="product-price-old">₦158,000</span></div>
+                  <div class="product-vendor">by <span class="verified">TyreMart Ikeja ✓</span></div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="product-card" data-go="product">
+            <div class="product-image">
+              <span class="badge genuine">GENUINE OEM</span>
+              <button class="wishlist"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.7A4 4 0 0119 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.6"/></svg></button>
+              <div class="part-img-fill gear" data-name="OIL FILTER"></div>
+            </div>
+            <div class="product-body">
+              <span class="product-brand">Mann-Filter</span>
+              <h3 class="product-title">Oil Filter Element — HU 925/4 x</h3>
+              <span class="product-fits">Fits Ford EcoBoost 1.5/1.6/2.0</span>
+              <div class="product-rating"><span class="stars">★★★★★</span> <span>4.9 · 158 reviews</span></div>
+              <div class="product-price-row">
+                <div>
+                  <div class="product-price">₦8,400</div>
+                  <div class="product-vendor">by <span class="verified">PartHub Abuja ✓</span></div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ============ VIEW: BROWSE BY CAR ============ -->
+  <main class="view" data-view="browse-car">
+    <div class="page">
+
+      <nav class="breadcrumb">
+        <a data-go="home">Home</a>
+        <span class="sep">/</span>
+        <span>Shop by car</span>
+      </nav>
+
+      <div class="car-selector">
+        <h2>Find parts that fit your car</h2>
+        <p>Select your vehicle so we only show parts guaranteed to fit. Save it for next time.</p>
+        <div class="selector-row">
+          <div class="selector-field">
+            <label>Year</label>
+            <select>
+              <option>2024</option><option>2023</option><option>2022</option>
+              <option selected>2019</option><option>2018</option><option>2017</option>
+            </select>
+          </div>
+          <div class="selector-field">
+            <label>Make</label>
+            <select>
+              <option selected>Toyota</option><option>Honda</option><option>Lexus</option>
+              <option>Mercedes-Benz</option><option>BMW</option><option>Hyundai</option>
+              <option>Nissan</option><option>Ford</option>
+            </select>
+          </div>
+          <div class="selector-field">
+            <label>Model</label>
+            <select>
+              <option selected>Camry</option><option>Corolla</option><option>RAV4</option>
+              <option>Highlander</option><option>Avalon</option>
+            </select>
+          </div>
+          <div class="selector-field">
+            <label>Trim / Engine</label>
+            <select>
+              <option selected>SE 2.5L 4-cyl</option>
+              <option>XLE 2.5L</option>
+              <option>XSE V6 3.5L</option>
+            </select>
+          </div>
+          <button class="btn btn-primary">Find parts</button>
+        </div>
+      </div>
+
+      <div class="selected-vehicle">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 13l2-6h14l2 6M3 13v5h2m-2-5h18m0 0v5h-2m0 0H7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7" cy="18" r="1.5" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="18" r="1.5" stroke="currentColor" stroke-width="1.6"/></svg>
+        <div class="text">
+          <strong>Shopping for: 2019 Toyota Camry SE 2.5L</strong>
+          <small>VIN saved · 4,820 compatible parts</small>
+        </div>
+        <a class="change" href="#">Change vehicle</a>
+      </div>
+
+      <div class="results-layout">
+        <aside class="filter-rail">
+          <h3>Refine</h3>
+          <div class="filter-group">
+            <h4>Category</h4>
+            <ul class="filter-list">
+              <li><input type="checkbox" id="c1"/><label for="c1">Engine & Drivetrain</label><span class="count">412</span></li>
+              <li><input type="checkbox" id="c2" checked/><label for="c2">Brakes</label><span class="count">186</span></li>
+              <li><input type="checkbox" id="c3"/><label for="c3">Suspension</label><span class="count">142</span></li>
+              <li><input type="checkbox" id="c4"/><label for="c4">Filters</label><span class="count">88</span></li>
+              <li><input type="checkbox" id="c5"/><label for="c5">Electrical</label><span class="count">204</span></li>
+            </ul>
+          </div>
+          <div class="filter-group">
+            <h4>Price (₦)</h4>
+            <div class="filter-price">
+              <input type="text" placeholder="Min" value="5,000"/>
+              <input type="text" placeholder="Max" value="80,000"/>
+            </div>
+          </div>
+          <div class="filter-group">
+            <h4>Condition</h4>
+            <ul class="filter-list">
+              <li><input type="checkbox" id="cn1" checked/><label for="cn1">Genuine OEM</label><span class="count">89</span></li>
+              <li><input type="checkbox" id="cn2" checked/><label for="cn2">OE-equivalent</label><span class="count">62</span></li>
+              <li><input type="checkbox" id="cn3"/><label for="cn3">Aftermarket</label><span class="count">35</span></li>
+            </ul>
+          </div>
+          <div class="filter-group">
+            <h4>Vendor location</h4>
+            <ul class="filter-list">
+              <li><input type="checkbox" id="l1" checked/><label for="l1">Lagos</label><span class="count">118</span></li>
+              <li><input type="checkbox" id="l2"/><label for="l2">Abuja</label><span class="count">42</span></li>
+              <li><input type="checkbox" id="l3"/><label for="l3">Port Harcourt</label><span class="count">26</span></li>
+            </ul>
+          </div>
+          <div class="filter-group">
+            <h4>Rating</h4>
+            <ul class="filter-list">
+              <li><input type="checkbox" id="r1"/><label for="r1">★★★★★ only</label><span class="count">58</span></li>
+              <li><input type="checkbox" id="r2" checked/><label for="r2">★★★★ & up</label><span class="count">142</span></li>
+            </ul>
+          </div>
+        </aside>
+
+        <div class="results">
+          <div class="results-head">
+            <div class="count"><strong>186 brake parts</strong> for your 2019 Camry SE</div>
+            <div class="results-sort">
+              <span>Sort by:</span>
+              <select>
+                <option>Best match</option>
+                <option>Price: low to high</option>
+                <option>Price: high to low</option>
+                <option>Most reviewed</option>
+                <option>Newest</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="product-grid">
+            <article class="product-card" data-go="product">
+              <div class="product-image">
+                <span class="badge genuine">GENUINE OEM</span>
+                <button class="wishlist"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.7A4 4 0 0119 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.6"/></svg></button>
+                <div class="part-img-fill brake" data-name="BRAKE PAD"></div>
+              </div>
+              <div class="product-body">
+                <span class="product-brand">Toyota OEM</span>
+                <h3 class="product-title">Front Brake Pad Set — Ceramic</h3>
+                <span class="product-fits">✓ Confirmed fit · Part 04465-33450</span>
+                <div class="product-rating"><span class="stars">★★★★★</span> <span>4.8 · 312</span></div>
+                <div class="product-price-row">
+                  <div>
+                    <div class="product-price">₦42,500</div>
+                    <div class="product-vendor">AutoSpares LAG · Lagos</div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="product-card" data-go="product">
+              <div class="product-image">
+                <span class="badge">FAST SHIP</span>
+                <button class="wishlist"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.7A4 4 0 0119 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.6"/></svg></button>
+                <div class="part-img-fill gear" data-name="BRAKE ROTOR"></div>
+              </div>
+              <div class="product-body">
+                <span class="product-brand">Brembo</span>
+                <h3 class="product-title">Brake Rotor — Front (Pair)</h3>
+                <span class="product-fits">✓ Confirmed fit · 296mm vented</span>
+                <div class="product-rating"><span class="stars">★★★★★</span> <span>4.7 · 89</span></div>
+                <div class="product-price-row">
+                  <div>
+                    <div class="product-price">₦68,200</div>
+                    <div class="product-vendor">EuroParts NG · Lagos</div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="product-card" data-go="product">
+              <div class="product-image">
+                <span class="badge genuine">GENUINE OEM</span>
+                <button class="wishlist"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.7A4 4 0 0119 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.6"/></svg></button>
+                <div class="part-img-fill brake" data-name="BRAKE PAD"></div>
+              </div>
+              <div class="product-body">
+                <span class="product-brand">Akebono</span>
+                <h3 class="product-title">Rear Brake Pad Set — ProACT</h3>
+                <span class="product-fits">✓ Confirmed fit · Low-dust formula</span>
+                <div class="product-rating"><span class="stars">★★★★☆</span> <span>4.6 · 142</span></div>
+                <div class="product-price-row">
+                  <div>
+                    <div class="product-price">₦32,800</div>
+                    <div class="product-vendor">PartHub · Abuja</div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="product-card" data-go="product">
+              <div class="product-image">
+                <button class="wishlist"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.7A4 4 0 0119 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.6"/></svg></button>
+                <div class="part-img-fill spark" data-name="CALIPER"></div>
+              </div>
+              <div class="product-body">
+                <span class="product-brand">Cardone</span>
+                <h3 class="product-title">Brake Caliper — Front Left (Reman)</h3>
+                <span class="product-fits">✓ Confirmed fit · Includes bracket</span>
+                <div class="product-rating"><span class="stars">★★★★☆</span> <span>4.4 · 28</span></div>
+                <div class="product-price-row">
+                  <div>
+                    <div class="product-price">₦56,000 <span class="product-price-old">₦68,000</span></div>
+                    <div class="product-vendor">BrakeWorks NG · Lagos</div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="product-card" data-go="product">
+              <div class="product-image">
+                <span class="badge">BESTSELLER</span>
+                <button class="wishlist"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.7A4 4 0 0119 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.6"/></svg></button>
+                <div class="part-img-fill filter" data-name="HOSE"></div>
+              </div>
+              <div class="product-body">
+                <span class="product-brand">Bosch</span>
+                <h3 class="product-title">DOT-4 Brake Fluid — 1L</h3>
+                <span class="product-fits">✓ Works for all Camry trims</span>
+                <div class="product-rating"><span class="stars">★★★★★</span> <span>4.9 · 412</span></div>
+                <div class="product-price-row">
+                  <div>
+                    <div class="product-price">₦6,800</div>
+                    <div class="product-vendor">Castrol Direct · Lagos</div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="product-card" data-go="product">
+              <div class="product-image">
+                <span class="badge genuine">GENUINE OEM</span>
+                <button class="wishlist"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.7A4 4 0 0119 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.6"/></svg></button>
+                <div class="part-img-fill suspension" data-name="LINE"></div>
+              </div>
+              <div class="product-body">
+                <span class="product-brand">Toyota OEM</span>
+                <h3 class="product-title">Brake Line Kit — Stainless</h3>
+                <span class="product-fits">✓ Confirmed fit · Front + Rear</span>
+                <div class="product-rating"><span class="stars">★★★★☆</span> <span>4.5 · 18</span></div>
+                <div class="product-price-row">
+                  <div>
+                    <div class="product-price">₦44,000</div>
+                    <div class="product-vendor">AutoSpares LAG · Lagos</div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="product-card" data-go="product">
+              <div class="product-image">
+                <button class="wishlist"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.7A4 4 0 0119 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.6"/></svg></button>
+                <div class="part-img-fill gear" data-name="DRUM"></div>
+              </div>
+              <div class="product-body">
+                <span class="product-brand">Centric</span>
+                <h3 class="product-title">Rear Brake Drum (Single)</h3>
+                <span class="product-fits">✓ Confirmed fit · L or R</span>
+                <div class="product-rating"><span class="stars">★★★★☆</span> <span>4.3 · 22</span></div>
+                <div class="product-price-row">
+                  <div>
+                    <div class="product-price">₦24,500</div>
+                    <div class="product-vendor">PartHub · Abuja</div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="product-card" data-go="product">
+              <div class="product-image">
+                <span class="badge genuine">GENUINE OEM</span>
+                <button class="wishlist"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.7A4 4 0 0119 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.6"/></svg></button>
+                <div class="part-img-fill alternator" data-name="MASTER"></div>
+              </div>
+              <div class="product-body">
+                <span class="product-brand">Aisin</span>
+                <h3 class="product-title">Brake Master Cylinder</h3>
+                <span class="product-fits">✓ Confirmed fit · ABS compatible</span>
+                <div class="product-rating"><span class="stars">★★★★★</span> <span>4.8 · 36</span></div>
+                <div class="product-price-row">
+                  <div>
+                    <div class="product-price">₦78,000</div>
+                    <div class="product-vendor">EuroParts NG · Lagos</div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="product-card" data-go="product">
+              <div class="product-image">
+                <button class="wishlist"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.7A4 4 0 0119 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.6"/></svg></button>
+                <div class="part-img-fill battery" data-name="SENSOR"></div>
+              </div>
+              <div class="product-body">
+                <span class="product-brand">Denso</span>
+                <h3 class="product-title">ABS Wheel Speed Sensor — Front</h3>
+                <span class="product-fits">✓ Confirmed fit · Both sides</span>
+                <div class="product-rating"><span class="stars">★★★★☆</span> <span>4.5 · 51</span></div>
+                <div class="product-price-row">
+                  <div>
+                    <div class="product-price">₦18,400</div>
+                    <div class="product-vendor">SensorCity · Port Harcourt</div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div style="display:flex; justify-content: center; padding: 32px 0;">
+            <button class="btn btn-secondary">Load 24 more</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ============ VIEW: BROWSE BY CATEGORY ============ -->
+  <main class="view" data-view="browse-category">
+    <div class="page">
+
+      <nav class="breadcrumb">
+        <a data-go="home">Home</a>
+        <span class="sep">/</span>
+        <a>Categories</a>
+        <span class="sep">/</span>
+        <span>Filters</span>
+      </nav>
+
+      <div style="padding: 12px 0 24px;">
+        <h1 style="font-size: 32px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.02em;">Filters</h1>
+        <p style="font-size: 14px; color: var(--tertiary); margin: 0;">Air, oil, fuel, cabin & transmission filters from 14 brands. <strong style="color: var(--fg); font-weight: 600;">1,820 parts</strong> in stock.</p>
+      </div>
+
+      <div class="results-layout">
+        <aside class="filter-rail">
+          <h3>Refine</h3>
+          <div class="filter-group">
+            <h4>Filter type</h4>
+            <ul class="filter-list">
+              <li><input type="checkbox" id="t1" checked/><label for="t1">Engine air filter</label><span class="count">486</span></li>
+              <li><input type="checkbox" id="t2" checked/><label for="t2">Oil filter</label><span class="count">724</span></li>
+              <li><input type="checkbox" id="t3"/><label for="t3">Cabin air filter</label><span class="count">312</span></li>
+              <li><input type="checkbox" id="t4"/><label for="t4">Fuel filter</label><span class="count">198</span></li>
+              <li><input type="checkbox" id="t5"/><label for="t5">Transmission filter</label><span class="count">100</span></li>
+            </ul>
+          </div>
+          <div class="filter-group">
+            <h4>Brand</h4>
+            <ul class="filter-list">
+              <li><input type="checkbox" id="b1" checked/><label for="b1">Mann-Filter</label><span class="count">240</span></li>
+              <li><input type="checkbox" id="b2" checked/><label for="b2">Bosch</label><span class="count">312</span></li>
+              <li><input type="checkbox" id="b3"/><label for="b3">Mahle</label><span class="count">186</span></li>
+              <li><input type="checkbox" id="b4"/><label for="b4">K&N</label><span class="count">94</span></li>
+              <li><input type="checkbox" id="b5"/><label for="b5">Denso</label><span class="count">142</span></li>
+              <li><input type="checkbox" id="b6"/><label for="b6">Toyota OEM</label><span class="count">86</span></li>
+            </ul>
+          </div>
+          <div class="filter-group">
+            <h4>Price (₦)</h4>
+            <div class="filter-price">
+              <input type="text" placeholder="Min" value="3,000"/>
+              <input type="text" placeholder="Max" value="40,000"/>
+            </div>
+          </div>
+          <div class="filter-group">
+            <h4>Fits car (optional)</h4>
+            <ul class="filter-list">
+              <li><input type="checkbox" id="f1"/><label for="f1">Toyota</label><span class="count">468</span></li>
+              <li><input type="checkbox" id="f2"/><label for="f2">Honda</label><span class="count">324</span></li>
+              <li><input type="checkbox" id="f3"/><label for="f3">Mercedes-Benz</label><span class="count">218</span></li>
+              <li><input type="checkbox" id="f4"/><label for="f4">BMW</label><span class="count">196</span></li>
+              <li><input type="checkbox" id="f5"/><label for="f5">Lexus</label><span class="count">142</span></li>
+            </ul>
+          </div>
+        </aside>
+
+        <div class="results">
+          <div class="results-head">
+            <div class="count"><strong>1,820 filters</strong> found · showing 12 of 1,820</div>
+            <div class="results-sort">
+              <span>Sort by:</span>
+              <select>
+                <option>Best match</option>
+                <option>Price: low to high</option>
+                <option>Most reviewed</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="product-grid">
+            <article class="product-card" data-go="product">
+              <div class="product-image">
+                <span class="badge genuine">GENUINE OEM</span>
+                <div class="part-img-fill filter" data-name="OIL FILTER"></div>
+              </div>
+              <div class="product-body">
+                <span class="product-brand">Mann-Filter</span>
+                <h3 class="product-title">Oil Filter HU 925/4 x</h3>
+                <span class="product-fits">Fits BMW N20, N52, N54 engines</span>
+                <div class="product-rating"><span class="stars">★★★★★</span> <span>4.9 · 158</span></div>
+                <div class="product-price-row"><div><div class="product-price">₦8,400</div><div class="product-vendor">PartHub Abuja ✓</div></div></div>
+              </div>
+            </article>
+            <article class="product-card" data-go="product">
+              <div class="product-image">
+                <span class="badge">BESTSELLER</span>
+                <div class="part-img-fill filter" data-name="AIR FILTER"></div>
+              </div>
+              <div class="product-body">
+                <span class="product-brand">Bosch</span>
+                <h3 class="product-title">Engine Air Filter — High-Flow</h3>
+                <span class="product-fits">Fits Honda Accord 2018–2023</span>
+                <div class="product-rating"><span class="stars">★★★★★</span> <span>4.7 · 184</span></div>
+                <div class="product-price-row"><div><div class="product-price">₦12,800 <span class="product-price-old">₦16,000</span></div><div class="product-vendor">PartHub Abuja ✓</div></div></div>
+              </div>
+            </article>
+            <article class="product-card" data-go="product">
+              <div class="product-image">
+                <span class="badge genuine">GENUINE OEM</span>
+                <div class="part-img-fill filter" data-name="CABIN"></div>
+              </div>
+              <div class="product-body">
+                <span class="product-brand">Mahle</span>
+                <h3 class="product-title">Cabin Air Filter — Carbon</h3>
+                <span class="product-fits">Fits Lexus RX 2016+</span>
+                <div class="product-rating"><span class="stars">★★★★☆</span> <span>4.6 · 62</span></div>
+                <div class="product-price-row"><div><div class="product-price">₦14,200</div><div class="product-vendor">EuroParts NG ✓</div></div></div>
+              </div>
+            </article>
+            <article class="product-card" data-go="product">
+              <div class="product-image">
+                <div class="part-img-fill gear" data-name="OIL"></div>
+              </div>
+              <div class="product-body">
+                <span class="product-brand">Toyota OEM</span>
+                <h3 class="product-title">Oil Filter — Camry / RAV4</h3>
+                <span class="product-fits">Part 04152-YZZA6</span>
+                <div class="product-rating"><span class="stars">★★★★★</span> <span>4.8 · 224</span></div>
+                <div class="product-price-row"><div><div class="product-price">₦4,600</div><div class="product-vendor">AutoSpares LAG ✓</div></div></div>
+              </div>
+            </article>
+            <article class="product-card" data-go="product">
+              <div class="product-image">
+                <span class="badge">FAST SHIP</span>
+                <div class="part-img-fill filter" data-name="FUEL"></div>
+              </div>
+              <div class="product-body">
+                <span class="product-brand">Denso</span>
+                <h3 class="product-title">Fuel Filter — Inline</h3>
+                <span class="product-fits">Fits Nissan Altima 2013–2018</span>
+                <div class="product-rating"><span class="stars">★★★★☆</span> <span>4.5 · 41</span></div>
+                <div class="product-price-row"><div><div class="product-price">₦18,800</div><div class="product-vendor">PartHub Abuja ✓</div></div></div>
+              </div>
+            </article>
+            <article class="product-card" data-go="product">
+              <div class="product-image">
+                <div class="part-img-fill filter" data-name="AIR"></div>
+              </div>
+              <div class="product-body">
+                <span class="product-brand">K&N</span>
+                <h3 class="product-title">Performance Air Filter — Reusable</h3>
+                <span class="product-fits">Fits Ford EcoBoost 2.0L</span>
+                <div class="product-rating"><span class="stars">★★★★☆</span> <span>4.4 · 73</span></div>
+                <div class="product-price-row"><div><div class="product-price">₦32,500</div><div class="product-vendor">TyreMart Ikeja ✓</div></div></div>
+              </div>
+            </article>
+            <article class="product-card" data-go="product">
+              <div class="product-image">
+                <span class="badge genuine">GENUINE OEM</span>
+                <div class="part-img-fill gear" data-name="OIL"></div>
+              </div>
+              <div class="product-body">
+                <span class="product-brand">Mann-Filter</span>
+                <h3 class="product-title">Oil Filter — HU 7008 z (Mercedes)</h3>
+                <span class="product-fits">Fits C-Class W205, E-Class W213</span>
+                <div class="product-rating"><span class="stars">★★★★★</span> <span>4.9 · 188</span></div>
+                <div class="product-price-row"><div><div class="product-price">₦11,200</div><div class="product-vendor">EuroParts NG ✓</div></div></div>
+              </div>
+            </article>
+            <article class="product-card" data-go="product">
+              <div class="product-image">
+                <div class="part-img-fill filter" data-name="TRANS"></div>
+              </div>
+              <div class="product-body">
+                <span class="product-brand">Mahle</span>
+                <h3 class="product-title">Transmission Filter Kit (with gasket)</h3>
+                <span class="product-fits">Fits Hyundai Sonata 2015–2019</span>
+                <div class="product-rating"><span class="stars">★★★★☆</span> <span>4.5 · 26</span></div>
+                <div class="product-price-row"><div><div class="product-price">₦28,400</div><div class="product-vendor">PartHub Abuja ✓</div></div></div>
+              </div>
+            </article>
+            <article class="product-card" data-go="product">
+              <div class="product-image">
+                <span class="badge genuine">GENUINE OEM</span>
+                <div class="part-img-fill filter" data-name="AIR"></div>
+              </div>
+              <div class="product-body">
+                <span class="product-brand">Bosch</span>
+                <h3 class="product-title">Engine Air Filter</h3>
+                <span class="product-fits">Fits Toyota Camry 2018–2024</span>
+                <div class="product-rating"><span class="stars">★★★★★</span> <span>4.8 · 142</span></div>
+                <div class="product-price-row"><div><div class="product-price">₦9,600</div><div class="product-vendor">AutoSpares LAG ✓</div></div></div>
+              </div>
+            </article>
+            <article class="product-card" data-go="product">
+              <div class="product-image">
+                <div class="part-img-fill filter" data-name="CABIN"></div>
+              </div>
+              <div class="product-body">
+                <span class="product-brand">Denso</span>
+                <h3 class="product-title">Cabin Filter — Standard</h3>
+                <span class="product-fits">Fits Honda CR-V 2017–2022</span>
+                <div class="product-rating"><span class="stars">★★★★☆</span> <span>4.3 · 58</span></div>
+                <div class="product-price-row"><div><div class="product-price">₦7,200</div><div class="product-vendor">PartHub Abuja ✓</div></div></div>
+              </div>
+            </article>
+            <article class="product-card" data-go="product">
+              <div class="product-image">
+                <span class="badge genuine">GENUINE OEM</span>
+                <div class="part-img-fill gear" data-name="OIL"></div>
+              </div>
+              <div class="product-body">
+                <span class="product-brand">Toyota OEM</span>
+                <h3 class="product-title">Oil Filter — Highlander V6</h3>
+                <span class="product-fits">Part 04152-31090</span>
+                <div class="product-rating"><span class="stars">★★★★★</span> <span>4.7 · 96</span></div>
+                <div class="product-price-row"><div><div class="product-price">₦5,200</div><div class="product-vendor">AutoSpares LAG ✓</div></div></div>
+              </div>
+            </article>
+            <article class="product-card" data-go="product">
+              <div class="product-image">
+                <span class="badge">NEW</span>
+                <div class="part-img-fill filter" data-name="AIR"></div>
+              </div>
+              <div class="product-body">
+                <span class="product-brand">Mann-Filter</span>
+                <h3 class="product-title">Air Filter — Ford EcoBoost</h3>
+                <span class="product-fits">Fits Escape, Edge, Fusion 1.5–2.0</span>
+                <div class="product-rating"><span class="stars">★★★★☆</span> <span>4.6 · 34</span></div>
+                <div class="product-price-row"><div><div class="product-price">₦11,800</div><div class="product-vendor">EuroParts NG ✓</div></div></div>
+              </div>
+            </article>
+          </div>
+
+          <div style="display:flex; justify-content: center; padding: 32px 0;">
+            <button class="btn btn-secondary">Load 24 more</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ============ VIEW: PRODUCT DETAIL ============ -->
+  <main class="view" data-view="product">
+    <div class="page">
+
+      <nav class="breadcrumb">
+        <a data-go="home">Home</a>
+        <span class="sep">/</span>
+        <a data-go="browse-category">Brakes</a>
+        <span class="sep">/</span>
+        <a>Toyota</a>
+        <span class="sep">/</span>
+        <span>Front Brake Pad Set — Ceramic</span>
+      </nav>
+
+      <div class="pdp">
+        <div class="pdp-gallery">
+          <div class="thumbs">
+            <div class="thumb active"><div class="part-img-fill brake" data-name="01"></div></div>
+            <div class="thumb"><div class="part-img-fill gear" data-name="02"></div></div>
+            <div class="thumb"><div class="part-img-fill spark" data-name="03"></div></div>
+            <div class="thumb"><div class="part-img-fill battery" data-name="04"></div></div>
+          </div>
+          <div class="main-image">
+            <div class="part-img-fill brake" data-name="BRAKE PAD SET · OEM"></div>
+          </div>
+        </div>
+
+        <div class="pdp-info">
+          <div class="pdp-brand">Toyota OEM · Genuine</div>
+          <h1>Front Brake Pad Set — Ceramic, Low-Dust</h1>
+          <div class="pdp-meta">
+            <span class="pdp-rating"><span class="stars">★★★★★</span> <strong>4.8</strong> · 312 reviews</span>
+            <span class="pdp-sku">Part # 04465-33450</span>
+            <span>· 1,240 sold this month</span>
+          </div>
+
+          <div class="pdp-price-block">
+            <div>
+              <span class="pdp-price">₦42,500</span>
+              <span class="pdp-price-old">₦52,000</span>
+              <span class="pdp-save">Save 18%</span>
+            </div>
+            <div class="pdp-price-meta">Inclusive of 7.5% VAT · Free Lagos delivery on orders over ₦50,000</div>
+          </div>
+
+          <div class="pdp-compatibility">
+            <div class="check">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="text">
+              <strong>This part fits your 2019 Toyota Camry SE 2.5L</strong>
+              <small>Confirmed compatible · Also fits Avalon 2019+, ES 350 2019+</small>
+            </div>
+          </div>
+
+          <div class="pdp-qty-row">
+            <div class="qty">
+              <button>−</button>
+              <input value="1" />
+              <button>+</button>
+            </div>
+            <div class="qty-meta"><span class="in-stock">● In stock</span> · 24 available at vendor</div>
+          </div>
+
+          <div class="pdp-actions">
+            <button class="btn btn-primary" data-go="cart">Add to cart</button>
+            <button class="btn btn-dark" data-go="cart">Buy now</button>
+          </div>
+
+          <div class="pdp-vendor">
+            <div class="vendor-logo">AS</div>
+            <div class="vendor-info">
+              <strong>AutoSpares LAG <span class="verified-pill">✓ Verified</span></strong>
+              <small>Apapa, Lagos · Member since 2019</small>
+              <div class="vendor-rating"><span class="stars">★★★★★</span> <span>4.9 vendor rating · 4,820 orders</span></div>
+            </div>
+            <button class="btn btn-sm btn-secondary">Visit shop</button>
+          </div>
+
+          <div class="pdp-delivery">
+            <div class="delivery-row">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M3 7h13l-1.5 8H6L4 5H2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="18" r="1.5" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="18" r="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M16 10h5v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+              <div>
+                <strong>Same-day to Lagos Island & Mainland</strong>
+                <small>Order before 14:00 · ₦2,500 fee · Free over ₦50,000</small>
+              </div>
+            </div>
+            <div class="delivery-row">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+              <div>
+                <strong>Next-day to Abuja & Port Harcourt</strong>
+                <small>₦4,800 fee · Tracked via GIG Logistics</small>
+              </div>
+            </div>
+            <div class="delivery-row">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M21 12a9 9 0 11-3-6.7L21 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M21 3v5h-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <div>
+                <strong>14-day return window · 1-year vendor warranty</strong>
+                <small>Free return pickup if part doesn't fit or is faulty</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="pdp-tabs">
+        <div class="tab-bar">
+          <button class="tab-btn active">Specifications</button>
+          <button class="tab-btn">Compatibility</button>
+          <button class="tab-btn">Reviews (312)</button>
+          <button class="tab-btn">Questions (24)</button>
+        </div>
+        <div class="pdp-tabs-content">
+          <table class="specs-table">
+            <tr><td>Part type</td><td>Front disc brake pad set, 4 pieces</td></tr>
+            <tr><td>OEM part number</td><td>04465-33450</td></tr>
+            <tr><td>Friction material</td><td>Ceramic — low dust, low noise</td></tr>
+            <tr><td>Operating temperature</td><td>0 °C to 650 °C</td></tr>
+            <tr><td>Wear sensor</td><td>Mechanical squealer included</td></tr>
+            <tr><td>Country of origin</td><td>Japan</td></tr>
+            <tr><td>Manufacturer warranty</td><td>1 year or 25,000 km</td></tr>
+            <tr><td>Includes</td><td>4 pads, anti-squeal shims, fitting grease sachet</td></tr>
+            <tr><td>Weight</td><td>1.6 kg</td></tr>
+          </table>
+
+          <div style="margin-top: 40px;">
+            <h3 style="font-size: 18px; font-weight: 600; margin: 0 0 16px;">Customer reviews</h3>
+            <div class="reviews-summary">
+              <div class="review-score">
+                <div class="num">4.8</div>
+                <div class="stars">★★★★★</div>
+                <div class="count">Based on 312 verified buyers</div>
+              </div>
+              <div class="review-bars">
+                <div class="review-bar"><span class="label">5 stars</span><div class="bar"><div class="fill" style="width:78%"></div></div><span class="num">243</span></div>
+                <div class="review-bar"><span class="label">4 stars</span><div class="bar"><div class="fill" style="width:14%"></div></div><span class="num">44</span></div>
+                <div class="review-bar"><span class="label">3 stars</span><div class="bar"><div class="fill" style="width:5%"></div></div><span class="num">16</span></div>
+                <div class="review-bar"><span class="label">2 stars</span><div class="bar"><div class="fill" style="width:2%"></div></div><span class="num">6</span></div>
+                <div class="review-bar"><span class="label">1 star</span><div class="bar"><div class="fill" style="width:1%"></div></div><span class="num">3</span></div>
+              </div>
+            </div>
+
+            <div class="review-item">
+              <div class="review-head">
+                <div class="review-avatar">CO</div>
+                <div>
+                  <div class="review-author">Chinedu O.</div>
+                  <div class="review-meta">Verified buyer · 2019 Camry SE · Lagos</div>
+                </div>
+                <span class="review-date">12 days ago</span>
+              </div>
+              <div class="review-stars stars">★★★★★</div>
+              <p class="review-body">Genuine pads, bedded in perfectly after 200km. Brake dust is noticeably less than the OE pads they replaced. Came in proper Toyota box with anti-counterfeit holographic. AutoSpares delivered same-day to Lekki — driver waited while I checked the part number. Will buy from them again.</p>
+            </div>
+
+            <div class="review-item">
+              <div class="review-head">
+                <div class="review-avatar">AB</div>
+                <div>
+                  <div class="review-author">Aisha B.</div>
+                  <div class="review-meta">Verified buyer · 2020 Avalon · Abuja</div>
+                </div>
+                <span class="review-date">3 weeks ago</span>
+              </div>
+              <div class="review-stars stars">★★★★★</div>
+              <p class="review-body">Came in two days to Abuja via GIG. Mechanic confirmed they are real Toyota OEM. Pedal feel is back to factory and the squeak is gone. Worth every Naira vs the cheap aftermarkets I tried before.</p>
+            </div>
+
+            <div class="review-item">
+              <div class="review-head">
+                <div class="review-avatar">TO</div>
+                <div>
+                  <div class="review-author">Tope O. (Mechanic)</div>
+                  <div class="review-meta">Verified buyer · Workshop · Port Harcourt</div>
+                </div>
+                <span class="review-date">1 month ago</span>
+              </div>
+              <div class="review-stars stars">★★★★☆</div>
+              <p class="review-body">Ordered 6 sets for my workshop. All genuine, all fit. Lost one star because one set had a missing fitting grease sachet — vendor sent a replacement free, so no real complaint. Solid supplier.</p>
+            </div>
+
+            <div style="text-align:center; margin-top: 20px;">
+              <button class="btn btn-secondary">Read all 312 reviews</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Similar parts -->
+      <section style="border-top: 1px solid var(--border);">
+        <div class="section-head">
+          <div>
+            <h2>Also viewed by Camry owners</h2>
+            <p>Common parts ordered together with brake pads.</p>
+          </div>
+        </div>
+        <div class="product-grid">
+          <article class="product-card">
+            <div class="product-image">
+              <div class="part-img-fill gear" data-name="ROTOR"></div>
+            </div>
+            <div class="product-body">
+              <span class="product-brand">Brembo</span>
+              <h3 class="product-title">Brake Rotor — Front (Pair)</h3>
+              <span class="product-fits">Fits 2018+ Camry SE</span>
+              <div class="product-rating"><span class="stars">★★★★★</span> <span>4.7 · 89</span></div>
+              <div class="product-price-row"><div><div class="product-price">₦68,200</div></div></div>
+            </div>
+          </article>
+          <article class="product-card">
+            <div class="product-image">
+              <div class="part-img-fill filter" data-name="FLUID"></div>
+            </div>
+            <div class="product-body">
+              <span class="product-brand">Bosch</span>
+              <h3 class="product-title">DOT-4 Brake Fluid — 1L</h3>
+              <span class="product-fits">All Camry trims</span>
+              <div class="product-rating"><span class="stars">★★★★★</span> <span>4.9 · 412</span></div>
+              <div class="product-price-row"><div><div class="product-price">₦6,800</div></div></div>
+            </div>
+          </article>
+          <article class="product-card">
+            <div class="product-image">
+              <div class="part-img-fill suspension" data-name="LINE"></div>
+            </div>
+            <div class="product-body">
+              <span class="product-brand">Toyota OEM</span>
+              <h3 class="product-title">Brake Line Kit — Stainless</h3>
+              <span class="product-fits">Confirmed fit</span>
+              <div class="product-rating"><span class="stars">★★★★☆</span> <span>4.5 · 18</span></div>
+              <div class="product-price-row"><div><div class="product-price">₦44,000</div></div></div>
+            </div>
+          </article>
+          <article class="product-card">
+            <div class="product-image">
+              <div class="part-img-fill battery" data-name="SENSOR"></div>
+            </div>
+            <div class="product-body">
+              <span class="product-brand">Denso</span>
+              <h3 class="product-title">ABS Wheel Speed Sensor</h3>
+              <span class="product-fits">Front · Either side</span>
+              <div class="product-rating"><span class="stars">★★★★☆</span> <span>4.5 · 51</span></div>
+              <div class="product-price-row"><div><div class="product-price">₦18,400</div></div></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ============ VIEW: CART & CHECKOUT ============ -->
+  <main class="view" data-view="cart">
+    <div class="page">
+
+      <div class="cart-steps">
+        <div class="step done">
+          <div class="num">1</div>
+          <span>Cart</span>
+        </div>
+        <div class="step-sep"></div>
+        <div class="step active">
+          <div class="num">2</div>
+          <span>Delivery & payment</span>
+        </div>
+        <div class="step-sep"></div>
+        <div class="step">
+          <div class="num">3</div>
+          <span>Review & place order</span>
+        </div>
+      </div>
+
+      <div class="cart-layout">
+        <div class="cart-main">
+
+          <!-- Cart items -->
+          <section class="cart-section">
+            <h2>Your cart (3 items)</h2>
+            <div class="cart-item">
+              <div class="cart-img"><div class="part-img-fill brake" data-name="01"></div></div>
+              <div class="cart-item-body">
+                <span class="brand">Toyota OEM</span>
+                <h3 class="title">Front Brake Pad Set — Ceramic, Low-Dust</h3>
+                <span class="fits">Part 04465-33450 · Fits 2019 Camry SE</span>
+                <span class="vendor">Sold by AutoSpares LAG ✓ · Lagos</span>
+              </div>
+              <div class="cart-item-controls">
+                <div>
+                  <div class="qty" style="margin-bottom: 6px;">
+                    <button>−</button><input value="1" /><button>+</button>
+                  </div>
+                </div>
+                <div>
+                  <div class="price">₦42,500</div>
+                  <a href="#" class="remove">Remove</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="cart-item">
+              <div class="cart-img"><div class="part-img-fill filter" data-name="02"></div></div>
+              <div class="cart-item-body">
+                <span class="brand">Bosch</span>
+                <h3 class="title">DOT-4 Brake Fluid — 1L</h3>
+                <span class="fits">All Camry trims · Use with new pads</span>
+                <span class="vendor">Sold by Castrol Direct ✓ · Lagos</span>
+              </div>
+              <div class="cart-item-controls">
+                <div>
+                  <div class="qty" style="margin-bottom: 6px;">
+                    <button>−</button><input value="2" /><button>+</button>
+                  </div>
+                </div>
+                <div>
+                  <div class="price">₦13,600</div>
+                  <a href="#" class="remove">Remove</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="cart-item">
+              <div class="cart-img"><div class="part-img-fill gear" data-name="03"></div></div>
+              <div class="cart-item-body">
+                <span class="brand">Mann-Filter</span>
+                <h3 class="title">Oil Filter Element — HU 925/4 x</h3>
+                <span class="fits">Routine service · 5W-30 grade</span>
+                <span class="vendor">Sold by PartHub Abuja ✓ · Abuja</span>
+              </div>
+              <div class="cart-item-controls">
+                <div>
+                  <div class="qty" style="margin-bottom: 6px;">
+                    <button>−</button><input value="1" /><button>+</button>
+                  </div>
+                </div>
+                <div>
+                  <div class="price">₦8,400</div>
+                  <a href="#" class="remove">Remove</a>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Delivery address -->
+          <section class="cart-section">
+            <h2>Delivery address</h2>
+            <div class="address-grid">
+              <div class="field"><label>First name</label><input value="Chinedu" /></div>
+              <div class="field"><label>Last name</label><input value="Okafor" /></div>
+              <div class="field"><label>Phone</label><input value="+234 803 421 9087" /></div>
+              <div class="field"><label>Email</label><input value="chinedu.o@example.ng" /></div>
+              <div class="field field-full"><label>Street address</label><input value="14B Admiralty Way, Lekki Phase 1" /></div>
+              <div class="field"><label>City</label><input value="Lagos" /></div>
+              <div class="field">
+                <label>State</label>
+                <select>
+                  <option selected>Lagos</option>
+                  <option>FCT — Abuja</option>
+                  <option>Rivers — Port Harcourt</option>
+                  <option>Oyo</option>
+                  <option>Kano</option>
+                </select>
+              </div>
+              <div class="field field-full"><label>Delivery notes (optional)</label><textarea placeholder="Landmark, gate code, mechanic's address…">Drop at mechanic — JK Auto Workshop, Block 14 Lekki.</textarea></div>
+            </div>
+          </section>
+
+          <!-- Delivery method -->
+          <section class="cart-section">
+            <h2>Delivery method</h2>
+            <div class="delivery-options">
+              <label class="delivery-opt selected">
+                <span class="radio"></span>
+                <div class="info">
+                  <strong>Same-day · Lagos Mainland & Island</strong>
+                  <small>Order before 14:00 · Tracked rider · Free over ₦50,000</small>
+                </div>
+                <span class="price-tag">₦2,500</span>
+              </label>
+              <label class="delivery-opt">
+                <span class="radio"></span>
+                <div class="info">
+                  <strong>Next-day · Lagos extended</strong>
+                  <small>Epe, Badagry, Sangotedo · Tracked rider</small>
+                </div>
+                <span class="price-tag">₦3,500</span>
+              </label>
+              <label class="delivery-opt">
+                <span class="radio"></span>
+                <div class="info">
+                  <strong>2-day · Abuja & Port Harcourt</strong>
+                  <small>Via GIG Logistics · Full tracking</small>
+                </div>
+                <span class="price-tag">₦4,800</span>
+              </label>
+              <label class="delivery-opt">
+                <span class="radio"></span>
+                <div class="info">
+                  <strong>Pickup at vendor warehouse</strong>
+                  <small>Apapa, Lagos · Ready in 4 hours</small>
+                </div>
+                <span class="price-tag">Free</span>
+              </label>
+            </div>
+          </section>
+
+          <!-- Payment -->
+          <section class="cart-section">
+            <h2>Payment method</h2>
+            <div class="payment-options">
+              <label class="payment-opt selected">
+                <span class="radio"></span>
+                <div class="info">
+                  <strong>Card payment</strong>
+                  <small>Verve, Mastercard, Visa · Secured by Paystack</small>
+                </div>
+                <span class="logo">PAYSTACK</span>
+              </label>
+              <label class="payment-opt">
+                <span class="radio"></span>
+                <div class="info">
+                  <strong>Bank transfer</strong>
+                  <small>Generated account · Confirmed automatically</small>
+                </div>
+                <span class="logo">TRANSFER</span>
+              </label>
+              <label class="payment-opt">
+                <span class="radio"></span>
+                <div class="info">
+                  <strong>Pay on delivery</strong>
+                  <small>Cash or transfer · Lagos & Abuja only · Inspect first</small>
+                </div>
+                <span class="logo">POD</span>
+              </label>
+              <label class="payment-opt">
+                <span class="radio"></span>
+                <div class="info">
+                  <strong>CoParts escrow</strong>
+                  <small>We hold Naira until you confirm part fits · 0% fee</small>
+                </div>
+                <span class="logo">ESCROW</span>
+              </label>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- Summary -->
+        <aside class="cart-summary">
+          <h2>Order summary</h2>
+          <div class="summary-row"><span class="label">Subtotal (3 items)</span><span class="val">₦64,500</span></div>
+          <div class="summary-row"><span class="label">Delivery (Same-day, Lagos)</span><span class="val">₦2,500</span></div>
+          <div class="summary-row discount"><span class="label">First-order discount (FIRST10)</span><span class="val">−₦6,450</span></div>
+          <div class="summary-row"><span class="label">VAT (7.5%, included)</span><span class="val">₦4,538</span></div>
+
+          <div class="summary-total">
+            <div>
+              <div class="label">Total</div>
+              <div class="vat">All-in, no extra fees</div>
+            </div>
+            <span class="val">₦60,550</span>
+          </div>
+
+          <div class="promo-row">
+            <input type="text" placeholder="Promo code" value="FIRST10" />
+            <button>Apply</button>
+          </div>
+
+          <button class="btn btn-primary btn-block btn-lg">Place order · ₦60,550</button>
+
+          <div class="summary-trust">
+            <div class="row">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+              <span>All parts verified genuine before dispatch</span>
+            </div>
+            <div class="row">
+              <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="7" width="18" height="12" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.6"/></svg>
+              <span>Payment secured · escrow available</span>
+            </div>
+            <div class="row">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M21 12a9 9 0 11-3-6.7L21 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+              <span>14-day returns if part doesn't fit</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ============ VIEW: SIGN IN ============ -->
+  <main class="view" data-view="signin">
+    <div class="auth-page">
+      <div class="auth-form">
+        <div class="auth-tabs">
+          <button class="auth-tab active">Sign in</button>
+          <button class="auth-tab">Create account</button>
+        </div>
+        <h1>Welcome back</h1>
+        <p>Sign in to view your saved cars, track orders, and reorder parts in one tap.</p>
+
+        <div class="auth-fields">
+          <div class="field"><label>Email or phone</label><input value="chinedu.o@example.ng" /></div>
+          <div class="field"><label>Password</label><input type="password" value="••••••••••" /></div>
+          <div class="forgot"><a href="#">Forgot password?</a></div>
+          <button class="btn btn-primary btn-block btn-lg" data-go="home">Sign in</button>
+        </div>
+
+        <div class="auth-divider">or continue with</div>
+
+        <div class="social-buttons">
+          <button class="social-btn">
+            <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22 12.2c0-.8-.1-1.4-.2-2.1H12v4h5.6c-.2 1.3-1 2.4-2 3.1v2.6h3.4c2-1.8 3-4.5 3-7.6z"/><path fill="#34A853" d="M12 22c2.7 0 5-.9 6.7-2.4l-3.4-2.6c-.9.6-2 1-3.3 1-2.6 0-4.7-1.7-5.5-4.1H3v2.6C4.6 19.7 8 22 12 22z"/><path fill="#FBBC05" d="M6.5 13.9c-.2-.6-.3-1.2-.3-1.9s.1-1.3.3-1.9V7.5H3C2.3 8.9 2 10.4 2 12s.4 3.1 1 4.5l3.5-2.6z"/><path fill="#EA4335" d="M12 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C16.9 3 14.7 2 12 2 8 2 4.6 4.3 3 7.5L6.5 10c.8-2.4 3-4 5.5-4z"/></svg>
+            Google
+          </button>
+          <button class="social-btn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.5c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.6.9-.7 0-1.9-.9-3.1-.8-1.6 0-3.1.9-3.9 2.4-1.7 2.9-.4 7.2 1.2 9.5.8 1.1 1.7 2.4 3 2.4 1.2 0 1.7-.8 3.2-.8s1.9.8 3.2.7c1.3 0 2.2-1.2 3-2.3.9-1.3 1.3-2.6 1.3-2.7-.1 0-2.5-1-2.5-3.9zm-2.5-7.2c.7-.8 1.1-1.9 1-3.1-.9 0-2.1.6-2.7 1.4-.6.7-1.2 1.9-1.1 3 1 .1 2-.5 2.8-1.3z"/></svg>
+            Apple
+          </button>
+        </div>
+
+        <div class="auth-foot">
+          New to CoParts? <a href="#">Create an account</a> · Mechanic? <a href="#">Apply for trade account</a>
+        </div>
+      </div>
+
+      <div class="auth-side">
+        <div class="auth-side-inner">
+          <div class="brand" style="color:#fff;">
+            <div class="brand-mark" style="background:#fff; color: var(--fg);">C</div>
+            CoParts <small style="color: rgba(255,255,255,0.4);">NG</small>
+          </div>
+          <h2>Real parts. <em>Real vendors.</em> Real warranty.</h2>
+          <p>CoParts is Nigeria's marketplace for genuine vehicle parts. We vet every vendor, verify every part, and hold your Naira in escrow until you're satisfied.</p>
+          <ul class="auth-perks">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <div>
+                <strong>One saved garage, every car you own</strong>
+                Skip the year-make-model selector once you've added a car.
+              </div>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <div>
+                <strong>Reorder routine parts in one tap</strong>
+                Filters, fluids, wipers — set up auto-reorder every 5,000 km.
+              </div>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <div>
+                <strong>Trade pricing for verified mechanics</strong>
+                Apply for our trade account to get 8–15% off across all vendors.
+              </div>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <div>
+                <strong>Naira escrow on every order</strong>
+                We hold your payment until the part fits. No risk on you.
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="auth-side-foot">
+          <span>© 2026 CoParts NG · RC 1928374</span>
+          <span>Lagos · Abuja · Port Harcourt</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ============ FOOTER (hidden on auth) ============ -->
+  <footer id="site-footer">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <div class="brand">
+            <div class="brand-mark" style="background:#fff; color: var(--fg);">C</div>
+            CoParts <small>NG</small>
+          </div>
+          <p>Nigeria's genuine auto parts marketplace. Vetted vendors, verified parts, Naira escrow, 48-hour delivery to Lagos, Abuja & Port Harcourt.</p>
+          <p style="font-size: 11px; color: rgba(255,255,255,0.4); margin: 0;">RC 1928374 · 7 Adeola Odeku Street, Victoria Island, Lagos</p>
+        </div>
+        <div>
+          <h4>Shop</h4>
+          <ul>
+            <li><a href="#">By car (year/make/model)</a></li>
+            <li><a href="#">By category</a></li>
+            <li><a href="#">Brands</a></li>
+            <li><a href="#">Deals & clearance</a></li>
+            <li><a href="#">New arrivals</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Sell</h4>
+          <ul>
+            <li><a href="#">Become a vendor</a></li>
+            <li><a href="#">Vendor dashboard</a></li>
+            <li><a href="#">Mechanic trade account</a></li>
+            <li><a href="#">Fleet & workshop pricing</a></li>
+            <li><a href="#">Shipping with CoParts</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Help</h4>
+          <ul>
+            <li><a href="#">Track an order</a></li>
+            <li><a href="#">Returns & refunds</a></li>
+            <li><a href="#">Genuine parts guarantee</a></li>
+            <li><a href="#">Naira escrow explained</a></li>
+            <li><a href="#">Contact support</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About CoParts</a></li>
+            <li><a href="#">Press</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Engineering blog</a></li>
+            <li><a href="#">Partners</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 CoParts NG Ltd.</span>
+        <div class="legal-links">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">Vendor agreement</a>
+          <a href="#">Cookies</a>
+          <a href="#">Naira ₦ · English</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ HELP BAR ============ -->
+  <div class="helpbar" id="helpbar">
+    <button class="pill">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.4 8.4 0 01-1 4 8.5 8.5 0 01-7.5 4.5 8.4 8.4 0 01-4-1L3 21l2-5.5a8.4 8.4 0 01-1-4 8.5 8.5 0 014.5-7.5 8.4 8.4 0 014-1 8.5 8.5 0 018.5 8.5z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <strong>Ask a question</strong>
+      <span style="color: var(--placeholder);">"Does this brake pad fit a 2019 Camry SE?"</span>
+    </button>
+    <a class="schedule" href="#">
+      Book a mechanic →
+    </a>
+    <button class="close" onclick="document.getElementById('helpbar').classList.add('hidden')">✕</button>
+  </div>
+
+<script>
+  // ============ View switcher ============
+  const views = document.querySelectorAll('.view');
+  const navBtns = document.querySelectorAll('.nav-links button, .proto-switcher button');
+  const FOOTER_VIEWS = ['home', 'browse-car', 'browse-category', 'product', 'cart'];
+
+  function go(target) {
+    if (!target) return;
+    views.forEach(v => v.classList.toggle('active', v.dataset.view === target));
+    navBtns.forEach(b => b.classList.toggle('active', b.dataset.go === target));
+    document.getElementById('site-footer').style.display = FOOTER_VIEWS.includes(target) ? 'block' : 'none';
+    document.getElementById('helpbar').style.display = target === 'signin' ? 'none' : 'flex';
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    try { localStorage.setItem('coparts:view', target); } catch (e) {}
+  }
+
+  document.addEventListener('click', (e) => {
+    const el = e.target.closest('[data-go]');
+    if (el) {
+      e.preventDefault();
+      go(el.dataset.go);
+    }
+  });
+
+  try {
+    const last = localStorage.getItem('coparts:view');
+    if (last) go(last);
+  } catch (e) {}
+
+  // ============ Tab switcher (PDP) ============
+  document.querySelectorAll('.tab-bar').forEach(bar => {
+    bar.addEventListener('click', e => {
+      const btn = e.target.closest('.tab-btn');
+      if (!btn) return;
+      bar.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+    });
+  });
+
+  // ============ Delivery/payment radio toggle ============
+  document.querySelectorAll('.delivery-options, .payment-options').forEach(group => {
+    group.addEventListener('click', e => {
+      const opt = e.target.closest('.delivery-opt, .payment-opt');
+      if (!opt) return;
+      group.querySelectorAll('.delivery-opt, .payment-opt').forEach(o => o.classList.toggle('selected', o === opt));
+    });
+  });
+
+  // ============ Auth tabs ============
+  document.querySelectorAll('.auth-tabs').forEach(bar => {
+    bar.addEventListener('click', e => {
+      const btn = e.target.closest('.auth-tab');
+      if (!btn) return;
+      bar.querySelectorAll('.auth-tab').forEach(b => b.classList.toggle('active', b === btn));
+      const isSignup = btn.textContent.trim() === 'Create account';
+      const h1 = bar.parentElement.querySelector('h1');
+      const sub = h1.nextElementSibling;
+      if (isSignup) {
+        h1.textContent = 'Create your account';
+        sub.textContent = 'Save your cars, track orders, and unlock first-order discount.';
+      } else {
+        h1.textContent = 'Welcome back';
+        sub.textContent = 'Sign in to view your saved cars, track orders, and reorder parts in one tap.';
+      }
+    });
+  });
+
+  // ============ Quantity steppers ============
+  document.querySelectorAll('.qty').forEach(q => {
+    const input = q.querySelector('input');
+    const [minus, plus] = q.querySelectorAll('button');
+    minus.addEventListener('click', () => input.value = Math.max(1, parseInt(input.value || '1') - 1));
+    plus.addEventListener('click', () => input.value = parseInt(input.value || '1') + 1);
+  });
+</script>
+</body>
+</html>

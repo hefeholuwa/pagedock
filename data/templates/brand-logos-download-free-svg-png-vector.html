@@ -1,0 +1,1943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brand Logos - Free SVG, PNG and Vector Logo Downloads</title>
+  <meta name="description" content="Download thousands of brand logos in SVG, PNG, AI, EPS and CDR formats. Free high-quality vector logos for graphic and web designers.">
+  <meta property="og:title" content="Brand Logos - Free SVG, PNG and Vector Logo Downloads">
+  <meta property="og:description" content="Download thousands of brand logos in SVG, PNG, AI, EPS and CDR formats. Free for designers.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#09090b">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <!-- Styles -->
+  <style>
+/* ============================================
+   BRAND LOGOS - Design System & Styles
+   Theme: Dark (locked)
+   Accent: Emerald
+   Font: Outfit
+   Radius: All-soft (8/12/16/pill)
+   ============================================ */
+
+/* Reset */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Design Tokens */
+:root {
+  --bg-base: #09090b;
+  --bg-raised: #18181b;
+  --bg-surface: #27272a;
+  --bg-surface-hover: #303033;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --accent: #10b981;
+  --accent-hover: #34d399;
+  --accent-dark: #059669;
+  --accent-muted: rgba(16, 185, 129, 0.12);
+  --accent-glow: rgba(16, 185, 129, 0.15);
+
+  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+
+  --container-max: 1360px;
+  --container-pad: 1.5rem;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 9999px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 0.15s;
+  --dur-normal: 0.3s;
+  --dur-slow: 0.6s;
+
+  --nav-h: 64px;
+}
+
+/* Base */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  background: none;
+  color: inherit;
+}
+
+input {
+  font-family: inherit;
+  border: none;
+  outline: none;
+  background: none;
+  color: inherit;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+/* Dot Grid Background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--container-pad);
+}
+
+/* Section Base */
+section {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+.section-title {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--text-primary);
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.section-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--accent);
+  transition: gap var(--dur-normal) var(--ease-out);
+}
+
+.section-link:hover {
+  gap: 10px;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  border-radius: var(--radius-sm);
+  transition: all var(--dur-normal) var(--ease-out);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--bg-base);
+  padding: 10px 20px;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+  padding: 10px 20px;
+}
+
+.btn-ghost:hover {
+  background: var(--bg-surface);
+  border-color: var(--border-strong);
+}
+
+.btn-sm {
+  padding: 7px 14px;
+  font-size: 13px;
+}
+
+/* ============================================
+   FORMAT PILLS
+   ============================================ */
+
+.format-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  border-radius: var(--radius-pill);
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+
+.format-pill-sm {
+  padding: 2px 7px;
+  font-size: 10px;
+}
+
+/* ============================================
+   NAVIGATION
+   ============================================ */
+
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-h);
+  z-index: 100;
+  transition: background var(--dur-normal) var(--ease-out),
+              border-color var(--dur-normal) var(--ease-out);
+  border-bottom: 1px solid transparent;
+}
+
+.nav.scrolled {
+  background: rgba(9, 9, 11, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom-color: var(--border-subtle);
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  gap: 2rem;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.logo-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--accent);
+  color: var(--bg-base);
+  font-weight: 700;
+  font-size: 12px;
+  border-radius: var(--radius-sm);
+  letter-spacing: -0.02em;
+}
+
+.logo-text {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.nav-links {
+  display: none;
+  align-items: center;
+  gap: 2rem;
+}
+
+.nav-link {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  transition: color var(--dur-fast);
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  transition: all var(--dur-fast);
+  font-size: 18px;
+}
+
+.nav-icon-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface);
+}
+
+.mobile-only {
+  display: inline-flex;
+}
+
+.desktop-only {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .nav-links {
+    display: flex;
+  }
+
+  .mobile-only {
+    display: none;
+  }
+
+  .desktop-only {
+    display: inline-flex;
+  }
+}
+
+/* Mobile Menu */
+.mobile-menu {
+  position: fixed;
+  top: var(--nav-h);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bg-base);
+  z-index: 99;
+  padding: 2rem var(--container-pad);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  transform: translateY(-10px);
+  opacity: 0;
+  pointer-events: none;
+  transition: all var(--dur-normal) var(--ease-out);
+}
+
+.mobile-menu.open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+.mobile-menu a {
+  display: block;
+  padding: 16px 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.mobile-menu a:hover {
+  color: var(--text-primary);
+}
+
+/* ============================================
+   HERO (Split-Screen)
+   ============================================ */
+
+.hero {
+  min-height: calc(100dvh - var(--nav-h));
+  display: flex;
+  align-items: center;
+  padding-top: calc(var(--nav-h) + 2rem);
+  padding-bottom: 3rem;
+  overflow: hidden;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .hero-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+  }
+}
+
+.hero-content {
+  max-width: 560px;
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 6vw, 3.75rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin-bottom: 1.25rem;
+}
+
+.hero-subtitle {
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 440px;
+  margin-bottom: 2rem;
+}
+
+.hero-search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  margin-bottom: 1.25rem;
+  transition: border-color var(--dur-normal) var(--ease-out),
+              box-shadow var(--dur-normal) var(--ease-out);
+}
+
+.hero-search:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.hero-search i {
+  font-size: 20px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.hero-search input {
+  flex: 1;
+  font-size: 16px;
+  color: var(--text-primary);
+  min-width: 0;
+}
+
+.hero-search input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-kbd {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .search-kbd {
+    display: inline-flex;
+  }
+}
+
+.hero-formats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Hero Logo Mosaic */
+.hero-logos {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.hero-logos::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 130%;
+  height: 130%;
+  background: radial-gradient(ellipse at center, var(--accent-glow) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-logo-card {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  transition: all var(--dur-normal) var(--ease-out);
+  padding: 1rem;
+}
+
+.hero-logo-card:hover {
+  background: var(--bg-surface);
+  border-color: var(--border-default);
+  transform: translateY(-3px);
+}
+
+.hero-logo-card img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+@media (min-width: 640px) {
+  .hero-logo-card img {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* ============================================
+   CATEGORIES (Horizontal Scroll)
+   ============================================ */
+
+.categories {
+  padding: 2rem 0 4rem;
+}
+
+.categories-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 4px 0;
+}
+
+.categories-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.category-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 400;
+  white-space: nowrap;
+  cursor: pointer;
+  scroll-snap-align: start;
+  flex-shrink: 0;
+  transition: all var(--dur-normal) var(--ease-out);
+}
+
+.category-pill i {
+  font-size: 16px;
+}
+
+.category-pill:hover {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border-color: var(--border-default);
+}
+
+.category-pill.active {
+  background: var(--accent-muted);
+  color: var(--accent);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+/* ============================================
+   TRENDING (4-col Content Grid)
+   ============================================ */
+
+.trending {
+  padding: 4rem 0;
+}
+
+.trending-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 640px) {
+  .trending-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .trending-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Logo Card */
+.logo-card {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all var(--dur-normal) var(--ease-out);
+  cursor: pointer;
+}
+
+.logo-card:hover {
+  background: var(--bg-surface);
+  border-color: var(--border-default);
+  transform: translateY(-3px);
+}
+
+.logo-card-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96px;
+  border-radius: var(--radius-sm);
+  background-color: rgba(255, 255, 255, 0.02);
+  background-image:
+    linear-gradient(45deg, rgba(255,255,255,0.025) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255,255,255,0.025) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.025) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.025) 75%);
+  background-size: 12px 12px;
+  background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+}
+
+.logo-card-preview img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.logo-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.logo-card-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.logo-card-category {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.logo-card-formats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+/* ============================================
+   FORMATS (Bento Grid)
+   ============================================ */
+
+.formats {
+  padding: 4rem 0;
+}
+
+.formats-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .formats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .formats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .format-card-hero {
+    grid-row: span 2;
+  }
+}
+
+.format-card {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all var(--dur-normal) var(--ease-out);
+}
+
+.format-card:hover {
+  border-color: var(--border-default);
+}
+
+.format-card-hero {
+  background: linear-gradient(135deg, var(--bg-raised) 0%, rgba(16, 185, 129, 0.06) 100%);
+  justify-content: center;
+}
+
+.format-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--accent-muted);
+  color: var(--accent);
+  font-size: 22px;
+}
+
+.format-card-hero .format-card-icon {
+  width: 64px;
+  height: 64px;
+  font-size: 28px;
+}
+
+.format-card-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.format-card-hero .format-card-title {
+  font-size: 24px;
+}
+
+.format-card-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ============================================
+   RECENTLY ADDED (Sidebar + List)
+   ============================================ */
+
+.recent {
+  padding: 4rem 0;
+}
+
+.recent-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .recent-layout {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.recent-featured {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all var(--dur-normal) var(--ease-out);
+  cursor: pointer;
+}
+
+.recent-featured:hover {
+  border-color: var(--border-default);
+  transform: translateY(-2px);
+}
+
+.recent-featured .logo-card-preview {
+  height: 160px;
+  flex: 1;
+}
+
+.recent-featured .logo-card-preview img {
+  width: 72px;
+  height: 72px;
+}
+
+.recent-featured .logo-card-name {
+  font-size: 20px;
+}
+
+.recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.recent-list-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--bg-raised);
+  border-radius: var(--radius-md);
+  transition: all var(--dur-normal) var(--ease-out);
+  cursor: pointer;
+}
+
+.recent-list-item:first-child {
+  border-radius: var(--radius-md) var(--radius-md) 4px 4px;
+}
+
+.recent-list-item:last-child {
+  border-radius: 4px 4px var(--radius-md) var(--radius-md);
+}
+
+.recent-list-item:hover {
+  background: var(--bg-surface);
+}
+
+.recent-list-item img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.recent-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.recent-item-info h3 {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.recent-item-info span {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.recent-date {
+  font-size: 12px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* ============================================
+   HOW IT WORKS (Vertical Numbered Steps)
+   ============================================ */
+
+.how-it-works {
+  padding: 5rem 0;
+}
+
+.steps {
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.step {
+  display: flex;
+  gap: 1.5rem;
+  padding: 2rem 0;
+}
+
+.step-number {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: var(--accent-muted);
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.step-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 420px;
+}
+
+.step-connector {
+  width: 1px;
+  height: 24px;
+  background: var(--border-default);
+  margin-left: 20px;
+}
+
+/* ============================================
+   STATS (Full-Width Strip)
+   ============================================ */
+
+.stats {
+  padding: 3rem 0;
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-raised);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem 1rem;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-number {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+/* ============================================
+   INDUSTRIES (Asymmetric Card Grid)
+   ============================================ */
+
+.industries {
+  padding: 5rem 0;
+}
+
+.industries-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .industries-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .industries-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .industry-card-lg {
+    grid-column: span 2;
+  }
+}
+
+.industry-card {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all var(--dur-normal) var(--ease-out);
+  cursor: pointer;
+  min-height: 140px;
+}
+
+.industry-card:hover {
+  border-color: var(--border-default);
+  transform: translateY(-2px);
+}
+
+.industry-card-lg {
+  min-height: 180px;
+  padding: 2rem;
+}
+
+.industry-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  font-size: 20px;
+  color: var(--text-secondary);
+}
+
+.industry-name {
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: auto;
+}
+
+.industry-count {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ============================================
+   CTA (Left-Aligned Form)
+   ============================================ */
+
+.cta {
+  padding: 5rem 0;
+}
+
+.cta-layout {
+  max-width: 520px;
+}
+
+.cta-desc {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.cta-form .cta-input-group {
+  display: flex;
+  gap: 10px;
+}
+
+.cta-form input[type="email"] {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 16px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--text-primary);
+  transition: border-color var(--dur-normal) var(--ease-out),
+              box-shadow var(--dur-normal) var(--ease-out);
+}
+
+.cta-form input[type="email"]::placeholder {
+  color: var(--text-muted);
+}
+
+.cta-form input[type="email"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+@media (max-width: 480px) {
+  .cta-form .cta-input-group {
+    flex-direction: column;
+  }
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+
+.footer {
+  padding: 4rem 0 2rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  padding-bottom: 3rem;
+}
+
+@media (min-width: 640px) {
+  .footer-grid {
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 2rem;
+  }
+}
+
+.footer-brand .logo-mark {
+  margin-bottom: 0;
+}
+
+.footer-brand .nav-logo {
+  margin-bottom: 1rem;
+}
+
+.footer-tagline {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-top: 1rem;
+  line-height: 1.6;
+}
+
+.footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-col-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.footer-col a {
+  font-size: 14px;
+  color: var(--text-muted);
+  transition: color var(--dur-fast);
+}
+
+.footer-col a:hover {
+  color: var(--text-primary);
+}
+
+.footer-bottom {
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-bottom p {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ============================================
+   SCROLL REVEAL
+   ============================================ */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity var(--dur-slow) var(--ease-out),
+              transform var(--dur-slow) var(--ease-out);
+}
+
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.08s; }
+.reveal-delay-2 { transition-delay: 0.16s; }
+.reveal-delay-3 { transition-delay: 0.24s; }
+.reveal-delay-4 { transition-delay: 0.32s; }
+.reveal-delay-5 { transition-delay: 0.4s; }
+.reveal-delay-6 { transition-delay: 0.48s; }
+.reveal-delay-7 { transition-delay: 0.56s; }
+.reveal-delay-8 { transition-delay: 0.64s; }
+
+/* Hero entrance */
+.hero-enter {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: heroEnter 0.8s var(--ease-out) forwards;
+}
+
+.hero-enter-delay-1 { animation-delay: 0.1s; }
+.hero-enter-delay-2 { animation-delay: 0.2s; }
+.hero-enter-delay-3 { animation-delay: 0.35s; }
+.hero-enter-delay-4 { animation-delay: 0.5s; }
+
+@keyframes heroEnter {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .hero-enter {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+
+  .hero-logo-card:hover,
+  .logo-card:hover,
+  .recent-featured:hover,
+  .industry-card:hover {
+    transform: none;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+</style>
+</head>
+<body>
+
+  <!-- ════════════════════════════════════════
+       NAVIGATION
+       ════════════════════════════════════════ -->
+  <nav id="main-nav" class="nav">
+    <div class="nav-inner container">
+      <a href="/" class="nav-logo" id="nav-logo">
+        <span class="logo-mark">BL</span>
+        <span class="logo-text">Brand Logos</span>
+      </a>
+
+      <div class="nav-links" id="nav-links">
+        <a href="#trending" class="nav-link">Trending</a>
+        <a href="#categories" class="nav-link">Categories</a>
+        <a href="#recent" class="nav-link">Recent</a>
+        <a href="#formats" class="nav-link">Formats</a>
+      </div>
+
+      <div class="nav-actions">
+        <button id="nav-search-btn" class="nav-icon-btn desktop-only" aria-label="Search">
+          <i class="ph ph-magnifying-glass"></i>
+        </button>
+        <a href="#" class="btn btn-primary btn-sm desktop-only" id="submit-logo-btn">
+          <i class="ph ph-upload-simple"></i>
+          <span>Submit</span>
+        </a>
+        <button id="mobile-menu-btn" class="nav-icon-btn mobile-only" aria-label="Menu" aria-expanded="false">
+          <i class="ph ph-list"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="#trending">Trending</a>
+    <a href="#categories">Categories</a>
+    <a href="#recent">Recently Added</a>
+    <a href="#formats">Formats</a>
+    <a href="#">Submit Logo</a>
+  </div>
+
+  <main>
+
+    <!-- ════════════════════════════════════════
+         HERO (Layout: Split-Screen)
+         ════════════════════════════════════════ -->
+    <section id="hero" class="hero">
+      <div class="container hero-grid">
+        <div class="hero-content">
+          <h1 class="hero-title hero-enter">Every logo.<br>Every format.</h1>
+          <p class="hero-subtitle hero-enter hero-enter-delay-1">Download brand logos in SVG, PNG, AI, EPS and more. Free for designers.</p>
+          <div class="hero-search hero-enter hero-enter-delay-2">
+            <i class="ph ph-magnifying-glass"></i>
+            <input type="text" placeholder="Search thousands of logos..." id="hero-search-input" aria-label="Search logos">
+            <kbd class="search-kbd">/</kbd>
+          </div>
+          <div class="hero-formats hero-enter hero-enter-delay-3">
+            <span class="format-pill">SVG</span>
+            <span class="format-pill">PNG</span>
+            <span class="format-pill">AI</span>
+            <span class="format-pill">EPS</span>
+            <span class="format-pill">CDR</span>
+            <span class="format-pill">PDF</span>
+          </div>
+        </div>
+
+        <div class="hero-logos hero-enter hero-enter-delay-4">
+          <div class="hero-logo-card"><img src="https://cdn.simpleicons.org/apple/ffffff" alt="Apple" width="40" height="40" loading="eager"></div>
+          <div class="hero-logo-card"><img src="https://cdn.simpleicons.org/google/4285F4" alt="Google" width="40" height="40" loading="eager"></div>
+          <div class="hero-logo-card"><img src="https://cdn.simpleicons.org/nike/ffffff" alt="Nike" width="40" height="40" loading="eager"></div>
+          <div class="hero-logo-card"><img src="https://cdn.simpleicons.org/spotify/1DB954" alt="Spotify" width="40" height="40" loading="eager"></div>
+          <div class="hero-logo-card"><img src="https://cdn.simpleicons.org/tesla/E82127" alt="Tesla" width="40" height="40" loading="eager"></div>
+          <div class="hero-logo-card"><img src="https://cdn.simpleicons.org/adobe/FF0000" alt="Adobe" width="40" height="40" loading="eager"></div>
+          <div class="hero-logo-card"><img src="https://cdn.simpleicons.org/netflix/E50914" alt="Netflix" width="40" height="40" loading="eager"></div>
+          <div class="hero-logo-card"><img src="https://cdn.simpleicons.org/amazon/FF9900" alt="Amazon" width="40" height="40" loading="eager"></div>
+          <div class="hero-logo-card"><img src="https://cdn.simpleicons.org/discord/5865F2" alt="Discord" width="40" height="40" loading="eager"></div>
+          <div class="hero-logo-card"><img src="https://cdn.simpleicons.org/figma/F24E1E" alt="Figma" width="40" height="40" loading="eager"></div>
+          <div class="hero-logo-card"><img src="https://cdn.simpleicons.org/github/ffffff" alt="GitHub" width="40" height="40" loading="eager"></div>
+          <div class="hero-logo-card"><img src="https://cdn.simpleicons.org/stripe/635BFF" alt="Stripe" width="40" height="40" loading="eager"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+         CATEGORIES (Layout: Horizontal Scroll)
+         ════════════════════════════════════════ -->
+    <section id="categories" class="categories">
+      <div class="container">
+        <div class="categories-scroll">
+          <button class="category-pill active" id="cat-all"><i class="ph ph-squares-four"></i> All</button>
+          <button class="category-pill" id="cat-tech"><i class="ph ph-cpu"></i> Technology</button>
+          <button class="category-pill" id="cat-auto"><i class="ph ph-car-simple"></i> Automotive</button>
+          <button class="category-pill" id="cat-fashion"><i class="ph ph-t-shirt"></i> Fashion</button>
+          <button class="category-pill" id="cat-sports"><i class="ph ph-trophy"></i> Sports</button>
+          <button class="category-pill" id="cat-food"><i class="ph ph-fork-knife"></i> Food &amp; Drink</button>
+          <button class="category-pill" id="cat-media"><i class="ph ph-monitor-play"></i> Media</button>
+          <button class="category-pill" id="cat-software"><i class="ph ph-code"></i> Software</button>
+          <button class="category-pill" id="cat-finance"><i class="ph ph-bank"></i> Finance</button>
+          <button class="category-pill" id="cat-education"><i class="ph ph-graduation-cap"></i> Education</button>
+          <button class="category-pill" id="cat-gaming"><i class="ph ph-game-controller"></i> Gaming</button>
+          <button class="category-pill" id="cat-music"><i class="ph ph-music-note"></i> Music</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+         TRENDING (Layout: 4-col Content Grid)
+         ════════════════════════════════════════ -->
+    <section id="trending" class="trending">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title reveal">Trending logos</h2>
+          <a href="#" class="section-link reveal" id="trending-view-all">View all <i class="ph ph-arrow-right"></i></a>
+        </div>
+
+        <div class="trending-grid">
+          <article class="logo-card reveal reveal-delay-1" id="logo-apple">
+            <div class="logo-card-preview">
+              <img src="https://cdn.simpleicons.org/apple/fafafa" alt="Apple logo" width="48" height="48" loading="lazy">
+            </div>
+            <div class="logo-card-info">
+              <h3 class="logo-card-name">Apple</h3>
+              <span class="logo-card-category">Technology</span>
+            </div>
+            <div class="logo-card-formats">
+              <span class="format-pill format-pill-sm">SVG</span>
+              <span class="format-pill format-pill-sm">PNG</span>
+              <span class="format-pill format-pill-sm">AI</span>
+            </div>
+          </article>
+
+          <article class="logo-card reveal reveal-delay-2" id="logo-google">
+            <div class="logo-card-preview">
+              <img src="https://cdn.simpleicons.org/google/4285F4" alt="Google logo" width="48" height="48" loading="lazy">
+            </div>
+            <div class="logo-card-info">
+              <h3 class="logo-card-name">Google</h3>
+              <span class="logo-card-category">Technology</span>
+            </div>
+            <div class="logo-card-formats">
+              <span class="format-pill format-pill-sm">SVG</span>
+              <span class="format-pill format-pill-sm">PNG</span>
+              <span class="format-pill format-pill-sm">EPS</span>
+            </div>
+          </article>
+
+          <article class="logo-card reveal reveal-delay-3" id="logo-nike">
+            <div class="logo-card-preview">
+              <img src="https://cdn.simpleicons.org/nike/fafafa" alt="Nike logo" width="48" height="48" loading="lazy">
+            </div>
+            <div class="logo-card-info">
+              <h3 class="logo-card-name">Nike</h3>
+              <span class="logo-card-category">Fashion</span>
+            </div>
+            <div class="logo-card-formats">
+              <span class="format-pill format-pill-sm">SVG</span>
+              <span class="format-pill format-pill-sm">PNG</span>
+              <span class="format-pill format-pill-sm">CDR</span>
+            </div>
+          </article>
+
+          <article class="logo-card reveal reveal-delay-4" id="logo-spotify">
+            <div class="logo-card-preview">
+              <img src="https://cdn.simpleicons.org/spotify/1DB954" alt="Spotify logo" width="48" height="48" loading="lazy">
+            </div>
+            <div class="logo-card-info">
+              <h3 class="logo-card-name">Spotify</h3>
+              <span class="logo-card-category">Media</span>
+            </div>
+            <div class="logo-card-formats">
+              <span class="format-pill format-pill-sm">SVG</span>
+              <span class="format-pill format-pill-sm">PNG</span>
+              <span class="format-pill format-pill-sm">AI</span>
+            </div>
+          </article>
+
+          <article class="logo-card reveal reveal-delay-5" id="logo-tesla">
+            <div class="logo-card-preview">
+              <img src="https://cdn.simpleicons.org/tesla/E82127" alt="Tesla logo" width="48" height="48" loading="lazy">
+            </div>
+            <div class="logo-card-info">
+              <h3 class="logo-card-name">Tesla</h3>
+              <span class="logo-card-category">Automotive</span>
+            </div>
+            <div class="logo-card-formats">
+              <span class="format-pill format-pill-sm">SVG</span>
+              <span class="format-pill format-pill-sm">PNG</span>
+              <span class="format-pill format-pill-sm">EPS</span>
+            </div>
+          </article>
+
+          <article class="logo-card reveal reveal-delay-6" id="logo-adobe">
+            <div class="logo-card-preview">
+              <img src="https://cdn.simpleicons.org/adobe/FF0000" alt="Adobe logo" width="48" height="48" loading="lazy">
+            </div>
+            <div class="logo-card-info">
+              <h3 class="logo-card-name">Adobe</h3>
+              <span class="logo-card-category">Software</span>
+            </div>
+            <div class="logo-card-formats">
+              <span class="format-pill format-pill-sm">SVG</span>
+              <span class="format-pill format-pill-sm">PNG</span>
+              <span class="format-pill format-pill-sm">AI</span>
+            </div>
+          </article>
+
+          <article class="logo-card reveal reveal-delay-7" id="logo-netflix">
+            <div class="logo-card-preview">
+              <img src="https://cdn.simpleicons.org/netflix/E50914" alt="Netflix logo" width="48" height="48" loading="lazy">
+            </div>
+            <div class="logo-card-info">
+              <h3 class="logo-card-name">Netflix</h3>
+              <span class="logo-card-category">Media</span>
+            </div>
+            <div class="logo-card-formats">
+              <span class="format-pill format-pill-sm">SVG</span>
+              <span class="format-pill format-pill-sm">PNG</span>
+              <span class="format-pill format-pill-sm">PDF</span>
+            </div>
+          </article>
+
+          <article class="logo-card reveal reveal-delay-8" id="logo-mercedes">
+            <div class="logo-card-preview">
+              <img src="https://cdn.simpleicons.org/mercedes/fafafa" alt="Mercedes-Benz logo" width="48" height="48" loading="lazy">
+            </div>
+            <div class="logo-card-info">
+              <h3 class="logo-card-name">Mercedes-Benz</h3>
+              <span class="logo-card-category">Automotive</span>
+            </div>
+            <div class="logo-card-formats">
+              <span class="format-pill format-pill-sm">SVG</span>
+              <span class="format-pill format-pill-sm">PNG</span>
+              <span class="format-pill format-pill-sm">EPS</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+         FORMATS (Layout: Bento Grid)
+         ════════════════════════════════════════ -->
+    <section id="formats" class="formats">
+      <div class="container">
+        <span class="eyebrow reveal">MULTI-FORMAT</span>
+        <h2 class="section-title reveal" style="margin-bottom: 2rem;">Download in any format</h2>
+
+        <div class="formats-grid">
+          <div class="format-card format-card-hero reveal">
+            <div class="format-card-icon"><i class="ph ph-file-svg"></i></div>
+            <h3 class="format-card-title">SVG</h3>
+            <p class="format-card-desc">Scalable vector graphics. Infinite resolution, tiny file size. The standard for web and UI work.</p>
+          </div>
+
+          <div class="format-card reveal">
+            <div class="format-card-icon"><i class="ph ph-file-png"></i></div>
+            <h3 class="format-card-title">PNG</h3>
+            <p class="format-card-desc">Transparent backgrounds. Ready for presentations and mockups.</p>
+          </div>
+
+          <div class="format-card reveal">
+            <div class="format-card-icon"><i class="ph ph-file"></i></div>
+            <h3 class="format-card-title">AI</h3>
+            <p class="format-card-desc">Adobe Illustrator native. Fully editable paths and layers.</p>
+          </div>
+
+          <div class="format-card reveal">
+            <div class="format-card-icon"><i class="ph ph-file"></i></div>
+            <h3 class="format-card-title">EPS</h3>
+            <p class="format-card-desc">Professional print format. Compatible with most design software.</p>
+          </div>
+
+          <div class="format-card reveal">
+            <div class="format-card-icon"><i class="ph ph-file"></i></div>
+            <h3 class="format-card-title">CDR</h3>
+            <p class="format-card-desc">CorelDRAW vector files. Native compatibility, full editability.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+         RECENTLY ADDED (Layout: Sidebar + List)
+         ════════════════════════════════════════ -->
+    <section id="recent" class="recent">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title reveal">Recently added</h2>
+          <a href="#" class="section-link reveal" id="recent-view-all">View all <i class="ph ph-arrow-right"></i></a>
+        </div>
+
+        <div class="recent-layout">
+          <article class="recent-featured reveal" id="logo-openai">
+            <div class="logo-card-preview">
+              <img src="https://cdn.simpleicons.org/openai/fafafa" alt="OpenAI logo" width="72" height="72" loading="lazy">
+            </div>
+            <div class="logo-card-info">
+              <h3 class="logo-card-name">OpenAI</h3>
+              <span class="logo-card-category">AI Tools</span>
+            </div>
+            <div class="logo-card-formats">
+              <span class="format-pill format-pill-sm">SVG</span>
+              <span class="format-pill format-pill-sm">PNG</span>
+              <span class="format-pill format-pill-sm">AI</span>
+              <span class="format-pill format-pill-sm">EPS</span>
+            </div>
+          </article>
+
+          <div class="recent-list reveal">
+            <div class="recent-list-item" id="logo-anthropic">
+              <img src="https://cdn.simpleicons.org/anthropic/fafafa" alt="Anthropic" width="36" height="36" loading="lazy">
+              <div class="recent-item-info">
+                <h3>Anthropic</h3>
+                <span>AI Tools</span>
+              </div>
+              <span class="recent-date">Today</span>
+            </div>
+
+            <div class="recent-list-item" id="logo-linear">
+              <img src="https://cdn.simpleicons.org/linear/5E6AD2" alt="Linear" width="36" height="36" loading="lazy">
+              <div class="recent-item-info">
+                <h3>Linear</h3>
+                <span>Software</span>
+              </div>
+              <span class="recent-date">Today</span>
+            </div>
+
+            <div class="recent-list-item" id="logo-vercel">
+              <img src="https://cdn.simpleicons.org/vercel/fafafa" alt="Vercel" width="36" height="36" loading="lazy">
+              <div class="recent-item-info">
+                <h3>Vercel</h3>
+                <span>Technology</span>
+              </div>
+              <span class="recent-date">Yesterday</span>
+            </div>
+
+            <div class="recent-list-item" id="logo-supabase">
+              <img src="https://cdn.simpleicons.org/supabase/3FCF8E" alt="Supabase" width="36" height="36" loading="lazy">
+              <div class="recent-item-info">
+                <h3>Supabase</h3>
+                <span>Technology</span>
+              </div>
+              <span class="recent-date">Yesterday</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+         HOW IT WORKS (Layout: Vertical Steps)
+         ════════════════════════════════════════ -->
+    <section id="how-it-works" class="how-it-works">
+      <div class="container">
+        <h2 class="section-title reveal" style="margin-bottom: 1rem;">How it works</h2>
+
+        <div class="steps">
+          <div class="step reveal">
+            <div class="step-number">01</div>
+            <div class="step-content">
+              <h3 class="step-title">Search for any brand</h3>
+              <p class="step-desc">Type the name of any company, product, or organization to find their official logo.</p>
+            </div>
+          </div>
+
+          <div class="step-connector reveal"></div>
+
+          <div class="step reveal">
+            <div class="step-number">02</div>
+            <div class="step-content">
+              <h3 class="step-title">Preview and choose format</h3>
+              <p class="step-desc">See the logo at full resolution. Pick from SVG, PNG, AI, EPS, or CDR.</p>
+            </div>
+          </div>
+
+          <div class="step-connector reveal"></div>
+
+          <div class="step reveal">
+            <div class="step-number">03</div>
+            <div class="step-content">
+              <h3 class="step-title">Download instantly</h3>
+              <p class="step-desc">One click download. No signup required, no watermarks, always free.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+         STATS (Layout: Full-Width Strip)
+         ════════════════════════════════════════ -->
+    <!-- All numbers are approximate/mock -->
+    <section id="stats" class="stats">
+      <div class="container stats-grid">
+        <div class="stat-item reveal">
+          <span class="stat-number">50,000+</span>
+          <span class="stat-label">Brand Logos</span>
+        </div>
+        <div class="stat-item reveal">
+          <span class="stat-number">1M+</span>
+          <span class="stat-label">Downloads</span>
+        </div>
+        <div class="stat-item reveal">
+          <span class="stat-number">6</span>
+          <span class="stat-label">File Formats</span>
+        </div>
+        <div class="stat-item reveal">
+          <span class="stat-number">35+</span>
+          <span class="stat-label">Categories</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+         INDUSTRIES (Layout: Asymmetric Card Grid)
+         ════════════════════════════════════════ -->
+    <section id="industries" class="industries">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title reveal">Browse by industry</h2>
+        </div>
+
+        <div class="industries-grid">
+          <a href="#" class="industry-card industry-card-lg reveal" id="industry-tech">
+            <div class="industry-icon"><i class="ph ph-cpu"></i></div>
+            <h3 class="industry-name">Technology</h3>
+            <span class="industry-count">8,400+ logos</span>
+          </a>
+
+          <a href="#" class="industry-card industry-card-lg reveal" id="industry-auto">
+            <div class="industry-icon"><i class="ph ph-car-simple"></i></div>
+            <h3 class="industry-name">Automotive</h3>
+            <span class="industry-count">2,100+ logos</span>
+          </a>
+
+          <a href="#" class="industry-card reveal" id="industry-fashion">
+            <div class="industry-icon"><i class="ph ph-t-shirt"></i></div>
+            <h3 class="industry-name">Fashion</h3>
+            <span class="industry-count">3,200+ logos</span>
+          </a>
+
+          <a href="#" class="industry-card reveal" id="industry-food">
+            <div class="industry-icon"><i class="ph ph-fork-knife"></i></div>
+            <h3 class="industry-name">Food &amp; Drink</h3>
+            <span class="industry-count">4,600+ logos</span>
+          </a>
+
+          <a href="#" class="industry-card reveal" id="industry-sports">
+            <div class="industry-icon"><i class="ph ph-trophy"></i></div>
+            <h3 class="industry-name">Sports</h3>
+            <span class="industry-count">5,300+ logos</span>
+          </a>
+
+          <a href="#" class="industry-card reveal" id="industry-media">
+            <div class="industry-icon"><i class="ph ph-monitor-play"></i></div>
+            <h3 class="industry-name">Media</h3>
+            <span class="industry-count">3,800+ logos</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+         CTA (Layout: Left-Aligned Form)
+         ════════════════════════════════════════ -->
+    <section id="cta" class="cta">
+      <div class="container">
+        <div class="cta-layout">
+          <h2 class="section-title reveal">Stay updated</h2>
+          <p class="cta-desc reveal">Get notified when new logos are added to our collection.</p>
+          <form class="cta-form reveal" id="newsletter-form">
+            <div class="cta-input-group">
+              <label for="newsletter-email" class="sr-only">Email address</label>
+              <input type="email" placeholder="you@example.com" id="newsletter-email" required aria-label="Email address">
+              <button type="submit" class="btn btn-primary">Subscribe</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ════════════════════════════════════════
+       FOOTER
+       ════════════════════════════════════════ -->
+  <footer id="footer" class="footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a href="/" class="nav-logo">
+          <span class="logo-mark">BL</span>
+          <span class="logo-text">Brand Logos</span>
+        </a>
+        <p class="footer-tagline">Free brand logos for graphic and web designers. Download in SVG, PNG, AI, EPS and CDR.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-col-title">Browse</h4>
+        <a href="#trending">Trending</a>
+        <a href="#categories">Categories</a>
+        <a href="#recent">Recently Added</a>
+        <a href="#">Most Downloaded</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-col-title">Formats</h4>
+        <a href="#">SVG Logos</a>
+        <a href="#">PNG Logos</a>
+        <a href="#">AI Logos</a>
+        <a href="#">EPS Logos</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-col-title">Company</h4>
+        <a href="#">About</a>
+        <a href="#">Submit Logo</a>
+        <a href="#">Contact</a>
+        <a href="#">Privacy Policy</a>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <p>2024 Brand Logos. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Visually hidden label helper -->
+  <style>.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}</style>
+
+  <script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  // ── Nav scroll effect ──
+  const nav = document.getElementById('main-nav');
+  let lastScroll = 0;
+
+  function updateNav() {
+    const scrollY = window.scrollY;
+    if (scrollY > 40) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+    lastScroll = scrollY;
+  }
+
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+
+  // ── Mobile menu toggle ──
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  if (menuBtn && mobileMenu) {
+    menuBtn.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', isOpen);
+      document.body.style.overflow = isOpen ? 'hidden' : '';
+    });
+
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+        menuBtn.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+      });
+    });
+  }
+
+  // ── Keyboard shortcut: "/" focuses search ──
+  document.addEventListener('keydown', (e) => {
+    const tag = document.activeElement.tagName;
+    if (e.key === '/' && tag !== 'INPUT' && tag !== 'TEXTAREA') {
+      e.preventDefault();
+      const searchInput = document.getElementById('hero-search-input');
+      if (searchInput) {
+        searchInput.focus();
+        searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  });
+
+  // ── Scroll Reveal (IntersectionObserver) ──
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!reduceMotion) {
+    const revealEls = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.12,
+      rootMargin: '0px 0px -40px 0px'
+    });
+
+    revealEls.forEach(el => revealObserver.observe(el));
+  } else {
+    document.querySelectorAll('.reveal').forEach(el => {
+      el.classList.add('revealed');
+    });
+  }
+
+  // ── Category pill active state ──
+  const categoryPills = document.querySelectorAll('.category-pill');
+  categoryPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      categoryPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+    });
+  });
+
+  // ── Newsletter form ──
+  const newsletterForm = document.getElementById('newsletter-form');
+  if (newsletterForm) {
+    newsletterForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const emailInput = document.getElementById('newsletter-email');
+      const btn = newsletterForm.querySelector('button[type="submit"]');
+      if (emailInput && emailInput.value) {
+        btn.textContent = 'Subscribed';
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+        emailInput.disabled = true;
+        emailInput.value = '';
+        setTimeout(() => {
+          btn.textContent = 'Subscribe';
+          btn.disabled = false;
+          btn.style.opacity = '';
+          emailInput.disabled = false;
+        }, 3000);
+      }
+    });
+  }
+
+});
+
+</script>
+</body>
+</html>

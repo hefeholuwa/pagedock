@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leica | Das Wesen der Fotografie</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+@font-face {
+    font-family: 'PP Neue Montreal';
+    src: local('-apple-system'), local('BlinkMacSystemFont'), local('Helvetica Neue'), local('Arial');
+    font-weight: 400;
+}
+:root {
+    --hyper-light: oklch(98% 0.01 240 / 0.65);
+    --anodized-silver: oklch(94% 0.01 240 / 0.4);
+    --industrial-edge: oklch(20% 0.02 240 / 0.15);
+}
+body {
+    font-family: 'PP Neue Montreal', sans-serif;
+    background-color: oklch(98% 0.01 240);
+    color: oklch(12% 0.01 240);
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+}
+.tech-spec {
+    font-family: 'Inter Tight', sans-serif;
+    letter-spacing: -0.02em;
+}
+.light-corridor {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at 70% 40%, transparent 0%, oklch(98% 0.01 240 / 0.8) 80%, oklch(98% 0.01 240 / 1) 100%);
+    pointer-events: none;
+    z-index: 1;
+    top: 0;
+    left: 0;
+}
+.geometric-breach {
+    position: absolute;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: 0;
+    filter: grayscale(15%) contrast(1.1) brightness(0.95);
+}
+.glass-morphism-2 {
+    background: linear-gradient(135deg, var(--hyper-light), var(--anodized-silver));
+    backdrop-filter: blur(20px) saturate(1.2);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+    border: 1px solid var(--industrial-edge);
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.6), 0 24px 40px -8px rgba(0,0,0,0.05);
+}
+.hub-nav {
+    background: linear-gradient(to bottom, oklch(98% 0.01 240 / 0.9) 0%, transparent 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+@keyframes atomic-assemble {
+    0% {
+        opacity: 0;
+        transform: translateY(60px) scale(0.96);
+        filter: blur(8px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+.assemble-on-scroll {
+    animation: atomic-assemble linear both;
+    animation-timeline: view();
+    animation-range: entry 10% cover 30%;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 0.8s;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+</style>
+</head>
+<body class="antialiased selection:bg-black selection:text-white">
+
+<nav class="fixed top-0 left-0 w-full z-50 hub-nav pt-8 pb-16 px-8 md:px-16 flex justify-between items-start transition-trigger">
+    <div class="text-xl md:text-2xl tracking-tight font-medium">LEICA</div>
+    <div class="hidden md:flex gap-12 text-xs uppercase tracking-widest tech-spec font-medium text-[oklch(30%_0.01_240)]">
+        <a href="#" class="hover:text-black transition-colors">Architecture</a>
+        <a href="#" class="hover:text-black transition-colors">Optics</a>
+        <a href="#" class="hover:text-black transition-colors">Telemetry</a>
+    </div>
+</nav>
+
+<main class="relative w-full h-screen flex flex-col justify-end pb-16 px-8 md:px-16 overflow-hidden">
+    <video autoplay muted loop playsinline class="geometric-breach">
+        <source src="https://htmlhost.co/m/3ed61224-2603-4ea3-8b9d-51f577ab96b3" type="video/mp4">
+    </video>
+    <div class="light-corridor"></div>
+
+    <div class="relative z-10 w-full max-w-7xl mx-auto flex justify-start">
+        <div class="glass-morphism-2 rounded-[2rem] p-10 md:p-14 w-full max-w-3xl assemble-on-scroll transform-gpu">
+            <h1 class="text-5xl md:text-7xl tracking-tighter leading-[1.05] mb-6 font-medium">Das Wesen der Fotografie.</h1>
+            <p class="text-lg md:text-xl tech-spec font-light text-[oklch(25%_0.02_240)] max-w-xl">
+                Absolute fidelity. Zero refraction loss. An interface forged from the mathematical boundaries of light gathering.
+            </p>
+        </div>
+    </div>
+</main>
+
+<section class="w-full max-w-7xl mx-auto px-8 md:px-16 py-32 md:py-48 @container">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-8 items-start">
+        <div class="lg:col-span-5 lg:sticky top-40 assemble-on-scroll">
+            <h2 class="text-4xl md:text-5xl tracking-tight mb-6 font-medium">Hardware Topology</h2>
+            <p class="tech-spec text-[oklch(35%_0.01_240)] leading-relaxed font-light text-lg">
+                The optical block is uncompromised. Every module exists to serve the signal path, creating a sensory experience of technical disruption mapped directly to human perception.
+            </p>
+        </div>
+        
+        <div class="lg:col-span-6 lg:col-start-7 flex flex-col gap-8">
+            <div class="glass-morphism-2 rounded-3xl p-8 md:p-10 flex gap-6 items-start assemble-on-scroll transition-transform hover:scale-[1.02] duration-500">
+                <iconify-icon icon="ph:aperture-thin" width="44" height="44" class="text-black shrink-0"></iconify-icon>
+                <div>
+                    <h3 class="text-xl md:text-2xl mb-3 font-medium">Optical resolution</h3>
+                    <p class="tech-spec font-light text-sm md:text-base text-[oklch(40%_0.01_240)] leading-relaxed">Edge-to-edge algorithmic sharpness. Micro-contrast optimized for anomalous dispersion glass variants.</p>
+                </div>
+            </div>
+
+            <div class="glass-morphism-2 rounded-3xl p-8 md:p-10 flex gap-6 items-start assemble-on-scroll md:translate-x-12 transition-transform hover:scale-[1.02] duration-500">
+                <iconify-icon icon="ph:faders-thin" width="44" height="44" class="text-black shrink-0"></iconify-icon>
+                <div>
+                    <h3 class="text-xl md:text-2xl mb-3 font-medium">Mechanical tolerance</h3>
+                    <p class="tech-spec font-light text-sm md:text-base text-[oklch(40%_0.01_240)] leading-relaxed">Machined to 0.001mm variance. Tactile feedback generated through solid brass helicoids.</p>
+                </div>
+            </div>
+
+            <div class="glass-morphism-2 rounded-3xl p-8 md:p-10 flex gap-6 items-start assemble-on-scroll transition-transform hover:scale-[1.02] duration-500">
+                <iconify-icon icon="ph:cube-thin" width="44" height="44" class="text-black shrink-0"></iconify-icon>
+                <div>
+                    <h3 class="text-xl md:text-2xl mb-3 font-medium">Light-path architecture</h3>
+                    <p class="tech-spec font-light text-sm md:text-base text-[oklch(40%_0.01_240)] leading-relaxed">Non-linear spatial plotting ensures geometric fidelity prior to digital conversion.</p>
+                </div>
+            </div>
+
+            <div class="glass-morphism-2 rounded-3xl p-8 md:p-10 flex gap-6 items-start assemble-on-scroll md:translate-x-12 transition-transform hover:scale-[1.02] duration-500">
+                <iconify-icon icon="ph:cpu-thin" width="44" height="44" class="text-black shrink-0"></iconify-icon>
+                <div>
+                    <h3 class="text-xl md:text-2xl mb-3 font-medium">Image signal processing</h3>
+                    <p class="tech-spec font-light text-sm md:text-base text-[oklch(40%_0.01_240)] leading-relaxed">Maestro III silicon running parallel vector math to render photorealistic grain density at 120fps.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.querySelectorAll('.transition-trigger a').forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (!document.startViewTransition) {
+            window.location.href = e.target.href;
+            return;
+        }
+        document.startViewTransition(() => {
+            document.body.style.opacity = '0.98';
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 30);
+        });
+    });
+});
+</script>
+</body>
+</html>

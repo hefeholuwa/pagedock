@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dabira Stars Brainy | Play, Sing and Learn for Little Minds</title>
+<meta name="description" content="Dabira Stars Brainy helps children learn pre-school and nursery subjects, sing rhymes and play games that make learning fun.">
+<meta name="color-scheme" content="light">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/scroll-animations.css?v=DX-LJEdd">
+<script>document.documentElement.classList.add('js');</script>
+<style>
+:root{
+  --ink:#1f1b4d;
+  --ink-soft:#4b4880;
+  --cream:#fff8ec;
+  --paper:#ffffff;
+  --sun:#ffc83d;
+  --sun-deep:#f2a900;
+  --coral:#ff6b57;
+  --mint:#3cc9a0;
+  --sky:#4aa8ff;
+  --grape:#7a5cff;
+  --line:#eadfca;
+  --radius:28px;
+  --shadow:0 18px 40px -18px rgba(31,27,77,.35);
+  --font-display:'Baloo 2',system-ui,sans-serif;
+  --font-body:'Figtree',system-ui,sans-serif;
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--font-body);font-size:1.0625rem;line-height:1.65;color:var(--ink);background:var(--cream);overflow-x:hidden}
+img{max-width:100%;display:block}
+h1,h2,h3{font-family:var(--font-display);line-height:1.08;margin:0;letter-spacing:-.01em}
+h1{font-size:clamp(2.7rem,7vw,5.2rem);font-weight:800}
+h2{font-size:clamp(2rem,4.5vw,3.3rem);font-weight:800}
+h3{font-size:1.5rem;font-weight:700}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--grape);outline-offset:3px;border-radius:8px}
+.skip{position:absolute;left:1rem;top:-4rem;background:var(--ink);color:#fff;padding:.7rem 1.1rem;border-radius:12px;z-index:100;transition:top .2s}
+.skip:focus{top:1rem}
+.wrap{width:min(1180px,100% - 2.5rem);margin-inline:auto}
+section{padding:clamp(4.5rem,9vw,8rem) 0;position:relative}
+.eyebrow{display:inline-flex;align-items:center;gap:.5rem;font-weight:700;font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;color:var(--grape);background:#ece7ff;padding:.4rem .9rem;border-radius:99px;margin-bottom:1.2rem}
+.eyebrow svg{width:16px;height:16px}
+.lead{font-size:1.2rem;color:var(--ink-soft);max-width:56ch}
+.sec-head{max-width:720px;margin-bottom:3.2rem}
+.sec-head p{margin-top:1rem;color:var(--ink-soft);font-size:1.15rem}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:.6rem;font:700 1.05rem var(--font-body);padding:.95rem 1.6rem;border-radius:99px;border:2px solid var(--ink);background:var(--sun);color:var(--ink);text-decoration:none;cursor:pointer;box-shadow:0 5px 0 var(--ink);transition:transform .18s,box-shadow .18s,background .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 7px 0 var(--ink)}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
+.btn svg{width:20px;height:20px}
+.btn.alt{background:var(--paper)}
+.btn.coral{background:var(--coral);color:#fff}
+.btn.small{padding:.6rem 1.1rem;font-size:.95rem;box-shadow:0 3px 0 var(--ink)}
+
+/* header */
+header.site{position:sticky;top:0;z-index:50;background:rgba(255,248,236,.88);backdrop-filter:blur(14px);border-bottom:2px solid transparent;transition:border-color .3s}
+header.site.scrolled{border-color:var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:78px}
+.brand{display:flex;align-items:center;gap:.7rem;text-decoration:none;font-family:var(--font-display);font-weight:800;font-size:1.45rem;line-height:1}
+.brand-mark{width:44px;height:44px;border-radius:14px;background:var(--sun);border:2px solid var(--ink);display:grid;place-items:center;transform:rotate(-6deg);box-shadow:0 3px 0 var(--ink)}
+.brand-mark svg{width:24px;height:24px;fill:var(--ink)}
+.brand small{display:block;font-family:var(--font-body);font-weight:600;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-top:.25rem}
+.nav ul{display:flex;gap:.3rem;list-style:none;margin:0;padding:0;align-items:center}
+.nav ul a{display:block;padding:.55rem 1rem;border-radius:99px;text-decoration:none;font-weight:600;transition:background .2s}
+.nav ul a:hover{background:#ffe9a8}
+.menu-btn{display:none;width:48px;height:48px;border-radius:14px;border:2px solid var(--ink);background:var(--paper);cursor:pointer;place-items:center;color:var(--ink)}
+.menu-btn svg{width:22px;height:22px}
+
+/* hero */
+.hero{padding-top:clamp(2.5rem,5vw,4.5rem);overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:3rem;align-items:center}
+.hero h1 .hl{position:relative;display:inline-block;color:var(--coral)}
+.hero h1 .hl::after{content:"";position:absolute;left:-2%;right:-2%;bottom:.04em;height:.2em;background:var(--sun);z-index:-1;border-radius:99px;transform:rotate(-1.2deg)}
+.hero .lead{margin:1.6rem 0 2.2rem}
+.hero-cta{display:flex;flex-wrap:wrap;gap:1rem}
+.proof{display:flex;flex-wrap:wrap;gap:1.8rem;margin-top:2.6rem}
+.proof div{display:flex;flex-direction:column}
+.proof strong{font-family:var(--font-display);font-size:2rem;line-height:1}
+.proof span{font-size:.9rem;color:var(--ink-soft)}
+.hero-art{position:relative}
+.hero-photo{border-radius:48% 52% 46% 54% / 40% 44% 56% 60%;overflow:hidden;border:3px solid var(--ink);box-shadow:12px 14px 0 var(--sky);aspect-ratio:4/4.3;background:#d9ecff}
+.hero-photo img{width:100%;height:100%;object-fit:cover}
+.float{position:absolute;background:var(--paper);border:2px solid var(--ink);border-radius:20px;padding:.7rem 1rem;display:flex;align-items:center;gap:.7rem;font-weight:700;box-shadow:0 5px 0 var(--ink);animation:bob 5s ease-in-out infinite}
+.float i,.float svg{width:22px;height:22px}
+.float.a{top:6%;left:-6%;background:#fff3c4}
+.float.b{bottom:12%;right:-4%;background:#d7f6ea;animation-delay:-2s}
+.float.c{bottom:-3%;left:8%;background:#ffe0da;animation-delay:-3.5s}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.deco{position:absolute;pointer-events:none;color:var(--sun-deep);opacity:.9}
+.deco svg{fill:currentColor}
+.deco.s1{width:46px;top:10%;right:3%;animation:spin 14s linear infinite}
+.deco.s2{width:28px;top:55%;left:-1%;color:var(--coral);animation:spin 18s linear infinite reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* marquee */
+.ticker{background:var(--ink);color:var(--cream);padding:1rem 0;overflow:hidden;border-block:3px solid var(--ink)}
+.ticker-track{display:flex;gap:3rem;width:max-content;animation:slide 32s linear infinite;font-family:var(--font-display);font-weight:700;font-size:1.4rem}
+.ticker-track span{display:inline-flex;align-items:center;gap:3rem;white-space:nowrap}
+.ticker-track svg{width:20px;height:20px;color:var(--sun);fill:var(--sun)}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+/* subjects */
+.tabs{display:inline-flex;background:var(--paper);border:2px solid var(--ink);border-radius:99px;padding:.3rem;gap:.2rem;margin-bottom:2.4rem}
+.tabs button{font:700 1rem var(--font-body);color:var(--ink);background:none;border:0;padding:.7rem 1.4rem;border-radius:99px;cursor:pointer;transition:background .25s,color .25s}
+.tabs button[aria-selected="true"]{background:var(--ink);color:#fff}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
+.card{background:var(--paper);border:2px solid var(--ink);border-radius:var(--radius);padding:1.8rem;box-shadow:0 7px 0 var(--ink);transition:transform .25s,box-shadow .25s;display:flex;flex-direction:column;gap:.8rem}
+.card:hover{transform:translateY(-5px);box-shadow:0 12px 0 var(--ink)}
+.card .ico{width:60px;height:60px;border-radius:18px;display:grid;place-items:center;border:2px solid var(--ink);margin-bottom:.4rem}
+.card .ico svg{width:30px;height:30px}
+.card p{color:var(--ink-soft);font-size:1rem}
+.card ul{margin:.4rem 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:.4rem}
+.card li{font-size:.82rem;font-weight:600;background:var(--cream);border:1.5px solid var(--line);padding:.2rem .7rem;border-radius:99px}
+.c1 .ico{background:#ffe3a1}.c2 .ico{background:#ffd0c9}.c3 .ico{background:#c9efe1}
+.c4 .ico{background:#cfe6ff}.c5 .ico{background:#dcd3ff}.c6 .ico{background:#ffd7ec}
+.panel[hidden]{display:none}
+
+/* rhymes */
+.rhymes{background:var(--ink);color:var(--cream)}
+.rhymes .eyebrow{background:#34307a;color:var(--sun)}
+.rhymes .sec-head p{color:#c9c6ee}
+.rhyme-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:3.5rem;align-items:start}
+.rhyme-photo{border-radius:var(--radius);overflow:hidden;border:3px solid var(--cream);aspect-ratio:3/4;box-shadow:10px 12px 0 var(--coral);position:sticky;top:110px}
+.rhyme-photo img{width:100%;height:100%;object-fit:cover}
+.acc{display:flex;flex-direction:column;gap:1rem}
+.acc-item{background:#2b2766;border:2px solid #4a45a0;border-radius:22px;overflow:hidden;transition:border-color .3s,background .3s}
+.acc-item.open{border-color:var(--sun);background:#332f78}
+.acc-item h3{font-size:inherit}
+.acc-btn{width:100%;display:flex;align-items:center;gap:1rem;padding:1.2rem 1.4rem;background:none;border:0;color:inherit;font:700 1.35rem var(--font-display);text-align:left;cursor:pointer}
+.acc-btn .tag{margin-left:auto;font:600 .8rem var(--font-body);background:var(--sun);color:var(--ink);padding:.15rem .7rem;border-radius:99px}
+.acc-btn .chev{transition:transform .35s;flex:none;width:22px;height:22px}
+.acc-item.open .chev{transform:rotate(180deg)}
+.acc-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s ease}
+.acc-item.open .acc-body{grid-template-rows:1fr}
+.acc-body>div{overflow:hidden}
+.acc-inner{padding:0 1.4rem 1.5rem}
+.verse{font-family:var(--font-display);font-size:1.25rem;line-height:1.55;font-weight:500;color:#fff;border-left:5px solid var(--sun);padding-left:1.1rem;margin:.2rem 0 1rem}
+.act{display:flex;gap:.6rem;align-items:flex-start;color:#c9c6ee;font-size:.98rem}
+.act svg{width:20px;height:20px;color:var(--mint);flex:none;margin-top:.2rem}
+
+/* games */
+.games-tabs{display:flex;flex-wrap:wrap;gap:.7rem;margin-bottom:1.8rem}
+.games-tabs button{display:inline-flex;align-items:center;gap:.5rem;font:700 1rem var(--font-body);color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:99px;padding:.7rem 1.3rem;cursor:pointer;transition:background .2s,transform .2s}
+.games-tabs button:hover{transform:translateY(-2px)}
+.games-tabs button[aria-selected="true"]{background:var(--sun)}
+.games-tabs svg{width:20px;height:20px}
+.arena{background:var(--paper);border:3px solid var(--ink);border-radius:36px;padding:clamp(1.5rem,4vw,3rem);box-shadow:10px 12px 0 var(--mint);min-height:430px}
+.game[hidden]{display:none}
+.game-top{display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center;margin-bottom:1.6rem}
+.game-top h3{font-size:1.7rem}
+.stat{display:inline-flex;align-items:center;gap:.5rem;background:var(--cream);border:2px solid var(--line);padding:.35rem .9rem;border-radius:99px;font-weight:700}
+.stat svg{width:18px;height:18px;color:var(--sun-deep)}
+.stars-box{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;padding:1.4rem;background:#fff5d6;border-radius:24px;margin-bottom:1.6rem;min-height:120px;align-items:center}
+.stars-box svg{width:48px;height:48px;color:var(--sun-deep);fill:var(--sun);animation:pop .4s backwards}
+@keyframes pop{from{transform:scale(0) rotate(-40deg)}}
+.answers{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.ans{font:800 2.6rem var(--font-display);padding:.7rem;border-radius:22px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);cursor:pointer;box-shadow:0 5px 0 var(--ink);transition:transform .15s,box-shadow .15s,background .2s}
+.ans:hover{background:#d9ecff;transform:translateY(-2px)}
+.ans:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
+.ans.right{background:var(--mint);animation:wiggle .5s}
+.ans.wrong{background:#ffb3a8;animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes wiggle{30%{transform:scale(1.1) rotate(-3deg)}60%{transform:scale(1.06) rotate(3deg)}}
+.feedback{min-height:2rem;margin-top:1.3rem;font-weight:700;font-size:1.2rem;text-align:center}
+.picture-box{display:grid;place-items:center;width:150px;height:150px;border-radius:50%;background:#dcd3ff;border:3px solid var(--ink);margin:0 auto .8rem}
+.picture-box svg{width:76px;height:76px;color:var(--ink)}
+.word{text-align:center;font:800 2.2rem var(--font-display);margin-bottom:1.4rem}
+.memory{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;max-width:560px;margin-inline:auto}
+.mem{aspect-ratio:1;border-radius:20px;border:2px solid var(--ink);background:var(--grape);color:#fff;cursor:pointer;display:grid;place-items:center;transition:transform .35s,background .3s;box-shadow:0 4px 0 var(--ink);padding:0}
+.mem svg{width:46%;height:46%;opacity:0;transition:opacity .2s}
+.mem.q svg.qm{opacity:1}
+.mem.flip,.mem.done{background:var(--paper);color:var(--ink);transform:rotateY(180deg)}
+.mem.flip svg,.mem.done svg{transform:rotateY(180deg);opacity:1}
+.mem.done{background:#c9efe1}
+.mem .qm{width:40%;height:40%;opacity:1}
+.mem.flip .qm,.mem.done .qm{display:none}
+.mem .face{display:none}
+.mem.flip .face,.mem.done .face{display:block}
+
+/* path */
+.path{background:#fff2cf}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4rem;counter-reset:s;position:relative}
+.step{background:var(--paper);border:2px solid var(--ink);border-radius:var(--radius);padding:1.8rem 1.5rem;position:relative}
+.step::before{counter-increment:s;content:counter(s);position:absolute;top:-22px;left:1.4rem;width:44px;height:44px;border-radius:50%;background:var(--coral);color:#fff;border:2px solid var(--ink);display:grid;place-items:center;font:800 1.3rem var(--font-display)}
+.step h3{margin:.6rem 0 .5rem;font-size:1.35rem}
+.step p{font-size:.98rem;color:var(--ink-soft)}
+.step .age{display:inline-block;margin-top:.9rem;font-weight:700;font-size:.82rem;background:#ece7ff;color:var(--grape);padding:.2rem .8rem;border-radius:99px}
+
+/* split */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.split .photos{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.split .photos img{width:100%;height:100%;object-fit:cover;border-radius:var(--radius);border:2px solid var(--ink)}
+.split .photos .p1{aspect-ratio:1;box-shadow:6px 7px 0 var(--sun)}
+.split .photos .p2{aspect-ratio:3/4;margin-top:2.4rem;box-shadow:6px 7px 0 var(--coral)}
+.checks{list-style:none;padding:0;margin:1.8rem 0 0;display:grid;gap:1rem}
+.checks li{display:flex;gap:1rem;align-items:flex-start}
+.checks .tick{flex:none;width:34px;height:34px;border-radius:50%;background:var(--mint);border:2px solid var(--ink);display:grid;place-items:center}
+.checks .tick svg{width:18px;height:18px}
+.checks b{display:block;font-family:var(--font-display);font-size:1.2rem}
+.checks span{color:var(--ink-soft);font-size:1rem}
+
+/* quotes */
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
+.quote{background:var(--paper);border:2px solid var(--ink);border-radius:var(--radius);padding:1.8rem;display:flex;flex-direction:column;gap:1.2rem}
+.quote:nth-child(2){background:#e4f6ef;transform:translateY(1.2rem)}
+.stars{display:flex;gap:.15rem;color:var(--sun-deep)}
+.stars svg{width:20px;height:20px;fill:var(--sun)}
+.quote cite{font-style:normal;font-weight:700;margin-top:auto}
+.quote cite small{display:block;font-weight:500;color:var(--ink-soft)}
+
+/* faq */
+.faq-wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:3rem}
+.faq .acc-item{background:var(--paper);border-color:var(--ink)}
+.faq .acc-item.open{background:#fff3c4;border-color:var(--ink)}
+.faq .acc-btn{font-size:1.15rem;color:var(--ink)}
+.faq .acc-inner{color:var(--ink-soft)}
+
+/* contact */
+.contact{background:var(--grape);color:#fff}
+.contact-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:3.5rem;align-items:start}
+.contact .eyebrow{background:#fff;color:var(--grape)}
+.contact .lead{color:#ebe6ff}
+.contact-list{list-style:none;padding:0;margin:2rem 0 0;display:grid;gap:1rem}
+.contact-list li{display:flex;gap:.9rem;align-items:center}
+.contact-list .ci{width:46px;height:46px;border-radius:14px;background:#fff;color:var(--grape);display:grid;place-items:center;flex:none}
+.contact-list svg{width:22px;height:22px}
+form.sign{background:var(--paper);color:var(--ink);border:3px solid var(--ink);border-radius:36px;padding:clamp(1.5rem,4vw,2.6rem);box-shadow:10px 12px 0 var(--sun);display:grid;gap:1.2rem}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+label,.legend{font-weight:700;font-size:.95rem;display:block;margin-bottom:.4rem}
+input[type=text],input[type=email],input[type=tel],textarea,select{width:100%;font:500 1rem var(--font-body);color:var(--ink);background:var(--cream);border:2px solid var(--ink);border-radius:16px;padding:.85rem 1rem;transition:box-shadow .2s,background .2s}
+input:focus,textarea:focus,select:focus{outline:none;box-shadow:0 0 0 4px #cfc3ff;background:#fff}
+textarea{min-height:110px;resize:vertical}
+fieldset{border:0;padding:0;margin:0}
+.opts{display:flex;flex-wrap:wrap;gap:.7rem}
+.opt{position:relative}
+.opt label{margin:0;display:inline-flex;align-items:center;gap:.6rem;font-weight:600;cursor:pointer;padding:.5rem .9rem .5rem .6rem;border-radius:99px;border:2px solid var(--line);transition:border-color .2s,background .2s}
+.opt label:hover{border-color:var(--ink)}
+.opt input{position:absolute;opacity:0;width:1px;height:1px}
+.opt .box{width:24px;height:24px;border:2px solid var(--ink);background:#fff;display:grid;place-items:center;transition:background .2s}
+.opt .box.sq{border-radius:8px}
+.opt .box.ci{border-radius:50%}
+.opt .box svg{width:14px;height:14px;opacity:0;transform:scale(.4);transition:.2s;color:var(--ink)}
+.opt .box.ci::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--ink);transform:scale(0);transition:transform .2s}
+.opt input:checked+label{background:#fff3c4;border-color:var(--ink)}
+.opt input:checked+label .box{background:var(--sun)}
+.opt input:checked+label .box svg{opacity:1;transform:scale(1)}
+.opt input:checked+label .box.ci::after{transform:scale(1)}
+.opt input:focus-visible+label{outline:3px solid var(--grape);outline-offset:2px}
+.consent{display:flex;gap:.7rem;align-items:flex-start;font-size:.92rem;color:var(--ink-soft)}
+.consent .opt{flex:none}
+.consent .opt label{padding:0;border:0;gap:0}
+form .btn{justify-self:start}
+
+/* themed select */
+select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:3rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%231f1b4d' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center}
+@supports (appearance:base-select){
+  select,::picker(select){appearance:base-select}
+  select{background-image:none;display:flex;align-items:center;justify-content:space-between}
+  select::picker-icon{content:"";width:20px;height:20px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%231f1b4d' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center/contain no-repeat;transition:rotate .25s}
+  select:open::picker-icon{rotate:180deg}
+  ::picker(select){background:#fff;border:2px solid var(--ink);border-radius:20px;padding:.5rem;margin-top:.4rem;box-shadow:0 8px 0 var(--ink);opacity:0;transform:translateY(-8px);transition:opacity .2s,transform .2s,overlay .2s allow-discrete,display .2s allow-discrete}
+  ::picker(select):popover-open{opacity:1;transform:none}
+  @starting-style{::picker(select):popover-open{opacity:0;transform:translateY(-8px)}}
+  option{font:600 1rem var(--font-body);color:var(--ink);padding:.7rem 1rem;border-radius:12px;display:flex;align-items:center;gap:.6rem;cursor:pointer}
+  option:hover,option:focus{background:#ffe9a8}
+  option:checked{background:var(--sun)}
+  option::checkmark{content:"✓";font-weight:800;margin-left:auto;order:2}
+}
+
+/* footer */
+footer{background:var(--ink);color:#c9c6ee;padding:4rem 0 2rem}
+.foot{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:2.5rem}
+footer .brand{color:#fff}
+footer h4{font:700 1.15rem var(--font-display);color:#fff;margin:0 0 .8rem}
+footer ul{list-style:none;padding:0;margin:0;display:grid;gap:.5rem}
+footer a{text-decoration:none}
+footer a:hover{color:var(--sun)}
+.copy{border-top:1px solid #3b3792;margin-top:3rem;padding-top:1.5rem;font-size:.9rem;display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between}
+
+/* reveal */
+.js .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1);transition-delay:var(--d,0s)}
+.js .reveal.in{opacity:1;transform:none}
+
+/* responsive */
+@media (max-width:980px){
+  .hero-grid,.rhyme-grid,.split,.faq-wrap,.contact-grid{grid-template-columns:1fr}
+  .cards,.quotes{grid-template-columns:1fr 1fr}
+  .steps{grid-template-columns:1fr 1fr;gap:2.2rem 1.4rem}
+  .rhyme-photo{position:static;aspect-ratio:16/10;max-width:560px}
+  .hero-art{max-width:520px;margin-inline:auto}
+  .quote:nth-child(2){transform:none}
+  .foot{grid-template-columns:1fr 1fr}
+}
+@media (max-width:760px){
+  .menu-btn{display:grid}
+  .nav ul{position:absolute;top:78px;left:0;right:0;flex-direction:column;align-items:stretch;background:var(--cream);padding:1rem 1.25rem 1.5rem;border-bottom:2px solid var(--line);gap:.2rem;clip-path:inset(0 0 100% 0);opacity:0;visibility:hidden;transition:clip-path .45s cubic-bezier(.2,.7,.2,1),opacity .3s,visibility .45s}
+  .nav ul.open{clip-path:inset(0 0 0 0);opacity:1;visibility:visible}
+  .nav ul a{padding:.9rem 1rem;font-size:1.15rem}
+}
+@media (max-width:620px){
+  .cards,.quotes,.steps,.row2,.foot{grid-template-columns:1fr}
+  .answers{gap:.6rem}
+  .ans{font-size:2.1rem}
+  .memory{gap:.6rem}
+  .float.a{left:0}.float.b{right:0}
+  .tabs{display:flex;width:100%}.tabs button{flex:1;padding-inline:.6rem}
+  .split .photos .p2{margin-top:1.2rem}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+  .js .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site" id="top">
+  <div class="wrap nav">
+    <a class="brand" href="#top" aria-label="Dabira Stars Brainy home">
+      <span class="brand-mark" aria-hidden="true"><i data-lucide="star"></i></span>
+      <span>Dabira Stars Brainy<small>Play · Sing · Learn</small></span>
+    </a>
+    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="navList" aria-label="Open menu"><i data-lucide="menu"></i></button>
+    <ul id="navList">
+      <li><a href="#subjects">Subjects</a></li>
+      <li><a href="#rhymes">Rhymes</a></li>
+      <li><a href="#games">Games</a></li>
+      <li><a href="#path">Learning path</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a class="btn small" href="#join">Join the fun</a></li>
+    </ul>
+  </div>
+</header>
+
+<main id="main">
+<!-- HERO -->
+<section class="hero">
+  <i class="deco s1" aria-hidden="true"><i data-lucide="sparkles"></i></i>
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow reveal"><i data-lucide="sparkles"></i> For ages 2 to 6</span>
+      <h1 class="reveal" style="--d:.08s">Little stars learn best when they're <span class="hl">playing.</span></h1>
+      <p class="lead reveal" style="--d:.16s">Dabira Stars Brainy turns pre-school and nursery lessons into songs, stories and games. Children count, spell, sing and explore at their own pace, and parents can see them shine.</p>
+      <div class="hero-cta reveal" style="--d:.24s">
+        <a class="btn" href="#games"><i data-lucide="gamepad-2"></i> Play a game</a>
+        <a class="btn alt" href="#subjects"><i data-lucide="book-open"></i> See what they'll learn</a>
+      </div>
+      <div class="proof reveal" style="--d:.32s">
+        <div><strong>6</strong><span>core subjects</span></div>
+        <div><strong>40+</strong><span>rhymes and songs</span></div>
+        <div><strong>100%</strong><span>screen-friendly fun</span></div>
+      </div>
+    </div>
+    <div class="hero-art reveal" style="--d:.2s">
+      <div class="hero-photo"><img src="https://images.pexels.com/photos/8922328/pexels-photo-8922328.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="A smiling child holding a colourful picture book" width="800" height="860" fetchpriority="high"></div>
+      <div class="float a"><i data-lucide="music"></i> Rhyme time!</div>
+      <div class="float b"><i data-lucide="trophy"></i> Star earned</div>
+      <div class="float c"><i data-lucide="pencil"></i> Letters &amp; numbers</div>
+      <i class="deco s2" aria-hidden="true"><i data-lucide="star"></i></i>
+    </div>
+  </div>
+</section>
+
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span>Counting <i data-lucide="star"></i> Phonics <i data-lucide="star"></i> Colours <i data-lucide="star"></i> Shapes <i data-lucide="star"></i> Rhymes <i data-lucide="star"></i> Stories <i data-lucide="star"></i> Games <i data-lucide="star"></i></span>
+    <span>Counting <i data-lucide="star"></i> Phonics <i data-lucide="star"></i> Colours <i data-lucide="star"></i> Shapes <i data-lucide="star"></i> Rhymes <i data-lucide="star"></i> Stories <i data-lucide="star"></i> Games <i data-lucide="star"></i></span>
+  </div>
+</div>
+
+<!-- SUBJECTS -->
+<section id="subjects">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow"><i data-lucide="graduation-cap"></i> Subjects</span>
+      <h2>Everything a growing mind needs, in bite-sized fun.</h2>
+      <p>Short, gentle lessons built around how young children really learn: through touch, sound, repetition and play.</p>
+    </div>
+    <div class="tabs reveal" role="tablist" aria-label="Choose a level">
+      <button role="tab" id="tab-pre" aria-selected="true" aria-controls="panel-pre">Pre-school</button>
+      <button role="tab" id="tab-nur" aria-selected="false" aria-controls="panel-nur" tabindex="-1">Nursery</button>
+    </div>
+
+    <div class="panel cards" id="panel-pre" role="tabpanel" aria-labelledby="tab-pre">
+      <article class="card c1 reveal"><div class="ico"><i data-lucide="palette"></i></div><h3>Colours &amp; Shapes</h3><p>Spot, sort and name the colours and shapes around us, from red apples to round suns.</p><ul><li>Primary colours</li><li>Circles</li><li>Squares</li></ul></article>
+      <article class="card c2 reveal" style="--d:.08s"><div class="ico"><i data-lucide="hash"></i></div><h3>First Numbers</h3><p>Count from 1 to 10 with toys, fingers and stars. Numbers feel friendly, never scary.</p><ul><li>Counting</li><li>More or less</li><li>Matching</li></ul></article>
+      <article class="card c3 reveal" style="--d:.16s"><div class="ico"><i data-lucide="ear"></i></div><h3>Listening &amp; Sounds</h3><p>Tune little ears to the sounds of animals, instruments and the first letters of words.</p><ul><li>Animal sounds</li><li>Rhythm</li><li>Echo games</li></ul></article>
+      <article class="card c4 reveal"><div class="ico"><i data-lucide="hand"></i></div><h3>My Body &amp; Me</h3><p>Name body parts, learn about feelings and build healthy habits like washing hands.</p><ul><li>Body parts</li><li>Feelings</li><li>Hygiene</li></ul></article>
+      <article class="card c5 reveal" style="--d:.08s"><div class="ico"><i data-lucide="paintbrush"></i></div><h3>Creative Play</h3><p>Draw, scribble, build and pretend. Fine motor skills grow with every squiggle.</p><ul><li>Drawing</li><li>Pretend play</li><li>Building</li></ul></article>
+      <article class="card c6 reveal" style="--d:.16s"><div class="ico"><i data-lucide="heart-handshake"></i></div><h3>Kind Friends</h3><p>Sharing, turn-taking and saying please and thank you, learned through gentle stories.</p><ul><li>Sharing</li><li>Manners</li><li>Teamwork</li></ul></article>
+    </div>
+
+    <div class="panel cards" id="panel-nur" role="tabpanel" aria-labelledby="tab-nur" hidden>
+      <article class="card c1"><div class="ico"><i data-lucide="a-large-small"></i></div><h3>Alphabet &amp; Phonics</h3><p>Trace letters A to Z, hear each sound and blend simple three-letter words like cat, sun and pen.</p><ul><li>Letter sounds</li><li>Tracing</li><li>CVC words</li></ul></article>
+      <article class="card c2"><div class="ico"><i data-lucide="calculator"></i></div><h3>Number Work</h3><p>Count to 20, write numbers, add and take away small amounts with pictures to help.</p><ul><li>Counting to 20</li><li>Simple adding</li><li>Number writing</li></ul></article>
+      <article class="card c3"><div class="ico"><i data-lucide="leaf"></i></div><h3>Our World</h3><p>Plants, animals, weather and the seasons. Curious children ask why, and we answer with wonder.</p><ul><li>Animals</li><li>Weather</li><li>Plants</li></ul></article>
+      <article class="card c4"><div class="ico"><i data-lucide="book-heart"></i></div><h3>Story Time</h3><p>Listen to short tales, retell what happened and spot the characters, beginning and end.</p><ul><li>Listening</li><li>Retelling</li><li>New words</li></ul></article>
+      <article class="card c5"><div class="ico"><i data-lucide="music-2"></i></div><h3>Rhymes &amp; Songs</h3><p>Action songs and rhymes that build memory, rhythm and a love of language.</p><ul><li>Action songs</li><li>Rhyming words</li><li>Clapping</li></ul></article>
+      <article class="card c6"><div class="ico"><i data-lucide="shapes"></i></div><h3>Patterns &amp; Puzzles</h3><p>Sequences, sorting and jigsaws that warm up logical thinking before big school begins.</p><ul><li>Patterns</li><li>Sorting</li><li>Jigsaws</li></ul></article>
+    </div>
+  </div>
+</section>
+
+<!-- RHYMES -->
+<section class="rhymes" id="rhymes">
+  <div class="wrap rhyme-grid">
+    <div class="rhyme-photo reveal"><img src="https://images.pexels.com/photos/8088096/pexels-photo-8088096.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="Young children sitting in a circle singing together" width="900" height="1200" loading="lazy"></div>
+    <div>
+      <div class="sec-head reveal">
+        <span class="eyebrow"><i data-lucide="music"></i> Rhyme Corner</span>
+        <h2>Sing it, clap it, move it!</h2>
+        <p>Open a rhyme to read the words and try the actions. Sing along with a grown-up or a friend.</p>
+      </div>
+      <div class="acc" id="rhymeAcc">
+        <div class="acc-item open reveal">
+          <h3><button class="acc-btn" aria-expanded="true" aria-controls="r1"><i data-lucide="star"></i> Five Bright Stars <span class="tag">Counting</span><i class="chev" data-lucide="chevron-down"></i></button></h3>
+          <div class="acc-body" id="r1" role="region"><div><div class="acc-inner">
+            <p class="verse">Five bright stars up in the sky,<br>One fell down to say goodbye.<br>Four bright stars are twinkling still,<br>Count them slowly, count them, will you?</p>
+            <p class="act"><i data-lucide="hand"></i> Hold up five fingers and fold one down with each verse.</p>
+          </div></div></div>
+        </div>
+        <div class="acc-item reveal" style="--d:.06s">
+          <h3><button class="acc-btn" aria-expanded="false" aria-controls="r2"><i data-lucide="droplets"></i> Scrub-a-Dub Hands <span class="tag">Healthy habits</span><i class="chev" data-lucide="chevron-down"></i></button></h3>
+          <div class="acc-body" id="r2" role="region"><div><div class="acc-inner">
+            <p class="verse">Scrub, scrub, bubbles on my hands,<br>Rub them round like dancing bands.<br>Fingers, thumbs and in between,<br>Rinse them off and watch them gleam!</p>
+            <p class="act"><i data-lucide="hand"></i> Mime washing and rubbing hands, then wiggle them dry.</p>
+          </div></div></div>
+        </div>
+        <div class="acc-item reveal" style="--d:.12s">
+          <h3><button class="acc-btn" aria-expanded="false" aria-controls="r3"><i data-lucide="train-front"></i> The ABC Train <span class="tag">Alphabet</span><i class="chev" data-lucide="chevron-down"></i></button></h3>
+          <div class="acc-body" id="r3" role="region"><div><div class="acc-inner">
+            <p class="verse">Chug-a chug, the ABC train,<br>A is for apple at the station again.<br>B is for ball and C is for cat,<br>All aboard, let's sing like that!</p>
+            <p class="act"><i data-lucide="hand"></i> Make train arms and chug round the room, one letter per step.</p>
+          </div></div></div>
+        </div>
+        <div class="acc-item reveal" style="--d:.18s">
+          <h3><button class="acc-btn" aria-expanded="false" aria-controls="r4"><i data-lucide="sun"></i> Good Morning, Sun <span class="tag">Days &amp; feelings</span><i class="chev" data-lucide="chevron-down"></i></button></h3>
+          <div class="acc-body" id="r4" role="region"><div><div class="acc-inner">
+            <p class="verse">Good morning, sun, I'm up, I'm here,<br>Stretch up high and give a cheer!<br>Happy, sleepy, silly or shy,<br>Whatever I feel, I wave hi!</p>
+            <p class="act"><i data-lucide="hand"></i> Stretch tall, then show a face for each feeling.</p>
+          </div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GAMES -->
+<section id="games">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow"><i data-lucide="gamepad-2"></i> Play &amp; Learn</span>
+      <h2>Games that sneak in the learning.</h2>
+      <p>Try three of our favourites right here. Big buttons, friendly feedback and no timers to worry about.</p>
+    </div>
+
+    <div class="games-tabs reveal" role="tablist" aria-label="Choose a game">
+      <button role="tab" id="gt-count" aria-selected="true" aria-controls="g-count"><i data-lucide="star"></i> Count the Stars</button>
+      <button role="tab" id="gt-letter" aria-selected="false" aria-controls="g-letter" tabindex="-1"><i data-lucide="a-large-small"></i> First Letter</button>
+      <button role="tab" id="gt-mem" aria-selected="false" aria-controls="g-mem" tabindex="-1"><i data-lucide="brain"></i> Memory Match</button>
+    </div>
+
+    <div class="arena reveal">
+      <div class="game" id="g-count" role="tabpanel" aria-labelledby="gt-count">
+        <div class="game-top"><h3>How many stars can you see?</h3><span class="stat"><i data-lucide="trophy"></i> Score: <b id="cScore">0</b></span></div>
+        <div class="stars-box" id="cStars" aria-live="polite"></div>
+        <div class="answers" id="cAns"></div>
+        <p class="feedback" id="cFb" role="status" aria-live="polite"></p>
+      </div>
+
+      <div class="game" id="g-letter" role="tabpanel" aria-labelledby="gt-letter" hidden>
+        <div class="game-top"><h3>What letter does it start with?</h3><span class="stat"><i data-lucide="trophy"></i> Score: <b id="lScore">0</b></span></div>
+        <div class="picture-box" id="lPic" aria-hidden="true"></div>
+        <p class="word" id="lWord"></p>
+        <div class="answers" id="lAns"></div>
+        <p class="feedback" id="lFb" role="status" aria-live="polite"></p>
+      </div>
+
+      <div class="game" id="g-mem" role="tabpanel" aria-labelledby="gt-mem" hidden>
+        <div class="game-top"><h3>Find the matching pairs</h3><span class="stat"><i data-lucide="repeat"></i> Tries: <b id="mMoves">0</b></span><button class="btn small alt" id="mReset" type="button"><i data-lucide="rotate-ccw"></i> New game</button></div>
+        <div class="memory" id="mGrid"></div>
+        <p class="feedback" id="mFb" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PATH -->
+<section class="path" id="path">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow"><i data-lucide="route"></i> Learning path</span>
+      <h2>A gentle road from first words to big-school ready.</h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><h3>Explore</h3><p>Colours, sounds, shapes and simple songs help little ones feel curious and safe.</p><span class="age">Ages 2 to 3</span></div>
+      <div class="step reveal" style="--d:.08s"><h3>Discover</h3><p>First numbers, letter names and body awareness grow through touch-and-play activities.</p><span class="age">Ages 3 to 4</span></div>
+      <div class="step reveal" style="--d:.16s"><h3>Build</h3><p>Phonics, counting to 20 and storytelling build confidence for reading and writing.</p><span class="age">Ages 4 to 5</span></div>
+      <div class="step reveal" style="--d:.24s"><h3>Shine</h3><p>Simple adding, patterns and sentences prepare children for a joyful start in primary school.</p><span class="age">Ages 5 to 6</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section>
+  <div class="wrap split">
+    <div class="photos reveal">
+      <img class="p1" src="https://images.pexels.com/photos/32734416/pexels-photo-32734416.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="Wooden alphabet blocks stacked on a table" width="700" height="700" loading="lazy">
+      <img class="p2" src="https://images.pexels.com/photos/7692514/pexels-photo-7692514.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="A teacher kneeling to help a child with a jigsaw puzzle" width="700" height="930" loading="lazy">
+    </div>
+    <div class="reveal" style="--d:.1s">
+      <span class="eyebrow"><i data-lucide="heart"></i> Why families love us</span>
+      <h2>Built with love, planned with care.</h2>
+      <ul class="checks">
+        <li><span class="tick"><i data-lucide="check"></i></span><div><b>Play-first teaching</b><span>Every lesson is a game, a song or a story, so children ask for "one more".</span></div></li>
+        <li><span class="tick"><i data-lucide="check"></i></span><div><b>Their pace, their way</b><span>No pressure or scores to fear. Children repeat favourites until they feel proud.</span></div></li>
+        <li><span class="tick"><i data-lucide="check"></i></span><div><b>Safe and ad-free</b><span>A calm, kind space with clear pictures, big buttons and friendly voices.</span></div></li>
+        <li><span class="tick"><i data-lucide="check"></i></span><div><b>Parents in the loop</b><span>Simple weekly notes show what your child enjoyed and what to try at home.</span></div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTES -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow"><i data-lucide="message-circle-heart"></i> Kind words</span>
+      <h2>Happy grown-ups, happier kids.</h2>
+    </div>
+    <div class="quotes">
+      <figure class="quote reveal" style="margin:0"><div class="stars" aria-label="5 out of 5 stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div><blockquote style="margin:0">My daughter now counts the stairs every morning and sings the hand-washing rhyme without being asked. It has changed our routines.</blockquote>Adaeze O.<small>Mum of a 3-year-old</small></figure>
+      <figure class="quote reveal" style="margin:0;--d:.1s"><div class="stars" aria-label="5 out of 5 stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div><blockquote style="margin:0">The letter games made phonics click for my son. He went from shy to reading road signs aloud in just a few weeks.</blockquote>Tunde B.<small>Dad of a 4-year-old</small></figure>
+      <figure class="quote reveal" style="margin:0;--d:.2s"><div class="stars" aria-label="5 out of 5 stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div><blockquote style="margin:0">As a nursery teacher I use the rhymes in class. The actions get every child moving and the vocabulary sticks.</blockquote>Mrs. Folake A.<small>Nursery teacher</small></figure>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq" id="faq" style="padding-top:0">
+  <div class="wrap faq-wrap">
+    <div class="reveal">
+      <span class="eyebrow"><i data-lucide="circle-help"></i> Questions</span>
+      <h2>Good to know.</h2>
+      <p class="lead" style="margin-top:1rem">Can't find your answer? Send us a message below and we'll reply within two working days.</p>
+    </div>
+    <div class="acc">
+      <div class="acc-item open reveal">
+        <h3><button class="acc-btn" aria-expanded="true" aria-controls="f1">What ages is Dabira Stars Brainy for?<i class="chev" data-lucide="chevron-down"></i></button></h3>
+        <div class="acc-body" id="f1" role="region"><div><div class="acc-inner">Our activities are designed for children from about 2 to 6 years old, covering pre-school and nursery. Every game can be played with a grown-up beside the child.</div></div></div>
+      </div>
+      <div class="acc-item reveal" style="--d:.06s">
+        <h3><button class="acc-btn" aria-expanded="false" aria-controls="f2">How long should my child play each day?<i class="chev" data-lucide="chevron-down"></i></button></h3>
+        <div class="acc-body" id="f2" role="region"><div><div class="acc-inner">Short and sweet works best: 15 to 20 minutes of focused play, then a break. We recommend pairing screen time with real-world activities such as counting snacks or singing together.</div></div></div>
+      </div>
+      <div class="acc-item reveal" style="--d:.12s">
+        <h3><button class="acc-btn" aria-expanded="false" aria-controls="f3">Does my child need to read already?<i class="chev" data-lucide="chevron-down"></i></button></h3>
+        <div class="acc-body" id="f3" role="region"><div><div class="acc-inner">Not at all. Games use pictures, sounds and big friendly buttons, so even children who haven't started reading can enjoy and learn.</div></div></div>
+      </div>
+      <div class="acc-item reveal" style="--d:.18s">
+        <h3><button class="acc-btn" aria-expanded="false" aria-controls="f4">Can schools and nurseries use your rhymes?<i class="chev" data-lucide="chevron-down"></i></button></h3>
+        <div class="acc-body" id="f4" role="region"><div><div class="acc-inner">Yes. Teachers are welcome to use our rhyme corner and games in class. Send us a note about your school and we'll share extra classroom ideas.</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="join">
+  <div class="wrap contact-grid">
+    <div class="reveal">
+      <span class="eyebrow"><i data-lucide="mail-open"></i> Join the fun</span>
+      <h2>Let's help your little star shine.</h2>
+      <p class="lead" style="margin-top:1rem">Tell us a little about your child and we'll send learning ideas, new rhymes and game updates that fit their age.</p>
+      <ul class="contact-list">
+        <li><span class="ci"><i data-lucide="mail"></i></span><span>hello@dabirastarsbrainy.com</span></li>
+        <li><span class="ci"><i data-lucide="map-pin"></i></span><span>Lagos, Nigeria</span></li>
+        <li><span class="ci"><i data-lucide="clock"></i></span><span>Mon to Fri, 8am to 5pm</span></li>
+      </ul>
+    </div>
+
+    <form class="sign reveal" action="/__hh/form" method="post" style="--d:.1s">
+      <input type="hidden" name="_form" value="Contact">
+      <div class="row2">
+        <div><label for="name">Your name</label><input type="text" id="name" name="name" autocomplete="name" required></div>
+        <div><label for="email">Email address</label><input type="email" id="email" name="email" autocomplete="email" required></div>
+      </div>
+      <div class="row2">
+        <div><label for="child">Child's first name</label><input type="text" id="child" name="child_name"></div>
+        <div>
+          <label for="age">Child's age</label>
+          <select id="age" name="age" required>
+            <option value="" disabled selected>Choose an age</option>
+            <option value="2-3">2 to 3 years</option>
+            <option value="3-4">3 to 4 years</option>
+            <option value="4-5">4 to 5 years</option>
+            <option value="5-6">5 to 6 years</option>
+          </select>
+        </div>
+      </div>
+      <fieldset>
+        <legend class="legend">What would your child love most?</legend>
+        <div class="opts">
+          <div class="opt"><input type="checkbox" id="i1" name="interests" value="Rhymes"><label for="i1"><span class="box sq"><i data-lucide="check"></i></span> Rhymes</label></div>
+          <div class="opt"><input type="checkbox" id="i2" name="interests" value="Numbers"><label for="i2"><span class="box sq"><i data-lucide="check"></i></span> Numbers</label></div>
+          <div class="opt"><input type="checkbox" id="i3" name="interests" value="Letters"><label for="i3"><span class="box sq"><i data-lucide="check"></i></span> Letters</label></div>
+          <div class="opt"><input type="checkbox" id="i4" name="interests" value="Games"><label for="i4"><span class="box sq"><i data-lucide="check"></i></span> Games</label></div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend class="legend">I am a</legend>
+        <div class="opts">
+          <div class="opt"><input type="radio" id="w1" name="role" value="Parent" checked><label for="w1"><span class="box ci"></span> Parent</label></div>
+          <div class="opt"><input type="radio" id="w2" name="role" value="Teacher"><label for="w2"><span class="box ci"></span> Teacher</label></div>
+          <div class="opt"><input type="radio" id="w3" name="role" value="Other"><label for="w3"><span class="box ci"></span> Other</label></div>
+        </div>
+      </fieldset>
+      <div><label for="msg">Anything else we should know?</label><textarea id="msg" name="message"></textarea></div>
+      <div class="consent">
+        <div class="opt"><input type="checkbox" id="ok" name="consent" value="yes" required><label for="ok" aria-label="I agree to be contacted"><span class="box sq"><i data-lucide="check"></i></span></label></div>
+        <span>I'm happy to receive learning tips and updates by email. I can unsubscribe any time.</span>
+      </div>
+      <button class="btn coral" type="submit"><i data-lucide="send"></i> Send my message</button>
+    </form>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"><i data-lucide="star"></i></span><span>Dabira Stars Brainy</span></a>
+        <p style="margin-top:1rem;max-width:34ch">Joyful early learning for pre-school and nursery children through rhymes, games and play.</p>
+      </div>
+      <div><h4>Explore</h4><ul><li><a href="#subjects">Subjects</a></li><li><a href="#rhymes">Rhyme Corner</a></li><li><a href="#games">Games</a></li><li><a href="#path">Learning path</a></li></ul></div>
+      <div><h4>Help</h4><ul><li><a href="#faq">FAQ</a></li><li><a href="#join">Contact us</a></li><li><a href="#top">Back to top</a></li></ul></div>
+    </div>
+    <div class="copy"><span>© 2026 Dabira Stars Brainy. All rights reserved.</span><span>Made with love for little learners.</span></div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script>
+(function(){
+  const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+  const icons=()=>window.lucide&&lucide.createIcons();
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  icons();
+
+  /* header */
+  const header=$('header.site');
+  addEventListener('scroll',()=>header.classList.toggle('scrolled',scrollY>8),{passive:true});
+  const menuBtn=$('#menuBtn'), navList=$('#navList');
+  const setMenu=o=>{navList.classList.toggle('open',o);menuBtn.setAttribute('aria-expanded',o);menuBtn.setAttribute('aria-label',o?'Close menu':'Open menu');
+    menuBtn.innerHTML='<i data-lucide="'+(o?'x':'menu')+'"></i>';icons();};
+  menuBtn.addEventListener('click',()=>setMenu(!navList.classList.contains('open')));
+  $$('#navList a').forEach(a=>a.addEventListener('click',()=>setMenu(false)));
+  addEventListener('keydown',e=>{if(e.key==='Escape'&&navList.classList.contains('open')){setMenu(false);menuBtn.focus();}});
+
+  /* reveal */
+  const rv=$$('.reveal');
+  if('IntersectionObserver' in window&&!reduce){
+    const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+    rv.forEach(el=>io.observe(el));
+  } else rv.forEach(el=>el.classList.add('in'));
+
+  /* generic tabs with arrow keys */
+  function tabs(list,onSelect){
+    const btns=$$('[role=tab]',list);
+    const select=b=>{btns.forEach(x=>{const on=x===b;x.setAttribute('aria-selected',on);x.tabIndex=on?0:-1;
+      const p=document.getElementById(x.getAttribute('aria-controls'));if(p)p.hidden=!on;});
+      onSelect&&onSelect(b);};
+    btns.forEach((b,i)=>{b.addEventListener('click',()=>select(b));
+      b.addEventListener('keydown',e=>{let n=null;
+        if(e.key==='ArrowRight')n=btns[(i+1)%btns.length];
+        if(e.key==='ArrowLeft')n=btns[(i-1+btns.length)%btns.length];
+        if(n){e.preventDefault();n.focus();select(n);}});});
+  }
+  tabs($('.tabs'),()=>{$$('#panel-pre .reveal,#panel-nur .reveal').forEach(e=>e.classList.add('in'));icons();});
+  tabs($('.games-tabs'));
+
+  /* accordions */
+  $$('.acc').forEach(acc=>{
+    $$('.acc-btn',acc).forEach(btn=>btn.addEventListener('click',()=>{
+      const item=btn.closest('.acc-item'), open=!item.classList.contains('open');
+      $$('.acc-item',acc).forEach(i=>{i.classList.remove('open');$('.acc-btn',i).setAttribute('aria-expanded','false');});
+      if(open){item.classList.add('open');btn.setAttribute('aria-expanded','true');}
+    }));
+  });
+
+  const rand=n=>Math.floor(Math.random()*n);
+  const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=rand(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;};
+  const praise=['Brilliant!','You did it!','Super star!','Well done!','Fantastic!'];
+
+  /* game 1: count */
+  let cScore=0,cTarget=0;
+  function countRound(){
+    cTarget=1+rand(9);
+    const box=$('#cStars');
+    box.setAttribute('aria-label',cTarget+' stars');
+    box.innerHTML='<i data-lucide="star"></i>'.repeat(cTarget);
+    const opts=new Set([cTarget]);
+    while(opts.size<3){const v=Math.max(1,Math.min(10,cTarget+rand(5)-2));opts.add(v);}
+    $('#cAns').innerHTML=shuffle([...opts]).map(v=>`<button class="ans" type="button" data-v="${v}" aria-label="${v}">${v}</button>`).join('');
+    $('#cFb').textContent='';
+    icons();
+  }
+  $('#cAns').addEventListener('click',e=>{
+    const b=e.target.closest('.ans');if(!b)return;
+    if(+b.dataset.v===cTarget){b.classList.add('right');cScore++;$('#cScore').textContent=cScore;
+      $('#cFb').textContent=praise[rand(praise.length)]+' There are '+cTarget+' stars.';
+      $$('#cAns .ans').forEach(x=>x.disabled=true);setTimeout(countRound,1400);}
+    else{b.classList.add('wrong');$('#cFb').textContent='Nearly! Count them one by one and try again.';setTimeout(()=>b.classList.remove('wrong'),450);}
+  });
+
+  /* game 2: letters */
+  const words=[['Apple','A','apple'],['Ball','B','volleyball'],['Cat','C','cat'],['Dog','D','dog'],['Egg','E','egg'],['Fish','F','fish'],['Moon','M','moon'],['Sun','S','sun'],['Rocket','R','rocket'],['Tree','T','tree-pine']];
+  let lScore=0,lCur=null,lLast=-1;
+  function letterRound(){
+    let i;do{i=rand(words.length);}while(i===lLast);lLast=i;lCur=words[i];
+    $('#lPic').innerHTML=`<i data-lucide="${lCur[2]}"></i>`;
+    $('#lWord').textContent=lCur[0];
+    const letters=new Set([lCur[1]]);
+    while(letters.size<3)letters.add(String.fromCharCode(65+rand(26)));
+    $('#lAns').innerHTML=shuffle([...letters]).map(l=>`<button class="ans" type="button" data-v="${l}" aria-label="Letter ${l}">${l}</button>`).join('');
+    $('#lFb').textContent='';
+    icons();
+  }
+  $('#lAns').addEventListener('click',e=>{
+    const b=e.target.closest('.ans');if(!b)return;
+    if(b.dataset.v===lCur[1]){b.classList.add('right');lScore++;$('#lScore').textContent=lScore;
+      $('#lFb').textContent=praise[rand(praise.length)]+' '+lCur[1]+' is for '+lCur[0]+'.';
+      $$('#lAns .ans').forEach(x=>x.disabled=true);setTimeout(letterRound,1500);}
+    else{b.classList.add('wrong');$('#lFb').textContent='Good try! Say the word slowly and listen for the first sound.';setTimeout(()=>b.classList.remove('wrong'),450);}
+  });
+
+  /* game 3: memory */
+  const mIcons=['star','sun','moon','cat','apple','rocket'];
+  let first=null,lock=false,moves=0,found=0;
+  function memoryNew(){
+    first=null;lock=false;moves=0;found=0;
+    $('#mMoves').textContent=0;$('#mFb').textContent='';
+    const deck=shuffle([...mIcons,...mIcons]);
+    $('#mGrid').innerHTML=deck.map((n,i)=>`<button class="mem" type="button" data-n="${n}" aria-label="Card ${i+1}, face down"><i class="qm" data-lucide="help-circle"></i><i class="face" data-lucide="${n}"></i></button>`).join('');
+    icons();
+  }
+  $('#mGrid').addEventListener('click',e=>{
+    const c=e.target.closest('.mem');
+    if(!c||lock||c.classList.contains('flip')||c.classList.contains('done'))return;
+    c.classList.add('flip');c.setAttribute('aria-label','Card showing '+c.dataset.n);
+    if(!first){first=c;return;}
+    moves++;$('#mMoves').textContent=moves;
+    if(first.dataset.n===c.dataset.n){
+      [first,c].forEach(x=>{x.classList.remove('flip');x.classList.add('done');x.disabled=true;});
+      first=null;found++;
+      $('#mFb').textContent=found===mIcons.length?'You found them all in '+moves+' tries. Star player!':'A match! Keep going.';
+    }else{
+      lock=true;const a=first;first=null;
+      setTimeout(()=>{[a,c].forEach(x=>{x.classList.remove('flip');x.setAttribute('aria-label','Card face down');});lock=false;},900);
+    }
+  });
+  $('#mReset').addEventListener('click',memoryNew);
+
+  countRound();letterRound();memoryNew();
+})();
+</script>
+</body>
+</html>

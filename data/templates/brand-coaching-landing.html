@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wildcard — Brand Coaching for Rebels Who Want Their Life Back</title>
+<meta name="description" content="Wildcard coaches founders to build profitable, lifestyle-first brand businesses. Positioning, pipeline and profit — without compromise.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%230B0C10'/%3E%3Cpath d='M10 14h44v8H40v28h-8V22H10z' fill='%23E2F835'/%3E%3Cpath d='M44 44l10 10H44z' fill='%23E879F9'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.1.11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+  --void:#0B0C10; --slate:#18191E; --slate-2:#22232A;
+  --volt:#E2F835; --orchid:#E879F9; --chalk:#F4F4F5; --mute:#9A9BA6;
+  --line:rgba(244,244,245,.09);
+  --display:'Bebas Neue',Impact,'Arial Narrow',sans-serif;
+  --body:'Plus Jakarta Sans',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--void);color:var(--chalk);font-family:var(--body);font-size:16px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img{display:block;width:100%;height:100%;object-fit:cover}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--volt);color:var(--void)}
+
+/* grain + grid atmosphere */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:100;opacity:.07;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.gridbg{background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:72px 72px}
+
+.wrap{width:min(1280px,100% - 32px);margin-inline:auto}
+@media(min-width:768px){.wrap{width:min(1280px,100% - 64px)}}
+
+.display{font-family:var(--display);font-weight:400;letter-spacing:.01em;line-height:.88;text-transform:uppercase;margin:0}
+.hl{color:var(--volt)}
+.hl-box{background:var(--volt);color:var(--void);padding:0 .12em;display:inline-block;transform:skewX(-6deg)}
+.hl-box > span{display:inline-block;transform:skewX(6deg)}
+.eyebrow{display:inline-flex;align-items:center;gap:.6rem;font-size:.72rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--mute)}
+.eyebrow::before{content:"";width:28px;height:2px;background:var(--volt)}
+
+/* buttons */
+.btn{--bg:var(--orchid);position:relative;display:inline-flex;align-items:center;justify-content:center;gap:.6rem;padding:1.05rem 1.6rem;font-weight:800;font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;border:2px solid transparent;cursor:pointer;transition:background .25s,color .25s,box-shadow .25s;will-change:transform;white-space:nowrap}
+.btn svg{width:18px;height:18px;transition:transform .3s}
+.btn:hover svg{transform:translate(3px,-3px)}
+.btn-pink{background:var(--orchid);color:var(--void);box-shadow:6px 6px 0 var(--volt)}
+.btn-pink:hover{box-shadow:9px 9px 0 var(--volt)}
+.btn-volt{background:var(--volt);color:var(--void);box-shadow:6px 6px 0 var(--orchid)}
+.btn-ghost{border-color:var(--chalk);color:var(--chalk);background:transparent}
+.btn-ghost:hover{background:var(--chalk);color:var(--void)}
+.btn-sm{padding:.75rem 1.1rem;font-size:.72rem;box-shadow:4px 4px 0 var(--volt)}
+.btn:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--volt);outline-offset:3px}
+
+/* nav */
+.nav{position:fixed;top:0;left:0;right:0;z-index:50;transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
+.nav.scrolled{background:rgba(11,12,16,.82);backdrop-filter:blur(14px);border-color:var(--line)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:78px}
+.logo{display:flex;align-items:center;gap:.6rem;font-family:var(--display);font-size:1.9rem;letter-spacing:.04em;line-height:1}
+.logo-mark{width:34px;height:34px;background:var(--volt);clip-path:polygon(0 0,100% 0,100% 70%,70% 100%,0 100%);display:grid;place-items:center;color:var(--void);font-size:1.4rem}
+.logo sup{font-family:var(--body);font-size:.6rem;color:var(--orchid);margin-left:2px}
+.nav-links{display:none;align-items:center;gap:2.2rem}
+.nav-links a.link{font-size:.88rem;font-weight:600;color:#cfd0d6;position:relative}
+.nav-links a.link::after{content:"";position:absolute;left:0;bottom:-6px;height:2px;width:0;background:var(--volt);transition:width .3s}
+.nav-links a.link:hover{color:var(--chalk)}
+.nav-links a.link:hover::after{width:100%}
+.menu-btn{display:grid;place-items:center;width:46px;height:46px;border:1.5px solid var(--line);background:transparent;color:var(--chalk);cursor:pointer}
+.menu-btn .i-close{display:none}
+.nav.open .menu-btn .i-open{display:none}
+.nav.open .menu-btn .i-close{display:block}
+.mobile-panel{display:none;border-top:1px solid var(--line);background:var(--void);padding:1.2rem 16px 1.6rem}
+.nav.open .mobile-panel{display:block}
+.mobile-panel a.m{display:block;font-family:var(--display);font-size:2.6rem;line-height:1.1;padding:.15rem 0}
+.mobile-panel a.m:hover{color:var(--volt)}
+@media(min-width:900px){.nav-links{display:flex}.menu-btn,.mobile-panel{display:none!important}}
+
+/* hero */
+.hero{position:relative;padding:118px 0 70px;min-height:100svh;display:flex;align-items:center;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-20vw;top:10%;width:60vw;height:60vw;background:radial-gradient(circle,rgba(232,121,249,.16),transparent 60%);pointer-events:none}
+.hero-grid{display:grid;gap:3.5rem;align-items:center;position:relative;z-index:2}
+@media(min-width:1024px){.hero-grid{grid-template-columns:1.15fr .85fr;gap:3rem}}
+.hero h1{font-size:clamp(3.3rem,8.4vw,7.6rem)}
+.line{display:block;overflow:hidden;padding-bottom:.04em}
+.line > span{display:inline-block}
+.hero-sub{max-width:31rem;color:#c3c4cc;font-size:1.06rem;margin:1.8rem 0 2.3rem}
+.hero-sub strong{color:var(--chalk)}
+.ctas{display:flex;flex-wrap:wrap;gap:1.1rem}
+.proof{display:flex;align-items:center;gap:1rem;margin-top:2.6rem;font-size:.85rem;color:var(--mute)}
+.avatars{display:flex}
+.avatars span{width:38px;height:38px;border-radius:50%;border:2px solid var(--void);margin-left:-10px;overflow:hidden;background:var(--slate-2)}
+.avatars span:first-child{margin-left:0}
+.stars{color:var(--volt);letter-spacing:2px;font-size:.9rem}
+
+/* portrait frame — the signature */
+.frame{position:relative;width:min(100%,460px);margin-inline:auto;aspect-ratio:4/5}
+.frame .back{position:absolute;inset:0;transform:translate(22px,22px);border:3px solid var(--volt)}
+.frame .slab{position:absolute;left:-26px;top:14%;width:44%;height:58%;background:var(--volt);clip-path:polygon(0 0,100% 12%,100% 100%,0 88%)}
+.frame .photo{position:absolute;inset:0;overflow:hidden;background:var(--slate);clip-path:polygon(0 0,82% 0,100% 14%,100% 100%,16% 100%,0 86%)}
+.frame .photo img{filter:grayscale(1) contrast(1.25) brightness(.95);transform:scale(1.06)}
+.frame .photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(11,12,16,.75));mix-blend-mode:normal}
+.frame .bracket{position:absolute;width:64px;height:64px;border-color:var(--volt);border-style:solid}
+.frame .b1{top:-16px;left:-16px;border-width:6px 0 0 6px}
+.frame .b2{bottom:-16px;right:-16px;border-width:0 6px 6px 0}
+.frame .hatch{position:absolute;right:-30px;top:-30px;width:120px;height:120px;background:repeating-linear-gradient(-45deg,var(--volt) 0 3px,transparent 3px 11px);opacity:.85;z-index:-1}
+.frame .cut{position:absolute;right:-18px;bottom:22%;background:var(--void);border:2px solid var(--volt);padding:.8rem 1rem;z-index:3}
+.frame .cut b{display:block;font-family:var(--display);font-size:2.4rem;line-height:.9;color:var(--volt);font-weight:400}
+.frame .cut small{font-size:.66rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--chalk)}
+.frame .tag{position:absolute;left:14px;bottom:18px;z-index:3;font-family:var(--display);font-size:1.5rem;letter-spacing:.04em;line-height:1}
+.frame .tag span{display:block;font-family:var(--body);font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--volt);font-weight:700}
+.sticker{position:absolute;left:-46px;bottom:-40px;width:128px;height:128px;z-index:4;border-radius:50%;background:var(--orchid);display:grid;place-items:center;color:var(--void)}
+.sticker svg.ring{position:absolute;inset:0;animation:spin 16s linear infinite}
+.sticker .core{width:44px;height:44px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:560px){.frame{width:84%}.sticker{width:100px;height:100px;left:-24px;bottom:-34px}.frame .slab{left:-14px}.frame .cut{right:-10px}}
+
+/* marquee */
+.marquee{background:var(--volt);color:var(--void);transform:rotate(-2deg);margin:30px -10px;border-block:3px solid var(--void);overflow:hidden;position:relative;z-index:5}
+.marquee.alt{background:var(--orchid);transform:rotate(1.5deg);margin-top:-46px;z-index:4}
+.track{display:flex;width:max-content;animation:slide 26s linear infinite}
+.marquee.alt .track{animation-direction:reverse;animation-duration:32s}
+.track span{font-family:var(--display);font-size:clamp(1.8rem,3.4vw,2.8rem);padding:.6rem 1.4rem;white-space:nowrap;display:flex;align-items:center;gap:1.4rem}
+.track span::after{content:"✦"}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+/* sections */
+section{position:relative}
+.sec{padding:110px 0}
+.sec-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:1.5rem;margin-bottom:3.5rem}
+.sec-head h2{font-size:clamp(3rem,7vw,6.2rem)}
+.sec-head p{max-width:24rem;color:var(--mute);margin:0}
+
+/* results */
+.stats{display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid var(--line);border-left:1px solid var(--line)}
+@media(min-width:900px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{padding:2rem 1.4rem 1.6rem;border-right:1px solid var(--line);border-bottom:1px solid var(--line);position:relative;overflow:hidden;transition:background .3s}
+.stat:hover{background:var(--slate)}
+.stat::before{content:"";position:absolute;left:0;top:0;height:4px;width:0;background:var(--volt);transition:width .45s}
+.stat:hover::before{width:100%}
+.stat .num{font-family:var(--display);font-size:clamp(3.4rem,7vw,5.6rem);line-height:.9;color:var(--chalk)}
+.stat .num em{font-style:normal;color:var(--volt)}
+.stat p{margin:.6rem 0 0;color:var(--mute);font-size:.88rem;max-width:14rem}
+
+.cases{display:grid;gap:1.4rem;margin-top:1.4rem}
+@media(min-width:900px){.cases{grid-template-columns:1.3fr 1fr}}
+.case{position:relative;background:var(--slate);border:1px solid var(--line);overflow:hidden}
+.case .img{aspect-ratio:16/10;overflow:hidden}
+.case .img img{filter:grayscale(1) contrast(1.15);transition:transform .7s,filter .5s}
+.case:hover .img img{transform:scale(1.05);filter:grayscale(0) contrast(1.05)}
+.case .body{padding:1.6rem}
+.case .chip{position:absolute;top:16px;left:16px;background:var(--volt);color:var(--void);font-weight:800;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;padding:.4rem .7rem}
+.case h3{font-family:var(--display);font-weight:400;font-size:2.2rem;line-height:.95;margin:0 0 .5rem}
+.case p{margin:0;color:var(--mute);font-size:.92rem}
+.quote{background:var(--orchid);color:var(--void);padding:2rem;display:flex;flex-direction:column;justify-content:space-between;gap:2rem;clip-path:polygon(0 0,100% 0,100% calc(100% - 40px),calc(100% - 40px) 100%,0 100%)}
+.quote blockquote{margin:0;font-family:var(--display);font-size:clamp(2rem,3.6vw,2.9rem);line-height:.98}
+.quote .who{display:flex;align-items:center;gap:.9rem;font-size:.85rem;font-weight:600}
+.quote .who .av{width:52px;height:52px;border-radius:50%;overflow:hidden;border:2px solid var(--void);flex:none}
+.quote .who small{display:block;font-weight:500;opacity:.75}
+
+/* method */
+.method{background:var(--slate)}
+.pillars{display:grid;gap:1.2rem}
+@media(min-width:900px){.pillars{grid-template-columns:repeat(3,1fr)}}
+.pillar{position:relative;padding:2rem 1.7rem 2.2rem;border:2px solid var(--line);background:var(--void);transition:border-color .3s,transform .3s}
+.pillar:hover{border-color:var(--volt);transform:translateY(-6px)}
+.pillar .n{font-family:var(--display);font-size:5rem;line-height:.8;color:transparent;-webkit-text-stroke:1.5px var(--volt)}
+.pillar .ic{position:absolute;top:1.7rem;right:1.7rem;width:48px;height:48px;display:grid;place-items:center;background:var(--volt);color:var(--void)}
+.pillar:nth-child(2) .ic{background:var(--orchid)}
+.pillar h3{font-family:var(--display);font-weight:400;font-size:2.4rem;line-height:1;margin:1.4rem 0 .6rem}
+.pillar p{margin:0;color:var(--mute);font-size:.94rem}
+
+/* about */
+.about-grid{display:grid;gap:4rem;align-items:center}
+@media(min-width:1024px){.about-grid{grid-template-columns:.9fr 1.1fr;gap:5rem}}
+.frame2{position:relative;width:min(100%,430px);margin-inline:auto;aspect-ratio:3/4}
+.frame2 .photo{position:absolute;inset:0;overflow:hidden;clip-path:polygon(14% 0,100% 0,100% 100%,0 100%,0 10%)}
+.frame2 .photo img{filter:grayscale(1) contrast(1.2)}
+.frame2 .bar{position:absolute;background:var(--volt)}
+.frame2 .v{left:-14px;top:22%;width:14px;height:46%}
+.frame2 .h{bottom:-14px;right:12%;height:14px;width:52%}
+.frame2 .box{position:absolute;right:-22px;top:-22px;width:44%;height:34%;border:3px solid var(--orchid);z-index:-1}
+.frame2 .label{position:absolute;left:18px;top:18px;background:var(--void);color:var(--volt);font-weight:800;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;padding:.45rem .7rem;z-index:2}
+.about h2{font-size:clamp(3rem,6.4vw,5.6rem);margin:1.2rem 0 1.4rem}
+.about p.lead{font-size:1.08rem;color:#c3c4cc;max-width:34rem;margin:0 0 1.8rem}
+.checks{display:grid;gap:.85rem;margin:0 0 2.4rem;padding:0;list-style:none}
+.checks li{display:flex;gap:.8rem;align-items:flex-start;font-weight:500}
+.checks li svg{flex:none;width:22px;height:22px;color:var(--void);background:var(--volt);padding:3px}
+
+/* blog */
+.posts{display:grid;gap:1.4rem}
+@media(min-width:768px){.posts{grid-template-columns:repeat(3,1fr)}}
+.post{display:block;border:1px solid var(--line);background:var(--slate);transition:transform .3s,border-color .3s}
+.post:hover{transform:translateY(-6px);border-color:var(--orchid)}
+.post .img{aspect-ratio:4/3;overflow:hidden}
+.post .img img{filter:grayscale(.9) contrast(1.15);transition:transform .7s,filter .5s}
+.post:hover .img img{transform:scale(1.06);filter:grayscale(0)}
+.post .body{padding:1.4rem 1.4rem 1.6rem}
+.post .meta{font-size:.7rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--orchid)}
+.post h3{font-family:var(--display);font-weight:400;font-size:1.95rem;line-height:1;margin:.6rem 0 .9rem}
+.post .more{display:inline-flex;align-items:center;gap:.4rem;font-size:.8rem;font-weight:700;color:var(--volt)}
+.post .more svg{width:16px;height:16px}
+
+/* book */
+.book{background:var(--volt);color:var(--void);overflow:hidden}
+.book::before{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(-45deg,rgba(11,12,16,.06) 0 2px,transparent 2px 14px)}
+.book-grid{position:relative;display:grid;gap:3rem}
+@media(min-width:1024px){.book-grid{grid-template-columns:1fr 1fr;gap:4rem;align-items:start}}
+.book h2{font-size:clamp(3.4rem,8vw,7.4rem)}
+.book h2 .ink{background:var(--void);color:var(--volt);padding:0 .1em}
+.book .lead{font-size:1.06rem;font-weight:500;max-width:28rem;margin:1.6rem 0}
+.book .perks{list-style:none;padding:0;margin:0;display:grid;gap:.7rem;font-weight:700}
+.book .perks li{display:flex;gap:.7rem;align-items:center}
+.book .perks svg{width:20px;height:20px}
+form.card{background:var(--void);color:var(--chalk);padding:2rem;box-shadow:12px 12px 0 var(--orchid);display:grid;gap:1rem}
+@media(min-width:640px){form.card{padding:2.4rem;grid-template-columns:1fr 1fr}}
+form.card .full{grid-column:1/-1}
+form.card h3{font-family:var(--display);font-weight:400;font-size:2.2rem;line-height:1;margin:0}
+form.card h3 + p{margin:.2rem 0 .4rem;color:var(--mute);font-size:.88rem}
+.field label{display:block;font-size:.7rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);margin-bottom:.45rem}
+.field input,.field select,.field textarea{width:100%;background:var(--slate);border:1.5px solid var(--slate-2);color:var(--chalk);padding:.9rem 1rem;font:inherit;font-size:.95rem;border-radius:0;transition:border-color .25s;appearance:none;-webkit-appearance:none}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23E2F835' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center;padding-right:2.6rem}
+.field textarea{min-height:110px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--volt);outline:none}
+form.card .btn{width:100%;margin-top:.4rem}
+form.card .fine{font-size:.75rem;color:var(--mute);margin:0;text-align:center}
+[data-hh-form-msg]{grid-column:1/-1;font-size:.9rem;font-weight:600;padding:.9rem 1rem;border-left:4px solid var(--volt);background:var(--slate)}
+[data-hh-form-msg]:empty{display:none}
+[data-hh-form-msg][data-state="success"]{border-color:var(--volt);color:var(--volt)}
+[data-hh-form-msg][data-state="error"]{border-color:#ff5c7a;color:#ff9db0}
+
+/* footer */
+footer{padding:70px 0 34px;border-top:1px solid var(--line)}
+.foot-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2rem;align-items:flex-end}
+.foot-big{font-family:var(--display);font-size:clamp(4rem,15vw,13rem);line-height:.8;color:transparent;-webkit-text-stroke:1.5px rgba(244,244,245,.22);margin-top:3rem;white-space:nowrap;overflow:hidden}
+.foot-links{display:flex;flex-wrap:wrap;gap:1.6rem;font-size:.88rem;font-weight:600;color:#c3c4cc}
+.foot-links a:hover{color:var(--volt)}
+.foot-bot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;margin-top:1.6rem;font-size:.78rem;color:var(--mute)}
+.social{display:flex;gap:.6rem}
+.social a{width:42px;height:42px;display:grid;place-items:center;border:1.5px solid var(--line);transition:background .25s,color .25s,border-color .25s}
+.social a:hover{background:var(--volt);color:var(--void);border-color:var(--volt)}
+.social svg{width:18px;height:18px}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a href="#home" class="logo" aria-label="Wildcard home"><span class="logo-mark">W</span>Wildcard<sup>®</sup></a>
+    <nav class="nav-links" aria-label="Primary">
+      <a class="link" href="#home">Home</a>
+      <a class="link" href="#about">About</a>
+      <a class="link" href="#results">Results</a>
+      <a class="link" href="#blog">Blog</a>
+      <a class="btn btn-pink btn-sm magnetic" href="#book">Book Your Consult <i data-lucide="arrow-up-right"></i></a>
+    </nav>
+    <button class="menu-btn" id="menuBtn" aria-label="Toggle menu" aria-expanded="false">
+      <i data-lucide="menu" class="i-open"></i><i data-lucide="x" class="i-close"></i>
+    </button>
+  </div>
+  <div class="mobile-panel">
+    <a class="m" href="#home">Home</a>
+    <a class="m" href="#about">About</a>
+    <a class="m" href="#results">Results</a>
+    <a class="m" href="#blog">Blog</a>
+    <a class="btn btn-pink" href="#book" style="margin-top:1.2rem;width:100%">Book Your Consult <i data-lucide="arrow-up-right"></i></a>
+  </div>
+</header>
+
+<main>
+<!-- HERO -->
+<section class="hero gridbg" id="home">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow hero-fade">Brand Business Coaching · Est. 2017</span>
+      <h1 class="display" style="margin-top:1.4rem" aria-label="Build a profitable, lifestyle-first brand business without compromise.">
+        <span class="line"><span>Build a <span class="hl">profitable,</span></span></span>
+        <span class="line"><span><span class="hl">lifestyle-first</span> brand</span></span>
+        <span class="line"><span>business without</span></span>
+        <span class="line"><span><span class="hl-box"><span>compromise.</span></span></span></span>
+      </h1>
+      <p class="hero-sub hero-fade">We help founders, creatives and coaches turn their name into a <strong>premium brand that sells while they live</strong> — sharper positioning, a pipeline on autopilot, and offers priced for freedom.</p>
+      <div class="ctas hero-fade">
+        <a href="#book" class="btn btn-pink magnetic">Book Your Consult <i data-lucide="arrow-up-right"></i></a>
+        <a href="#book" class="btn btn-ghost magnetic"><i data-lucide="play"></i> Free Lead-Gen Training</a>
+      </div>
+      <div class="proof hero-fade">
+        <div class="avatars">
+          <span><img src="https://htmlhost.co/photo/square/smiling-founder-headshot-warm-light" alt=""></span>
+          <span><img src="https://htmlhost.co/photo/square/creative-entrepreneur-portrait-urban-wall" alt=""></span>
+          <span><img src="https://htmlhost.co/photo/square/confident-consultant-headshot-dark-background" alt=""></span>
+        </div>
+        <div><div class="stars">★★★★★</div>312 brands coached to freedom</div>
+      </div>
+    </div>
+
+    <div class="hero-visual" style="padding:30px 30px 50px">
+      <div class="frame">
+        <div class="hatch f-piece"></div>
+        <div class="back f-piece"></div>
+        <div class="slab f-piece"></div>
+        <div class="photo f-photo"><img src="https://htmlhost.co/photo/portrait/bold-female-brand-coach-studio-portrait" alt="Wildcard founder and lead coach, studio portrait"></div>
+        <div class="bracket b1 f-piece"></div>
+        <div class="bracket b2 f-piece"></div>
+        <div class="cut f-piece"><b>4-DAY</b><small>Avg. client work week</small></div>
+        <div class="tag">Ada Okafor<span>Founder · Lead Coach</span></div>
+        <div class="sticker f-piece" aria-hidden="true">
+          <svg class="ring" viewBox="0 0 128 128"><defs><path id="c" d="M64,64 m-48,0 a48,48 0 1,1 96,0 a48,48 0 1,1 -96,0"/></defs><text font-family="Plus Jakarta Sans" font-weight="800" font-size="11.5" letter-spacing="2.6" fill="#0B0C10"><textPath href="#c">LIFESTYLE FIRST ✦ PROFIT ALWAYS ✦ </textPath></text></svg>
+          <i data-lucide="zap" class="core"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div aria-hidden="true">
+  <div class="marquee"><div class="track">
+    <span>Scale without burnout</span><span>Charge what you're worth</span><span>Leads on autopilot</span><span>Brand over hustle</span>
+    <span>Scale without burnout</span><span>Charge what you're worth</span><span>Leads on autopilot</span><span>Brand over hustle</span>
+  </div></div>
+  <div class="marquee alt"><div class="track">
+    <span>No funnels from 2015</span><span>No 80-hour weeks</span><span>No beige branding</span><span>No compromise</span>
+    <span>No funnels from 2015</span><span>No 80-hour weeks</span><span>No beige branding</span><span>No compromise</span>
+  </div></div>
+</div>
+
+<!-- RESULTS -->
+<section class="sec" id="results">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div><span class="eyebrow">Results</span><h2 class="display" style="margin-top:1rem">Receipts, <span class="hl">not</span> promises.</h2></div>
+      <p>Numbers pulled from client dashboards across the last 24 months. Real revenue, real weekends.</p>
+    </div>
+    <div class="stats reveal">
+      <div class="stat"><div class="num"><em>$</em><span class="count" data-to="4.2" data-dec="1">4.2</span><em>M</em></div><p>Client revenue generated in the last two years</p></div>
+      <div class="stat"><div class="num"><span class="count" data-to="312">312</span></div><p>Brands coached from side project to premium</p></div>
+      <div class="stat"><div class="num"><span class="count" data-to="11">11</span><em>x</em></div><p>Average return on the program investment</p></div>
+      <div class="stat"><div class="num"><span class="count" data-to="62">62</span><em>%</em></div><p>Average drop in hours worked per week</p></div>
+    </div>
+    <div class="cases">
+      <article class="case reveal">
+        <span class="chip">Case study</span>
+        <div class="img"><img src="https://htmlhost.co/photo/landscape/designer-presenting-brand-strategy-in-loft-studio" alt="Client presenting a new brand strategy in a loft studio"></div>
+        <div class="body">
+          <h3>From $8K months to $41K — in a 4-day week</h3>
+          <p>Interior stylist Tolu R. dropped five low-ticket services, launched one signature offer, and booked out Q1 in eleven days.</p>
+        </div>
+      </article>
+      <div class="quote reveal">
+        <blockquote>“I stopped selling my hours and started selling my point of view. Best decision of my career.”</blockquote>
+        <div class="who">
+          <span class="av"><img src="https://htmlhost.co/photo/square/male-creative-director-portrait-studio" alt="Marcus Bell"></span>
+          <div>Marcus Bell<small>Creative director · 3x revenue in 9 months</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METHOD -->
+<section class="sec method">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div><span class="eyebrow">The method</span><h2 class="display" style="margin-top:1rem">Three moves. <span class="hl">Zero</span> fluff.</h2></div>
+      <p>A 90-day build that turns your expertise into an asset — not another job.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar reveal"><div class="ic"><i data-lucide="target"></i></div><div class="n">01</div><h3>Position</h3><p>Own a category nobody else can touch. We sharpen your message until the right clients feel it in their chest.</p></div>
+      <div class="pillar reveal"><div class="ic"><i data-lucide="trending-up"></i></div><div class="n">02</div><h3>Pipeline</h3><p>Lead-gen that runs while you're offline: one content engine, one capture system, zero cold DMs.</p></div>
+      <div class="pillar reveal"><div class="ic"><i data-lucide="coins"></i></div><div class="n">03</div><h3>Profit</h3><p>Offers priced for freedom, not hustle. Fewer clients, deeper work, bigger margins.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="sec about" id="about">
+  <div class="wrap about-grid">
+    <div class="reveal" style="padding:24px">
+      <div class="frame2">
+        <div class="box"></div>
+        <div class="photo"><img src="https://htmlhost.co/photo/portrait/coach-leading-workshop-on-stage-dramatic-light" alt="Ada leading a brand workshop on stage"></div>
+        <div class="bar v"></div><div class="bar h"></div>
+        <span class="label">Live · Brand Rebels Summit</span>
+      </div>
+    </div>
+    <div class="reveal">
+      <span class="eyebrow">About</span>
+      <h2 class="display">Ex-agency. <span class="hl">Anti-hustle.</span> All in.</h2>
+      <p class="lead">I spent a decade building brands for global agencies — and burning out doing it. Wildcard is the playbook I wish I'd had: build something bold that pays you more and needs you less.</p>
+      <ul class="checks">
+        <li><i data-lucide="check"></i>10+ years leading brand strategy for agencies on three continents</li>
+        <li><i data-lucide="check"></i>Built a 7-figure coaching business on a 4-day week</li>
+        <li><i data-lucide="check"></i>Small cohorts, direct access — no junior coaches, ever</li>
+      </ul>
+      <a href="#book" class="btn btn-volt magnetic">Work With Me <i data-lucide="arrow-up-right"></i></a>
+    </div>
+  </div>
+</section>
+
+<!-- BLOG -->
+<section class="sec" id="blog" style="padding-top:40px">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div><span class="eyebrow">Blog</span><h2 class="display" style="margin-top:1rem">Loud <span class="hl">ideas.</span></h2></div>
+      <a href="#blog" class="btn btn-ghost btn-sm" style="box-shadow:none">All articles <i data-lucide="arrow-up-right"></i></a>
+    </div>
+    <div class="posts">
+      <a class="post reveal" href="#blog">
+        <div class="img"><img src="https://htmlhost.co/photo/landscape/notebook-with-pricing-sketches-on-concrete-desk" alt="Notebook with pricing sketches"></div>
+        <div class="body"><span class="meta">Pricing · 6 min</span><h3>Why your cheapest offer is killing your brand</h3><span class="more">Read <i data-lucide="arrow-right"></i></span></div>
+      </a>
+      <a class="post reveal" href="#blog">
+        <div class="img"><img src="https://htmlhost.co/photo/landscape/laptop-on-beach-table-at-golden-hour" alt="Laptop on a beach table at golden hour"></div>
+        <div class="body"><span class="meta">Lifestyle · 4 min</span><h3>The 4-day week is a business model, not a perk</h3><span class="more">Read <i data-lucide="arrow-right"></i></span></div>
+      </a>
+      <a class="post reveal" href="#blog">
+        <div class="img"><img src="https://htmlhost.co/photo/landscape/phone-filming-content-in-neon-lit-studio" alt="Phone filming content in a neon-lit studio"></div>
+        <div class="body"><span class="meta">Lead-gen · 8 min</span><h3>One post a week, a full calendar: the engine</h3><span class="more">Read <i data-lucide="arrow-right"></i></span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- BOOK -->
+<section class="sec book" id="book">
+  <div class="wrap book-grid">
+    <div class="reveal">
+      <h2 class="display">Stop scaling <span class="ink">your stress.</span></h2>
+      <p class="lead">Book a free 30-minute strategy call. You'll leave with a clear positioning angle and the one move that unlocks your next revenue level — whether we work together or not.</p>
+      <ul class="perks">
+        <li><i data-lucide="zap"></i>Personal brand audit before the call</li>
+        <li><i data-lucide="zap"></i>Custom 90-day roadmap</li>
+        <li><i data-lucide="zap"></i>Instant access to the free lead-gen training</li>
+      </ul>
+    </div>
+    <form class="card reveal" action="/__hh/form" method="post">
+      <input type="hidden" name="_form" value="Contact">
+      <div class="full"><h3>Book your consult</h3><p>Only 6 spots open for November.</p></div>
+      <div class="field"><label for="name">Name</label><input id="name" name="name" type="text" autocomplete="name" required placeholder="Your full name"></div>
+      <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" required placeholder="you@brand.com"></div>
+      <div class="field"><label for="website">Website / handle</label><input id="website" name="website" type="text" placeholder="yourbrand.com"></div>
+      <div class="field"><label for="revenue">Monthly revenue</label>
+        <select id="revenue" name="revenue" required>
+          <option value="" disabled selected>Select a range</option>
+          <option>Under $5K</option><option>$5K – $15K</option><option>$15K – $50K</option><option>$50K+</option>
+        </select>
+      </div>
+      <div class="field full"><label for="message">What's holding you back?</label><textarea id="message" name="message" placeholder="One or two sentences is plenty."></textarea></div>
+      <div class="full"><button type="submit" class="btn btn-pink">Book Your Consult <i data-lucide="arrow-up-right"></i></button></div>
+      <p class="fine full">No pitch-slap. We reply within 24 hours.</p>
+      <div data-hh-form-msg></div>
+    </form>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <a href="#home" class="logo"><span class="logo-mark">W</span>Wildcard<sup>®</sup></a>
+      <nav class="foot-links" aria-label="Footer">
+        <a href="#home">Home</a><a href="#about">About</a><a href="#results">Results</a><a href="#blog">Blog</a><a href="#book">Book</a>
+      </nav>
+      <div class="social">
+        <a href="mailto:hello@wildcardbrand.co" aria-label="Email"><i data-lucide="mail"></i></a>
+        <a href="#blog" aria-label="Podcast"><i data-lucide="mic"></i></a>
+        <a href="#blog" aria-label="YouTube channel"><i data-lucide="youtube"></i></a>
+      </div>
+    </div>
+    <div class="foot-big" aria-hidden="true">No compromise.</div>
+    <div class="foot-bot">
+      <span>© 2026 Wildcard Brand Co. All rights reserved.</span>
+      <span>Built for rebels with deadlines.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  if (window.lucide) lucide.createIcons();
+
+  // nav
+  var nav = document.getElementById('nav'), btn = document.getElementById('menuBtn');
+  btn.addEventListener('click', function(){
+    var open = nav.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open);
+  });
+  nav.querySelectorAll('.mobile-panel a').forEach(function(a){
+    a.addEventListener('click', function(){ nav.classList.remove('open'); btn.setAttribute('aria-expanded', false); });
+  });
+  var onScroll = function(){ nav.classList.toggle('scrolled', window.scrollY > 20); };
+  window.addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!window.gsap || reduce) return;
+  gsap.registerPlugin(ScrollTrigger);
+
+  // hero kinetic reveal
+  var tl = gsap.timeline({defaults:{ease:'power4.out'}});
+  tl.from('.hero h1 .line > span', {yPercent:115, rotate:3, duration:1.1, stagger:.11})
+    .from('.hero-fade', {y:24, opacity:0, duration:.8, stagger:.1}, '-=.7')
+    .from('.f-photo', {clipPath:'polygon(0 0,0 0,0 0,0 100%,0 100%,0 100%)', duration:1.2, ease:'expo.inOut'}, .2)
+    .from('.f-piece', {scale:.6, opacity:0, duration:.7, stagger:.07, ease:'back.out(2)'}, .7)
+    .from('.hl-box', {scaleX:0, transformOrigin:'left center', duration:.6, ease:'expo.out'}, .7);
+
+  // portrait parallax tilt
+  var frame = document.querySelector('.frame');
+  if (frame && window.matchMedia('(pointer:fine)').matches){
+    document.querySelector('.hero').addEventListener('mousemove', function(e){
+      var x = (e.clientX / innerWidth - .5), y = (e.clientY / innerHeight - .5);
+      gsap.to('.frame .photo', {x:x*14, y:y*14, duration:.8});
+      gsap.to('.frame .back, .frame .slab', {x:x*-22, y:y*-22, duration:.9});
+      gsap.to('.frame .hatch', {x:x*30, y:y*30, duration:1});
+    });
+  }
+
+  // scroll reveals
+  gsap.utils.toArray('.reveal').forEach(function(el){
+    gsap.from(el, {y:50, opacity:0, duration:.9, ease:'power3.out', scrollTrigger:{trigger:el, start:'top 88%'}});
+  });
+  gsap.utils.toArray('.sec-head h2').forEach(function(h){
+    gsap.from(h, {letterSpacing:'.12em', duration:1.2, ease:'power3.out', scrollTrigger:{trigger:h, start:'top 90%'}});
+  });
+
+  // counters
+  gsap.utils.toArray('.count').forEach(function(el){
+    var to = parseFloat(el.dataset.to), dec = parseInt(el.dataset.dec || 0, 10), o = {v:0};
+    gsap.to(o, {v:to, duration:2, ease:'power2.out', scrollTrigger:{trigger:el, start:'top 90%'},
+      onUpdate:function(){ el.textContent = o.v.toFixed(dec); }});
+  });
+
+  // magnetic hover physics
+  if (window.matchMedia('(pointer:fine)').matches){
+    document.querySelectorAll('.magnetic').forEach(function(b){
+      b.addEventListener('mousemove', function(e){
+        var r = b.getBoundingClientRect();
+        gsap.to(b, {x:(e.clientX - r.left - r.width/2)*.28, y:(e.clientY - r.top - r.height/2)*.4, duration:.4, ease:'power3.out'});
+      });
+      b.addEventListener('mouseleave', function(){ gsap.to(b, {x:0, y:0, duration:.9, ease:'elastic.out(1,.35)'}); });
+    });
+  }
+})();
+</script>
+</body>
+</html>

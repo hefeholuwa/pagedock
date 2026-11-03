@@ -2,14 +2,14 @@
 require_once dirname(__DIR__) . '/config/config.php';
 
 $all = Templates::getAll();
-assert(count($all) >= 6, 'Must provide at least 6 starter templates');
+assert(count($all) === 26, 'Must provide all 26 exact htmlhost templates');
 
-$portfolio = Templates::get('developer-portfolio');
-assert($portfolio !== null, 'Developer portfolio template must exist');
-assert(!empty($portfolio['html']), 'Template must contain HTML code');
-assert(!empty($portfolio['category']), 'Template must have a category');
+$futuristic = Templates::get('futuristic-dark-landing');
+assert($futuristic !== null, 'Futuristic Dark Landing template must exist');
+assert(!empty($futuristic['html']), 'Template must contain HTML code');
+assert(!empty($futuristic['category']), 'Template must have a category');
 
 $categories = Templates::getCategories();
-assert(in_array('Landing Page', $categories), 'Landing Page category must exist');
+assert(count($categories) >= 5, 'Multiple categories must exist');
 
-echo "PASS: Templates registry tests pass\n";
+echo "PASS: All 26 exact templates loaded successfully!\n";

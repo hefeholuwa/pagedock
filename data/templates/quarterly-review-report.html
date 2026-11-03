@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Q2 Wrapped — A Quarter in Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"> 
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,300;1,9..144,400;1,9..144,600&family=JetBrains+Mono:wght@400;500&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --graphite-950: #0e0f0c;
+    --graphite-900: #161814;
+    --graphite-850: #1c1e1a;
+    --graphite-800: #23261f;
+    --graphite-700: #2d3128;
+    --graphite-600: #3a3f33;
+    --graphite-500: #5a6150;
+    --bone:        #f3efe4;
+    --bone-dim:    #e6e1d3;
+    --bone-mute:   #a9a496;
+    --lime:        #ff8a1f;
+    --lime-soft:   #ffab52;
+    --lime-deep:   #b85a00;
+    --rule:        rgba(243, 239, 228, 0.12);
+    --rule-strong: rgba(243, 239, 228, 0.28);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--graphite-950);
+    color: var(--bone);
+    font-family: 'Inter Tight', sans-serif;
+    line-height: 1.5;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    background: var(--lime);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: difference;
+    transform: translate(-50%, -50%);
+    transition: transform .15s ease, width .25s, height .25s;
+  }
+  .cursor.hover { transform: translate(-50%, -50%) scale(2.4); }
+  @media (max-width: 900px) { body { cursor: auto; } .cursor { display: none; } }
+
+  /* Grain overlay */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.3;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  .container { max-width: 1320px; margin: 0 auto; padding: 0 32px; }
+  a, button, .clickable { cursor: none; }
+  @media (max-width: 900px) { a, button, .clickable { cursor: pointer; } }
+
+  /* ======== TOP BAR ======== */
+  .top-bar {
+    border-bottom: 1px solid var(--rule);
+    padding: 18px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--bone-mute);
+    position: sticky;
+    top: 0;
+    background: rgba(14, 15, 12, 0.85);
+    backdrop-filter: blur(12px);
+    z-index: 50;
+  }
+  .top-bar .container { display: flex; justify-content: space-between; align-items: center; gap: 24px; }
+  .top-bar nav { display: flex; gap: 28px; }
+  .top-bar nav a { color: var(--bone-mute); text-decoration: none; transition: color .25s; position: relative; }
+  .top-bar nav a::after {
+    content: ""; position: absolute; bottom: -4px; left: 0;
+    width: 0; height: 1px; background: var(--lime); transition: width .3s;
+  }
+  .top-bar nav a:hover { color: var(--lime); }
+  .top-bar nav a:hover::after { width: 100%; }
+  .top-bar .mark { display: flex; align-items: center; gap: 10px; color: var(--bone); }
+  .mark .dot {
+    width: 8px; height: 8px; background: var(--lime); border-radius: 50%;
+    box-shadow: 0 0 12px var(--lime); animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  /* ======== HERO ======== */
+  .hero {
+    position: relative;
+    padding: 80px 0 100px;
+    border-bottom: 1px solid var(--rule);
+    overflow: hidden;
+    min-height: 100vh;
+  }
+  .hero-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+  .hero-bg img {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: center 30%;
+    opacity: 0.22;
+    filter: grayscale(100%) contrast(1.1);
+    transform: scale(1.1);
+    will-change: transform;
+  }
+  .hero-bg::after {
+    content: ""; position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 50%, transparent 0%, var(--graphite-950) 80%),
+      linear-gradient(180deg, rgba(14,15,12,0.4) 0%, var(--graphite-950) 95%);
+  }
+  .hero .container { position: relative; z-index: 2; }
+
+  .hero-meta {
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 40px;
+    align-items: end; margin-bottom: 48px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--bone-mute);
+  }
+  .hero-meta .center { text-align: center; }
+  .hero-meta .right { text-align: right; }
+  .hero-meta strong { color: var(--bone); font-weight: 500; }
+
+  .hero h1 {
+    font-family: 'Fraunces', serif; font-weight: 300;
+    font-size: clamp(80px, 16vw, 240px);
+    line-height: 0.84; letter-spacing: -0.04em;
+    color: var(--bone);
+    font-variation-settings: "opsz" 144, "SOFT" 100;
+  }
+  .hero h1 em {
+    font-style: italic; font-weight: 300; color: var(--lime);
+    position: relative; display: inline-block;
+    white-space: nowrap; vertical-align: bottom;
+  }
+  .hero h1 em::after {
+    content: ""; position: absolute; bottom: 0.05em; left: -2%;
+    width: 104%; height: 4px; background: var(--lime); opacity: 0.25;
+    transform: scaleX(0); transform-origin: left;
+    animation: underline 1.4s cubic-bezier(0.65,0,0.35,1) 0.6s forwards;
+  }
+  @keyframes underline { to { transform: scaleX(1); } }
+  .hero h1 .small {
+    display: block; font-size: 0.32em; font-style: italic; font-weight: 400;
+    color: var(--bone-mute); margin-top: 24px; letter-spacing: -0.01em;
+    line-height: 1.2; max-width: 600px;
+  }
+
+  .live-ticker {
+    position: absolute; top: 80px; right: 32px; z-index: 3;
+    background: rgba(14, 15, 12, 0.7); backdrop-filter: blur(8px);
+    border: 1px solid var(--rule-strong);
+    padding: 14px 20px; display: flex; align-items: center; gap: 12px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.14em; color: var(--bone); text-transform: uppercase;
+  }
+  .live-ticker .live-dot {
+    width: 6px; height: 6px; background: var(--lime);
+    border-radius: 50%; animation: pulse 1.5s ease-in-out infinite;
+  }
+  .live-ticker .count { color: var(--lime); font-weight: 500; }
+
+  .hero-bottom {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 48px;
+    margin-top: 100px; padding-top: 32px; border-top: 1px solid var(--rule);
+  }
+  .hero-bottom .col h4 {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--bone-mute); margin-bottom: 12px; font-weight: 500;
+  }
+  .hero-bottom .col p {
+    font-family: 'Fraunces', serif; font-size: 18px;
+    color: var(--bone); line-height: 1.45;
+  }
+  .hero-bottom .col p .accent { color: var(--lime); font-style: italic; }
+
+  .scroll-hint {
+    position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--bone-mute);
+    display: flex; flex-direction: column; align-items: center; gap: 12px; z-index: 3;
+  }
+  .scroll-hint .line {
+    width: 1px; height: 40px;
+    background: linear-gradient(180deg, var(--lime), transparent);
+    animation: scroll-line 2s ease-in-out infinite;
+  }
+  @keyframes scroll-line {
+    0%, 100% { transform: scaleY(0.3); transform-origin: top; }
+    50% { transform: scaleY(1); transform-origin: top; }
+  }
+
+  /* ======== SECTIONS ======== */
+  .section {
+    padding: 120px 0; border-bottom: 1px solid var(--rule);
+    position: relative;
+  }
+  .section-head {
+    display: grid; grid-template-columns: 120px 1fr; gap: 32px;
+    align-items: baseline; margin-bottom: 64px;
+  }
+  .section-head .num {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    letter-spacing: 0.2em; color: var(--lime);
+  }
+  .section-head h2 {
+    font-family: 'Fraunces', serif; font-weight: 300; font-style: italic;
+    font-size: clamp(40px, 5.5vw, 72px); line-height: 1;
+    letter-spacing: -0.02em; color: var(--bone);
+  }
+  .section-head h2 .reg { font-style: normal; }
+
+  /* ======== METRICS ======== */
+  .metrics {
+    display: grid; grid-template-columns: repeat(12, 1fr);
+    gap: 1px; background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+  .metric {
+    background: var(--graphite-900); padding: 36px 32px;
+    position: relative; overflow: hidden; transition: background .4s;
+  }
+  .metric::after {
+    content: ""; position: absolute; top: 0; left: 0;
+    width: 0; height: 2px; background: var(--lime);
+    transition: width .6s cubic-bezier(0.65,0,0.35,1);
+  }
+  .metric:hover { background: var(--graphite-850); }
+  .metric:hover::after { width: 100%; }
+  .metric.span-4 { grid-column: span 4; }
+  .metric.span-6 { grid-column: span 6; }
+  .metric.span-8 { grid-column: span 8; }
+
+  .metric .label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--bone-mute);
+    margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .metric .label .delta { color: var(--lime); font-weight: 500; }
+
+  .metric .figure {
+    font-family: 'Fraunces', serif; font-weight: 300;
+    font-size: clamp(56px, 7vw, 96px); line-height: 0.9;
+    letter-spacing: -0.04em; color: var(--bone); margin-bottom: 12px;
+  }
+  .metric .figure .unit { font-size: 0.4em; color: var(--bone-mute); margin-left: 4px; }
+  .metric .figure.lime { color: var(--lime); }
+  .metric .desc { font-size: 14px; color: var(--bone-mute); max-width: 280px; line-height: 1.5; }
+
+  .metric.feature { background: var(--lime); color: var(--graphite-950); }
+  .metric.feature:hover { background: var(--lime-soft); }
+  .metric.feature .label, .metric.feature .desc { color: var(--graphite-700); }
+  .metric.feature .label .delta { color: var(--graphite-950); }
+  .metric.feature .figure { color: var(--graphite-950); }
+  .metric.feature .figure .unit { color: var(--graphite-700); }
+  .metric.feature::after { background: var(--graphite-950); }
+
+  .bars { margin-top: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .bar-row {
+    display: grid; grid-template-columns: 90px 1fr 60px; gap: 16px;
+    align-items: center; font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--bone);
+  }
+  .bar-track { height: 6px; background: var(--graphite-700); position: relative; overflow: hidden; }
+  .bar-fill {
+    position: absolute; inset: 0 auto 0 0; background: var(--lime);
+    transform: scaleX(0); transform-origin: left;
+  }
+  .bar-fill.go { animation: fill-bar 1.4s cubic-bezier(0.65,0,0.35,1) forwards; }
+  @keyframes fill-bar { to { transform: scaleX(var(--w, 1)); } }
+  .bar-row .val { text-align: right; color: var(--bone-mute); }
+
+  /* ======== GALLERY MARQUEE ======== */
+  .gallery {
+    padding: 0; border-bottom: 1px solid var(--rule);
+    overflow: hidden; position: relative; background: var(--graphite-900);
+  }
+  .gallery-marquee {
+    display: flex; gap: 24px; padding: 60px 0;
+    animation: marquee 50s linear infinite; width: max-content;
+  }
+  .gallery-marquee:hover { animation-play-state: paused; }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .gallery-item {
+    width: 380px; height: 480px; flex-shrink: 0;
+    position: relative; overflow: hidden; background: var(--graphite-800);
+  }
+  .gallery-item img {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: grayscale(60%) contrast(1.05);
+    transition: filter .6s, transform .6s;
+  }
+  .gallery-item:hover img { filter: grayscale(0%) contrast(1); transform: scale(1.05); }
+  .gallery-item .caption {
+    position: absolute; bottom: 0; left: 0; right: 0; padding: 24px;
+    background: linear-gradient(180deg, transparent, rgba(14, 15, 12, 0.9));
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--bone);
+    display: flex; justify-content: space-between;
+  }
+  .gallery-item .caption .num { color: var(--lime); }
+
+  /* ======== AGENDA ======== */
+  .agenda { display: grid; grid-template-columns: 1fr; }
+  .agenda-row {
+    display: grid; grid-template-columns: 110px 1fr 1.2fr 180px; gap: 32px;
+    padding: 32px 0; border-top: 1px solid var(--rule);
+    align-items: baseline; transition: background .3s, padding-left .3s;
+    position: relative;
+  }
+  .agenda-row::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 2px; background: var(--lime);
+    transform: scaleY(0); transform-origin: top; transition: transform .35s ease;
+  }
+  .agenda-row:hover { background: var(--graphite-900); padding-left: 24px; }
+  .agenda-row:hover::before { transform: scaleY(1); }
+  .agenda-row:last-child { border-bottom: 1px solid var(--rule); }
+  .agenda-row .time {
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    letter-spacing: 0.08em; color: var(--lime);
+  }
+  .agenda-row .title {
+    font-family: 'Fraunces', serif; font-weight: 400; font-size: 26px;
+    line-height: 1.15; letter-spacing: -0.01em; color: var(--bone);
+  }
+  .agenda-row .title em { font-style: italic; color: var(--bone-mute); }
+  .agenda-row .desc { font-size: 14px; color: var(--bone-mute); line-height: 1.55; }
+  .agenda-row .speaker {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--bone); text-align: right;
+  }
+  .agenda-row .speaker .role {
+    display: block; color: var(--bone-mute); margin-top: 4px; font-size: 10px;
+  }
+
+  /* ======== TESTIMONIALS CAROUSEL ======== */
+  .testimonials-section { background: var(--graphite-900); position: relative; overflow: hidden; }
+  .testimonials-section::before {
+    content: ""; position: absolute; top: 0; left: -10%;
+    width: 120%; height: 100%;
+    background:
+      radial-gradient(ellipse 40% 60% at 20% 30%, rgba(212, 255, 58, 0.04), transparent 70%),
+      radial-gradient(ellipse 40% 60% at 80% 70%, rgba(212, 255, 58, 0.03), transparent 70%);
+    pointer-events: none;
+  }
+  .testimonials-stage { position: relative; min-height: 480px; }
+
+  .testimonial {
+    display: grid; grid-template-columns: 320px 1fr; gap: 64px;
+    align-items: center; position: absolute; inset: 0;
+    opacity: 0; transform: translateX(40px);
+    transition: opacity .7s ease, transform .7s ease;
+    pointer-events: none;
+  }
+  .testimonial.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+  .testimonial .portrait {
+    aspect-ratio: 4/5; background: var(--graphite-800);
+    overflow: hidden; position: relative;
+  }
+  .testimonial .portrait img {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: grayscale(80%) contrast(1.1);
+  }
+  .testimonial .portrait::after {
+    content: ""; position: absolute; top: 16px; left: 16px;
+    width: 12px; height: 12px; background: var(--lime);
+    border-radius: 50%; box-shadow: 0 0 16px var(--lime);
+  }
+  .testimonial .body { position: relative; }
+  .testimonial .quote-mark {
+    font-family: 'Fraunces', serif; font-size: 140px; line-height: 0.4;
+    color: var(--lime); font-style: italic; display: block;
+    margin-bottom: 24px; height: 60px;
+  }
+  .testimonial blockquote {
+    font-family: 'Fraunces', serif; font-weight: 300;
+    font-size: clamp(24px, 3vw, 36px); line-height: 1.25;
+    color: var(--bone); margin-bottom: 36px; letter-spacing: -0.015em;
+  }
+  .testimonial blockquote em { color: var(--lime); font-style: italic; }
+  .testimonial cite {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--bone-mute); font-style: normal; display: block;
+  }
+  .testimonial cite strong { color: var(--bone); font-weight: 500; }
+  .testimonial cite .meta { margin-top: 8px; color: var(--bone-mute); font-size: 10px; }
+  .testimonial cite .meta span { color: var(--lime); margin: 0 8px; }
+
+  .carousel-controls {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 56px; padding-top: 32px; border-top: 1px solid var(--rule);
+  }
+  .carousel-dots { display: flex; gap: 8px; }
+  .carousel-dots .dot {
+    width: 32px; height: 2px; background: var(--graphite-600);
+    border: none; transition: background .3s, width .3s; padding: 0;
+  }
+  .carousel-dots .dot.active { background: var(--lime); width: 56px; }
+  .carousel-arrows { display: flex; gap: 12px; }
+  .carousel-arrows button {
+    width: 48px; height: 48px; background: transparent;
+    border: 1px solid var(--rule-strong); color: var(--bone);
+    font-family: 'JetBrains Mono', monospace; font-size: 18px;
+    transition: background .25s, color .25s, border-color .25s;
+  }
+  .carousel-arrows button:hover {
+    background: var(--lime); color: var(--graphite-950); border-color: var(--lime);
+  }
+
+  /* ======== HIGHLIGHTS ======== */
+  .highlights { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; }
+  .quote-card {
+    background: var(--graphite-900); border: 1px solid var(--rule);
+    padding: 40px 36px; grid-column: span 6; position: relative;
+    transition: border-color .35s, transform .35s;
+  }
+  .quote-card:hover { border-color: var(--lime); transform: translateY(-4px); }
+  .quote-card.wide { grid-column: span 8; }
+  .quote-card.narrow { grid-column: span 4; }
+  .quote-card .quote-mark {
+    font-family: 'Fraunces', serif; font-size: 80px; line-height: 0.5;
+    color: var(--lime); font-style: italic; margin-bottom: 8px; display: block;
+  }
+  .quote-card blockquote {
+    font-family: 'Fraunces', serif; font-size: 22px; line-height: 1.35;
+    color: var(--bone); margin-bottom: 28px; letter-spacing: -0.01em;
+  }
+  .quote-card blockquote em { color: var(--lime); font-style: italic; }
+  .quote-card cite {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--bone-mute); font-style: normal; display: block;
+  }
+  .quote-card cite strong { color: var(--bone); font-weight: 500; }
+
+  .stat-card {
+    background: var(--graphite-900); border: 1px solid var(--rule);
+    padding: 36px; grid-column: span 4;
+    display: flex; flex-direction: column; justify-content: space-between;
+    min-height: 220px; transition: background .35s, border-color .35s;
+  }
+  .stat-card:hover { background: var(--graphite-850); border-color: var(--lime); }
+  .stat-card .big {
+    font-family: 'Fraunces', serif; font-weight: 300;
+    font-size: 96px; line-height: 0.85; color: var(--lime); letter-spacing: -0.04em;
+  }
+  .stat-card .cap {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--bone-mute); margin-top: 24px; line-height: 1.6;
+  }
+
+  /* ======== SPEAKERS ======== */
+  .speakers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .speaker-card {
+    position: relative; aspect-ratio: 3/4; overflow: hidden;
+    background: var(--graphite-800);
+  }
+  .speaker-card img {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: grayscale(80%); transition: filter .5s, transform .5s;
+  }
+  .speaker-card:hover img { filter: grayscale(0%); transform: scale(1.05); }
+  .speaker-card .info {
+    position: absolute; bottom: 0; left: 0; right: 0; padding: 24px;
+    background: linear-gradient(180deg, transparent, rgba(14,15,12,0.95)); color: var(--bone);
+  }
+  .speaker-card .info h4 {
+    font-family: 'Fraunces', serif; font-weight: 400; font-size: 22px; margin-bottom: 4px;
+  }
+  .speaker-card .info p {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--bone-mute);
+  }
+  .speaker-card .badge {
+    position: absolute; top: 16px; left: 16px;
+    background: var(--lime); color: var(--graphite-950);
+    padding: 6px 10px; font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase;
+    transform: translateY(-200%); transition: transform .35s;
+  }
+  .speaker-card:hover .badge { transform: translateY(0); }
+
+  /* ======== CTA ======== */
+  .cta {
+    padding: 140px 0; background: var(--lime);
+    color: var(--graphite-950); position: relative; overflow: hidden;
+  }
+  .cta::before {
+    content: "Q2 / Q2 / Q2 / Q2 / Q2 / Q2";
+    position: absolute; bottom: -20px; left: -2%;
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 300;
+    font-size: 240px; line-height: 0.8;
+    color: rgba(14, 15, 12, 0.06); white-space: nowrap; pointer-events: none;
+  }
+  .cta-inner {
+    position: relative; display: grid;
+    grid-template-columns: 1.2fr 1fr; gap: 80px; align-items: center;
+  }
+  .cta h2 {
+    font-family: 'Fraunces', serif; font-weight: 300;
+    font-size: clamp(48px, 7vw, 96px); line-height: 0.95; letter-spacing: -0.03em;
+  }
+  .cta h2 em { font-style: italic; }
+  .cta p {
+    margin-top: 24px; font-size: 17px; line-height: 1.55;
+    color: var(--graphite-700); max-width: 480px;
+  }
+  .rsvp-box { background: var(--graphite-950); color: var(--bone); padding: 40px; }
+  .rsvp-box .cap {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--bone-mute); margin-bottom: 16px;
+  }
+  .rsvp-box h3 {
+    font-family: 'Fraunces', serif; font-weight: 400; font-size: 28px; margin-bottom: 8px;
+  }
+  .rsvp-box .when {
+    color: var(--lime); font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; letter-spacing: 0.08em; margin-bottom: 28px;
+  }
+
+  .countdown {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    margin-bottom: 28px; padding: 20px 0;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .countdown .unit { text-align: center; }
+  .countdown .num {
+    font-family: 'Fraunces', serif; font-weight: 300;
+    font-size: 36px; color: var(--lime); line-height: 1;
+    letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+  }
+  .countdown .lbl {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--bone-mute); margin-top: 6px;
+  }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--lime); color: var(--graphite-950); border: none;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    padding: 16px 24px; text-decoration: none;
+    transition: transform .25s, background .25s;
+    width: 100%; justify-content: center;
+  }
+  .btn:hover { background: var(--bone); transform: translateY(-2px); }
+  .btn .arrow { transition: transform .25s; }
+  .btn:hover .arrow { transform: translateX(4px); }
+  .btn.ghost {
+    background: transparent; color: var(--bone);
+    border: 1px solid var(--rule-strong); margin-top: 12px;
+  }
+  .btn.ghost:hover {
+    background: var(--graphite-800); color: var(--lime);
+    border-color: var(--lime); transform: translateY(-2px);
+  }
+
+  /* ======== FOOTER ======== */
+  footer {
+    padding: 60px 0 40px; border-top: 1px solid var(--rule);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--bone-mute);
+  }
+  footer .container {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 24px;
+  }
+  footer .legal { display: flex; gap: 24px; }
+  footer a { color: var(--bone-mute); text-decoration: none; transition: color .2s; }
+  footer a:hover { color: var(--lime); }
+
+  /* ======== REVEAL ======== */
+  .reveal {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 1s cubic-bezier(0.2, 0.8, 0.2, 1), transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* ======== RESPONSIVE ======== */
+  @media (max-width: 900px) {
+    .hero-meta { grid-template-columns: 1fr; gap: 8px; text-align: left; }
+    .hero-meta .center, .hero-meta .right { text-align: left; }
+    .hero-bottom { grid-template-columns: 1fr; gap: 32px; }
+    .live-ticker { right: 16px; top: 60px; padding: 10px 14px; font-size: 9px; }
+    .section-head { grid-template-columns: 1fr; gap: 16px; }
+    .metric.span-4, .metric.span-6, .metric.span-8 { grid-column: span 12; }
+    .agenda-row { grid-template-columns: 80px 1fr; gap: 12px; }
+    .agenda-row .desc, .agenda-row .speaker { grid-column: 2; text-align: left; }
+    .quote-card, .stat-card, .quote-card.wide, .quote-card.narrow { grid-column: span 12; }
+    .speakers { grid-template-columns: repeat(2, 1fr); }
+    .testimonial { grid-template-columns: 1fr; gap: 24px; }
+    .testimonial .portrait { aspect-ratio: 16/9; }
+    .cta-inner { grid-template-columns: 1fr; gap: 48px; }
+    .gallery-item { width: 280px; height: 360px; }
+    .top-bar nav { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation: none !important;
+      transition-duration: 0.01ms !important;
+      transition-delay: 0ms !important;
+    }
+    .reveal { opacity: 1; transform: none; }
+    .bar-fill { transform: scaleX(var(--w, 1)); }
+    .gallery-marquee { animation: none; transform: translateX(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<div class="top-bar">
+  <div class="container">
+    <div class="mark"><span class="dot"></span> Q2 / WRAPPED — INT'L OFFSITE</div>
+    <nav>
+      <a href="#numbers">Numbers</a>
+      <a href="#agenda">Agenda</a>
+      <a href="#voices">Voices</a>
+      <a href="#speakers">Speakers</a>
+      <a href="#rsvp">RSVP</a>
+    </nav>
+    <div>FRI · 21 JUN · 14:00 WAT</div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg" id="heroBg">
+    <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1800&q=80" alt="" />
+  </div>
+
+  
+  <div class="container">
+    <div class="hero-meta reveal">
+      <div>VOL. <strong>04</strong> — APR · MAY · JUN</div>
+      <div class="center">A QUARTERLY DOCUMENT, ANNOTATED</div>
+      <div class="right">FILED <strong>30.06.2026</strong></div>
+    </div>
+
+    <h1 class="reveal">
+      Q2,<br>
+      <em style="
+  overflow: hidden;
+  border-right: 0.15em solid var(--lime);
+  width: 0;
+  animation:
+    typing 3.5s steps(7, end) infinite,
+    blink-caret .75s ease-in-out infinite;
+  animation-play-state: paused, paused;
+  box-sizing: border-box;
+  max-width: fit-content;
+  padding-right: 0.2em;
+">wrapped<style>
+  @keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+  }
+  @keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: var(--lime) }
+  }
+  /* Override existing underline animation to start after typing */
+  .hero h1 em::after {
+    animation-delay: 4.1s !important; /* typing (3.5s) + a small delay */
+  }
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    em {
+      width: auto !important;
+      border-right: none !important;
+      animation: none !important;
+    }
+    .hero h1 em::after {
+      animation-delay: 0s !important;
+    }
+  }
+</style></em>.
+      <span class="small">Ninety-one days, six product launches, and one stubbornly good quarter — read back to you, slowly, with footnotes.</span>
+      <script>
+        (function () {
+          const h1 = document.currentScript.parentElement;
+          const typed = h1.querySelector('em');
+          if (!typed || !('IntersectionObserver' in window)) {
+            if (typed) typed.style.animationPlayState = 'running, running';
+            return;
+          }
+
+          const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+          if (media.matches) return;
+
+          const setState = (inView) => {
+            typed.style.animationPlayState = inView ? 'running, running' : 'paused, paused';
+          };
+
+          const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => setState(entry.isIntersecting));
+          }, { threshold: 0.05 });
+
+          observer.observe(h1);
+        })();
+      </script>
+    </h1>
+
+    <div class="hero-bottom">
+      <div class="col reveal">
+        <h4>01 — The Quarter</h4>
+        <p>We shipped <span class="accent">six</span> products, opened <span class="accent">two</span> markets, and kept the lights on through a re-org that was, briefly, alarming.</p>
+      </div>
+      <div class="col reveal">
+        <h4>02 — The Day</h4>
+        <p>An afternoon of receipts. Numbers we're proud of, decisions we'd take back, and a closing toast — <span class="accent">in that order</span>.</p>
+      </div>
+      <div class="col reveal">
+        <h4>03 — The Ask</h4>
+        <p>Bring questions, not slides. We've prepared the slides. Bring whatever has been on your mind since <span class="accent">January</span>.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <span class="line"></span>
+  </div>
+</section>
+
+<!-- BY THE NUMBERS -->
+<section class="section" id="numbers">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="num">§ 01 / RECEIPTS</div>
+      <h2>By the <span class="reg">numbers,</span><br>without the spin.</h2>
+    </div>
+
+    <div class="metrics">
+      <div class="metric span-4 reveal">
+        <div class="label"><span>Net new ARR</span><span class="delta">↑ 38%</span></div>
+        <div class="figure" data-count="14.2" data-suffix="M" data-prefix="$">$0<span class="unit">M</span></div>
+        <div class="desc">Outpaced plan by eleven points. Driven mainly by mid-market, not the deal we kept telling everyone about.</div>
+      </div>
+
+      <div class="metric span-4 feature reveal">
+        <div class="label"><span>Logo retention</span><span class="delta">↑ 4.1pp</span></div>
+        <div class="figure" data-count="96.7" data-suffix="%">0<span class="unit">%</span></div>
+        <div class="desc">Highest on record. The customer success team would like to be congratulated, please.</div>
+      </div>
+
+      <div class="metric span-4 reveal">
+        <div class="label"><span>Headcount</span><span class="delta">+ 28</span></div>
+        <div class="figure" data-count="412">0</div>
+        <div class="desc">Across nine countries. Welcome to the eighteen people who joined this morning and are reading this on their first day.</div>
+      </div>
+
+      <div class="metric span-8 reveal">
+        <div class="label"><span>Where the revenue came from</span><span class="delta">By segment</span></div>
+        <div class="figure lime">04 <span class="unit" style="font-size: 0.5em;">regions, one chart</span></div>
+        <div class="bars" id="bars">
+          <div class="bar-row"><span>EMEA</span><span class="bar-track"><span class="bar-fill" style="--w: 0.92;"></span></span><span class="val">$5.2M</span></div>
+          <div class="bar-row"><span>NORAM</span><span class="bar-track"><span class="bar-fill" style="--w: 0.78;"></span></span><span class="val">$4.4M</span></div>
+          <div class="bar-row"><span>APAC</span><span class="bar-track"><span class="bar-fill" style="--w: 0.51;"></span></span><span class="val">$2.9M</span></div>
+          <div class="bar-row"><span>LATAM</span><span class="bar-track"><span class="bar-fill" style="--w: 0.31;"></span></span><span class="val">$1.7M</span></div>
+        </div>
+      </div>
+
+      <div class="metric span-4 reveal">
+        <div class="label"><span>Avg deal size</span><span class="delta">↑ 22%</span></div>
+        <div class="figure" data-count="84" data-prefix="$" data-suffix="k">$0<span class="unit">k</span></div>
+        <div class="desc">Larger contracts, longer cycles, more paperwork — the trade we keep choosing.</div>
+      </div>
+
+      <div class="metric span-6 reveal">
+        <div class="label"><span>Releases shipped</span><span class="delta">on time: 5/6</span></div>
+        <div class="figure" data-count="6" data-pad="2">06</div>
+        <div class="desc">One slipped two weeks. We will not be naming it. (It was the billing redesign.)</div>
+      </div>
+
+      <div class="metric span-6 reveal">
+        <div class="label"><span>NPS</span><span class="delta">↑ 9</span></div>
+        <div class="figure" data-count="62">0</div>
+        <div class="desc">Best score since the rebrand. Worst single comment received: "fine, I guess." We will work on this.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY MARQUEE -->
+<section class="gallery">
+  <div class="gallery-marquee">
+    <div class="gallery-item">
+      <img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=600&q=80" alt="" />
+      <div class="caption"><span>Berlin offsite — Apr 02</span><span class="num">001</span></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=600&q=80" alt="" />
+      <div class="caption"><span>Product demo day</span><span class="num">002</span></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=600&q=80" alt="" />
+      <div class="caption"><span>Strategy huddle</span><span class="num">003</span></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=600&q=80" alt="" />
+      <div class="caption"><span>All-hands · Lagos</span><span class="num">004</span></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=600&q=80" alt="" />
+      <div class="caption"><span>Rooftop · close of Q2</span><span class="num">005</span></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=600&q=80" alt="" />
+      <div class="caption"><span>Late-night ship</span><span class="num">006</span></div>
+    </div>
+    <!-- Repeated for seamless loop -->
+    <div class="gallery-item">
+      <img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=600&q=80" alt="" />
+      <div class="caption"><span>Berlin offsite — Apr 02</span><span class="num">001</span></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=600&q=80" alt="" />
+      <div class="caption"><span>Product demo day</span><span class="num">002</span></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=600&q=80" alt="" />
+      <div class="caption"><span>Strategy huddle</span><span class="num">003</span></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=600&q=80" alt="" />
+      <div class="caption"><span>All-hands · Lagos</span><span class="num">004</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- AGENDA -->
+<section class="section" id="agenda">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="num">§ 02 / RUN OF SHOW</div>
+      <h2>Agenda <span class="reg">— roughly five</span><br>hours, generously paced.</h2>
+    </div>
+
+    <div class="agenda">
+      <div class="agenda-row reveal">
+        <div class="time" style="display:flex; align-items:center; gap:10px;"><span aria-hidden="true" style="display:inline-flex; width:16px; height:16px; color:currentColor; flex:0 0 16px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5v5l3 2"></path></svg></span><span>14:00</span></div>
+        <div class="title">Doors, coffee, <em>name-tag triage</em></div>
+        <div class="desc">Lobby, Tower B. Lanyards by region. The barista is a friend of the company; tip if you can.</div>
+        <div class="speaker">— THE FOYER<span class="role">30 min</span></div>
+      </div>
+      <div class="agenda-row reveal">
+        <div class="time" style="display:flex; align-items:center; gap:10px;"><span aria-hidden="true" style="display:inline-flex; width:16px; height:16px; color:currentColor; flex:0 0 16px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5v5l3 2"></path></svg></span><span>14:30</span></div>
+        <div class="title">Welcome &amp; <em>state of the union</em></div>
+        <div class="desc">A short, honest talk about where we are. No slides until slide three. Promise.</div>
+        <div class="speaker">A. OKAFOR<span class="role">CEO · 25 min</span></div>
+      </div>
+      <div class="agenda-row reveal">
+        <div class="time" style="display:flex; align-items:center; gap:10px;"><span aria-hidden="true" style="display:inline-flex; width:16px; height:16px; color:currentColor; flex:0 0 16px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5v5l3 2"></path></svg></span><span>15:00</span></div>
+        <div class="title">Product, in three acts</div>
+        <div class="desc">What shipped, what we learned, and what we cut. The cuts are the interesting part.</div>
+        <div class="speaker">M. LARSEN<span class="role">CPO · 40 min</span></div>
+      </div>
+      <div class="agenda-row reveal">
+        <div class="time" style="display:flex; align-items:center; gap:10px;"><span aria-hidden="true" style="display:inline-flex; width:16px; height:16px; color:currentColor; flex:0 0 16px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5v5l3 2"></path></svg></span><span>15:45</span></div>
+        <div class="title">Customer voices <em>— recorded</em></div>
+        <div class="desc">Six clips, two minutes each. Some are flattering. Some are not. We are showing them anyway.</div>
+        <div class="speaker">CS TEAM<span class="role">PANEL · 30 min</span></div>
+      </div>
+      <div class="agenda-row reveal">
+        <div class="time" style="display:flex; align-items:center; gap:10px;"><span aria-hidden="true" style="display:inline-flex; width:16px; height:16px; color:currentColor; flex:0 0 16px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5v5l3 2"></path></svg></span><span>16:20</span></div>
+        <div class="title">Break <em>(actual break)</em></div>
+        <div class="desc">Pastries, the good kind. Use the courtyard if the weather holds.</div>
+        <div class="speaker">— COURTYARD<span class="role">20 min</span></div>
+      </div>
+      <div class="agenda-row reveal">
+        <div class="time" style="display:flex; align-items:center; gap:10px;"><span aria-hidden="true" style="display:inline-flex; width:16px; height:16px; color:currentColor; flex:0 0 16px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5v5l3 2"></path></svg></span><span>16:45</span></div>
+        <div class="title">Q3 &amp; the long view</div>
+        <div class="desc">Where we're heading. The OKRs, the bets, the one thing we're definitely going to be wrong about.</div>
+        <div class="speaker">LEADERSHIP<span class="role">PANEL · 45 min</span></div>
+      </div>
+      <div class="agenda-row reveal">
+        <div class="time" style="display:flex; align-items:center; gap:10px;"><span aria-hidden="true" style="display:inline-flex; width:16px; height:16px; color:currentColor; flex:0 0 16px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5v5l3 2"></path></svg></span><span>17:45</span></div>
+        <div class="title">Open floor — <em>say the thing</em></div>
+        <div class="desc">Mics on both sides. Nothing is off limits. Most things are on the record.</div>
+        <div class="speaker">EVERYONE<span class="role">Q&amp;A · 30 min</span></div>
+      </div>
+      <div class="agenda-row reveal">
+        <div class="time" style="display:flex; align-items:center; gap:10px;"><span aria-hidden="true" style="display:inline-flex; width:16px; height:16px; color:currentColor; flex:0 0 16px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5v5l3 2"></path></svg></span><span>18:30</span></div>
+        <div class="title">Drinks, dinner, <em>and a toast</em></div>
+        <div class="desc">Rooftop. One short toast. The bar closes at twenty-three hundred and means it this time.</div>
+        <div class="speaker">— ROOFTOP<span class="role">UNTIL LATE</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS CAROUSEL -->
+<section class="section testimonials-section" id="voices">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="num">§ 03 / TESTIMONIALS</div>
+      <h2>What the <span class="reg">team</span><br>is saying.</h2>
+    </div>
+
+    <div class="testimonials-stage" id="testimonialStage">
+      <div class="testimonial active" data-i="0">
+        <div class="portrait">
+          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&q=80" alt="" />
+        </div>
+        <div class="body">
+          <span class="quote-mark">“</span>
+          <blockquote>We finally stopped pretending the dashboard was the product. The product is the <em>five seconds before someone opens the dashboard</em> — and we got those five seconds back this quarter.</blockquote>
+          <cite>
+            <strong>Marit Larsen</strong> · Chief Product Officer
+            <div class="meta">JOINED 2022 <span>·</span> BASED IN OSLO <span>·</span> 12 YEARS IN PRODUCT</div>
+          </cite>
+        </div>
+      </div>
+
+      <div class="testimonial" data-i="1">
+        <div class="portrait">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80" alt="" />
+        </div>
+        <div class="body">
+          <span class="quote-mark">“</span>
+          <blockquote>The re-org worked, in the end. <em>Quietly.</em> Like most good re-orgs do. I'm told the loudest ones rarely succeed, and I'm starting to believe it.</blockquote>
+          <cite>
+            <strong>Adaeze Okafor</strong> · Chief Executive
+            <div class="meta">FOUNDER <span>·</span> BASED IN LAGOS <span>·</span> 7 YEARS AT THE COMPANY</div>
+          </cite>
+        </div>
+      </div>
+
+      <div class="testimonial" data-i="2">
+        <div class="portrait">
+          <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&q=80" alt="" />
+        </div>
+        <div class="body">
+          <span class="quote-mark">“</span>
+          <blockquote>We turned down two large deals on principle. Both customers came back six weeks later, <em>on our terms</em>. There is a lesson in there about patience that I am still learning.</blockquote>
+          <cite>
+            <strong>Robin Vance</strong> · Head of Revenue
+            <div class="meta">JOINED 2023 <span>·</span> BASED IN LONDON <span>·</span> 18 YEARS IN B2B</div>
+          </cite>
+        </div>
+      </div>
+
+      <div class="testimonial" data-i="3">
+        <div class="portrait">
+          <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&q=80" alt="" />
+        </div>
+        <div class="body">
+          <span class="quote-mark">“</span>
+          <blockquote>Engineering shipped six things and broke <em>almost nothing</em>. I have run quarters where we shipped one thing and broke everything. This was not that quarter, and I'm grateful.</blockquote>
+          <cite>
+            <strong>Priya Anand</strong> · VP Engineering
+            <div class="meta">JOINED 2021 <span>·</span> BASED IN BANGALORE <span>·</span> 240-PERSON ORG</div>
+          </cite>
+        </div>
+      </div>
+
+      <div class="testimonial" data-i="4">
+        <div class="portrait">
+          <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&q=80" alt="" />
+        </div>
+        <div class="body">
+          <span class="quote-mark">“</span>
+          <blockquote>The thing I'm most proud of isn't on a slide. It's that <em>nobody got burnt out</em>. Or — fewer people, anyway. We're calling it progress and meaning it.</blockquote>
+          <cite>
+            <strong>Tomás Reyes</strong> · Chief People Officer
+            <div class="meta">JOINED 2024 <span>·</span> BASED IN MEXICO CITY <span>·</span> 412 PEOPLE LOOKED AFTER</div>
+          </cite>
+        </div>
+      </div>
+    </div>
+
+    <div class="carousel-controls">
+      <div class="carousel-dots" id="dots"></div>
+      <div class="carousel-arrows">
+        <button id="prev" aria-label="Previous">←</button>
+        <button id="next" aria-label="Next">→</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPEAKERS GRID -->
+<section class="section" id="speakers">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="num">§ 04 / ON THE PROGRAM</div>
+      <h2>Speakers <span class="reg">&amp; people</span><br>on the program.</h2>
+    </div>
+
+    <div class="speakers">
+      <div class="speaker-card reveal">
+        <span class="badge">Keynote</span>
+        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&q=80" alt="" />
+        <div class="info"><h4>Adaeze Okafor</h4><p>CEO · State of the Union</p></div>
+      </div>
+      <div class="speaker-card reveal">
+        <span class="badge">Product</span>
+        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&q=80" alt="" />
+        <div class="info"><h4>Marit Larsen</h4><p>CPO · Three Acts</p></div>
+      </div>
+      <div class="speaker-card reveal">
+        <span class="badge">Revenue</span>
+        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&q=80" alt="" />
+        <div class="info"><h4>Robin Vance</h4><p>Head of Revenue</p></div>
+      </div>
+      <div class="speaker-card reveal">
+        <span class="badge">Eng</span>
+        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=600&q=80" alt="" />
+        <div class="info"><h4>Priya Anand</h4><p>VP Engineering</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HIGHLIGHTS -->
+<section class="section">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="num">§ 05 / FOOTNOTES</div>
+      <h2>Quotes we couldn't <span class="reg">stop</span><br>thinking about.</h2>
+    </div>
+
+    <div class="highlights">
+      <div class="quote-card wide reveal">
+        <span class="quote-mark">“</span>
+        <blockquote>We finally stopped pretending the dashboard was the product. The product is the <em>five seconds before someone opens the dashboard</em>.</blockquote>
+        <cite><strong>M. Larsen</strong> · Chief Product Officer</cite>
+      </div>
+      <div class="stat-card reveal">
+        <div class="big">3.1×</div>
+        <div class="cap">Faster onboarding<br>than Q1, end-to-end.</div>
+      </div>
+      <div class="quote-card narrow reveal">
+        <span class="quote-mark">“</span>
+        <blockquote>The re-org worked, in the end. Quietly.</blockquote>
+        <cite><strong>A. Okafor</strong> · CEO</cite>
+      </div>
+      <div class="quote-card wide reveal">
+        <span class="quote-mark">“</span>
+        <blockquote>We turned down two large deals on principle. <em>Both customers came back six weeks later</em>, on our terms.</blockquote>
+        <cite><strong>R. Vance</strong> · Head of Revenue</cite>
+      </div>
+      <div class="stat-card reveal">
+        <div class="big">17</div>
+        <div class="cap">Internal tools sunset.<br>None of them missed.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="rsvp">
+  <div class="container cta-inner">
+    <div class="reveal">
+      <h2>Come <em>celebrate</em><br>a quarter that <br>actually held.</h2>
+      <p>Doors open at 14:00. The toast is at 19:30, give or take. We saved you a seat near the front, but you should still RSVP — there is a printed program with your name on it and the printer needs forty-eight hours.</p>
+    </div>
+
+    <div class="rsvp-box reveal">
+      <div class="cap">Friday · 21 June · 2026</div>
+      <h3>Tower B, Floor 14</h3>
+      <div class="when">14:00 — LATE / WAT</div>
+
+      <div class="countdown" id="countdown">
+        <div class="unit"><div class="num" id="cd-d">00</div><div class="lbl">Days</div></div>
+        <div class="unit"><div class="num" id="cd-h">00</div><div class="lbl">Hrs</div></div>
+        <div class="unit"><div class="num" id="cd-m">00</div><div class="lbl">Min</div></div>
+        <div class="unit"><div class="num" id="cd-s">00</div><div class="lbl">Sec</div></div>
+      </div>
+
+      <a href="#" class="btn" id="rsvpBtn">
+        <span class="label">Confirm attendance</span>
+        <span class="arrow">→</span>
+      </a>
+      <a href="#" class="btn ghost">
+        <span>Add to calendar</span>
+        <span class="arrow">↗</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div>© <strong style="color: var(--bone);">THE COMPANY</strong> — INTERNAL DOCUMENT, NOT FOR DISTRIBUTION.</div>
+    <div class="legal">
+      <a href="#">Code of conduct</a>
+      <a href="#">Accessibility</a>
+      <a href="#">Contact: events@</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ===== Custom cursor =====
+  const cursor = document.getElementById('cursor');
+  if (window.matchMedia('(min-width: 901px)').matches) {
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+    document.querySelectorAll('a, button, .agenda-row, .metric, .speaker-card, .gallery-item, .quote-card, .stat-card').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+    });
+  }
+
+  // ===== Reveal on scroll =====
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('in'), i * 50);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // ===== Animated counters =====
+  const easeOut = t => 1 - Math.pow(1 - t, 3);
+  const counterIO = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const target = parseFloat(el.dataset.count);
+      const prefix = el.dataset.prefix || '';
+      const suffix = el.dataset.suffix || '';
+      const pad = parseInt(el.dataset.pad || '0', 10);
+      const isFloat = String(target).includes('.');
+      const unitEl = el.querySelector('.unit');
+      const unitHTML = unitEl ? unitEl.outerHTML : '';
+      const dur = 1600;
+      const start = performance.now();
+      const tick = (now) => {
+        const t = Math.min(1, (now - start) / dur);
+        const v = target * easeOut(t);
+        let display = isFloat ? v.toFixed(1) : Math.round(v).toString();
+        if (pad) display = display.padStart(pad, '0');
+        el.innerHTML = prefix + display + (suffix && !unitEl ? suffix : '') + unitHTML;
+        if (t < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+      counterIO.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('[data-count]').forEach(el => counterIO.observe(el));
+
+  // ===== Bar chart fill =====
+  const barIO = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.querySelectorAll('.bar-fill').forEach((b, i) => {
+          setTimeout(() => b.classList.add('go'), i * 120);
+        });
+        barIO.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  const bars = document.getElementById('bars');
+  if (bars) barIO.observe(bars);
+
+  // ===== Hero parallax =====
+  const heroBg = document.getElementById('heroBg');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    if (y < 800 && heroBg) {
+      heroBg.style.transform = `translateY(${y * 0.3}px)`;
+    }
+  }, { passive: true });
+
+  // ===== Testimonial carousel =====
+  const slides = document.querySelectorAll('.testimonial');
+  const dotsContainer = document.getElementById('dots');
+  let currentSlide = 0;
+  let autoplayId;
+
+  slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  });
+
+  function goTo(i) {
+    slides[currentSlide].classList.remove('active');
+    dotsContainer.children[currentSlide].classList.remove('active');
+    currentSlide = (i + slides.length) % slides.length;
+    slides[currentSlide].classList.add('active');
+    dotsContainer.children[currentSlide].classList.add('active');
+    resetAutoplay();
+  }
+
+  function resetAutoplay() {
+    clearInterval(autoplayId);
+    autoplayId = setInterval(() => goTo(currentSlide + 1), 6000);
+  }
+
+  document.getElementById('prev').addEventListener('click', () => goTo(currentSlide - 1));
+  document.getElementById('next').addEventListener('click', () => goTo(currentSlide + 1));
+
+  const stage = document.getElementById('testimonialStage');
+  stage.addEventListener('mouseenter', () => clearInterval(autoplayId));
+  stage.addEventListener('mouseleave', resetAutoplay);
+
+  resetAutoplay();
+
+  // Keyboard nav
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') goTo(currentSlide - 1);
+    if (e.key === 'ArrowRight') goTo(currentSlide + 1);
+  });
+
+  // ===== Countdown =====
+  const target = new Date('2026-06-21T14:00:00+01:00').getTime();
+  const cdD = document.getElementById('cd-d');
+  const cdH = document.getElementById('cd-h');
+  const cdM = document.getElementById('cd-m');
+  const cdS = document.getElementById('cd-s');
+
+  function pad(n) { return String(Math.max(0, n)).padStart(2, '0'); }
+  function updateCountdown() {
+    const diff = target - Date.now();
+    if (diff <= 0) {
+      cdD.textContent = '00'; cdH.textContent = '00';
+      cdM.textContent = '00'; cdS.textContent = '00';
+      return;
+    }
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const m = Math.floor((diff / (1000 * 60)) % 60);
+    const s = Math.floor((diff / 1000) % 60);
+    cdD.textContent = pad(d);
+    cdH.textContent = pad(h);
+    cdM.textContent = pad(m);
+    cdS.textContent = pad(s);
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  // ===== RSVP button =====
+  const rsvpBtn = document.getElementById('rsvpBtn');
+  const rsvpCount = document.getElementById('rsvpCount');
+  let confirmed = false;
+  rsvpBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (confirmed) return;
+    confirmed = true;
+    rsvpBtn.querySelector('.label').textContent = 'RSVP confirmed';
+    rsvpBtn.querySelector('.arrow').textContent = '✓';
+    rsvpBtn.style.background = 'var(--bone)';
+    let n = parseInt(rsvpCount.textContent, 10);
+    const finalN = n + 1;
+    const tickUp = () => {
+      n++;
+      rsvpCount.textContent = n;
+      if (n < finalN) requestAnimationFrame(tickUp);
+    };
+    tickUp();
+  });
+
+  // Subtle live RSVP count fluctuation
+  setInterval(() => {
+    if (confirmed) return;
+    const cur = parseInt(rsvpCount.textContent, 10);
+    if (Math.random() > 0.6) rsvpCount.textContent = cur + 1;
+  }, 8000);
+</script>
+
+</body>
+</html>

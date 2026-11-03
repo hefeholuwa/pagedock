@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bole Festival 2026 — Choplaif | Port Harcourt</title>
+<meta name="description" content="Bole Festival 2026: Choplaif. Three days of bole, fisherman soup, kekefia, banga and the best of southern Nigerian food in Port Harcourt.">
+<meta name="theme-color" content="#fff9e5">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="https://htmlhost.co/m/673dcaa5-80fc-499b-a37d-03f25c904fc3" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Fraunces:ital,opsz,wght@1,9..144,500;1,9..144,700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+  --cream:#fff9e5;
+  --cream-2:#fbefc9;
+  --gold:#fab924;
+  --gold-deep:#e09a00;
+  --red:#cf3234;
+  --red-deep:#a5201f;
+  --ink:#22140f;
+  --cocoa:#3b2219;
+  --muted:#6e5446;
+  --line:rgba(34,20,15,.14);
+  --radius:22px;
+  --radius-sm:12px;
+  --shadow:0 18px 40px -18px rgba(59,34,25,.45);
+  --ease:cubic-bezier(.22,1,.36,1);
+  --display:"Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
+  --serif:"Fraunces", Georgia, "Times New Roman", serif;
+  --body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  margin:0;font-family:var(--body);font-size:1.0625rem;line-height:1.6;
+  color:var(--ink);background:var(--cream);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:100;opacity:.07;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+img{max-width:100%;display:block;height:auto}
+a{color:inherit}
+h1,h2,h3,h4{font-family:var(--display);line-height:1.02;margin:0;letter-spacing:-.02em;font-weight:800}
+p{margin:0}
+em.accent{font-family:var(--serif);font-style:italic;font-weight:500;letter-spacing:0}
+.wrap{width:min(1200px,100% - 2.5rem);margin-inline:auto}
+section{padding-block:clamp(5rem,10vw,8.5rem)}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:.5rem;font-weight:700;font-size:.8rem;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--red);
+}
+.eyebrow svg{width:16px;height:16px}
+.section-head{display:grid;gap:1.1rem;max-width:720px;margin-bottom:clamp(2.5rem,5vw,4rem)}
+.section-head h2{font-size:clamp(2.4rem,5.5vw,4.4rem)}
+.section-head p{color:var(--muted);font-size:1.15rem;max-width:58ch}
+.skip{position:absolute;left:1rem;top:-4rem;z-index:200;background:var(--ink);color:var(--cream);padding:.75rem 1rem;border-radius:10px;transition:top .2s}
+.skip:focus{top:1rem}
+:focus-visible{outline:3px solid var(--red);outline-offset:3px;border-radius:6px}
+
+/* Buttons */
+.btn{
+  --bg:var(--red);--fg:var(--cream);
+  display:inline-flex;align-items:center;justify-content:center;gap:.6rem;
+  font:700 1rem/1 var(--body);padding:1.05rem 1.5rem;border-radius:999px;border:2px solid var(--ink);
+  background:var(--bg);color:var(--fg);text-decoration:none;cursor:pointer;
+  box-shadow:4px 4px 0 var(--ink);transition:transform .25s var(--ease),box-shadow .25s var(--ease),background .25s;
+}
+.btn svg{width:18px;height:18px;transition:transform .3s var(--ease)}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.btn:hover svg{transform:translateX(3px)}
+.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+.btn.gold{--bg:var(--gold);--fg:var(--ink)}
+.btn.ghost{--bg:var(--cream);--fg:var(--ink)}
+.btn.sm{padding:.75rem 1.1rem;font-size:.92rem;box-shadow:3px 3px 0 var(--ink)}
+
+/* Header */
+.site-header{position:sticky;top:0;z-index:50;transition:background .3s,box-shadow .3s,backdrop-filter .3s}
+.site-header.scrolled{background:rgba(255,249,229,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 1px 0 var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-block:.9rem}
+.brand{display:flex;align-items:center;gap:.75rem;text-decoration:none;font-family:var(--display);font-weight:800;font-size:1.15rem}
+.brand img{width:52px;height:52px;transition:transform .5s var(--ease)}
+.brand:hover img{transform:rotate(-12deg) scale(1.05)}
+.brand small{display:block;font-family:var(--body);font-weight:600;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--red)}
+.nav ul{list-style:none;margin:0;padding:0;display:flex;gap:.25rem}
+.nav a{display:block;text-decoration:none;font-weight:600;padding:.6rem .9rem;border-radius:999px;position:relative;transition:background .2s}
+.nav a:hover{background:var(--cream-2)}
+.header-cta{display:flex;align-items:center;gap:.6rem}
+.menu-toggle{
+  display:none;width:48px;height:48px;border-radius:50%;border:2px solid var(--ink);background:var(--gold);
+  cursor:pointer;place-items:center;color:var(--ink);transition:transform .2s;
+}
+.menu-toggle:active{transform:scale(.92)}
+.menu-toggle svg{width:22px;height:22px}
+.menu-toggle .i-close{display:none}
+.menu-toggle[aria-expanded="true"] .i-open{display:none}
+.menu-toggle[aria-expanded="true"] .i-close{display:block}
+
+@media (max-width:900px){
+  .header-cta .btn{display:none}
+  html.js .menu-toggle{display:grid}
+  html:not(.js) .header-inner{flex-wrap:wrap}
+  html:not(.js) .nav{width:100%;overflow-x:auto}
+  html.js .nav{
+    position:fixed;inset:76px 1rem auto 1rem;background:var(--ink);color:var(--cream);border-radius:var(--radius);
+    padding:1rem;box-shadow:var(--shadow);
+    clip-path:inset(0 0 100% 0 round 22px);opacity:0;visibility:hidden;
+    transition:clip-path .5s var(--ease),opacity .3s,visibility 0s .5s;
+  }
+  html.js .nav.open{clip-path:inset(0 0 0 0 round 22px);opacity:1;visibility:visible;transition:clip-path .5s var(--ease),opacity .3s}
+  html.js .nav ul{flex-direction:column}
+  html.js .nav li{opacity:0;transform:translateY(10px);transition:opacity .35s,transform .45s var(--ease)}
+  html.js .nav.open li{opacity:1;transform:none}
+  html.js .nav.open li:nth-child(2){transition-delay:.05s}
+  html.js .nav.open li:nth-child(3){transition-delay:.1s}
+  html.js .nav.open li:nth-child(4){transition-delay:.15s}
+  html.js .nav.open li:nth-child(5){transition-delay:.2s}
+  html.js .nav.open li:nth-child(6){transition-delay:.25s}
+  html.js .nav a{font-family:var(--display);font-size:1.6rem;padding:.7rem 1rem}
+  html.js .nav a:hover{background:rgba(255,249,229,.08);color:var(--gold)}
+}
+
+/* Hero */
+.hero{padding-top:clamp(2rem,5vw,4rem);padding-bottom:clamp(4rem,8vw,6rem);position:relative}
+.hero-grid{display:grid;grid-template-columns:1.25fr .9fr;gap:clamp(2rem,5vw,4.5rem);align-items:center}
+.hero-tag{display:inline-flex;align-items:center;gap:.5rem;background:var(--ink);color:var(--gold);padding:.5rem .95rem;border-radius:999px;font-weight:700;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase}
+.hero-tag svg{width:15px;height:15px}
+.hero h1{
+  font-size:clamp(4.2rem,13vw,10.5rem);line-height:.85;letter-spacing:-.05em;margin:1.4rem 0 1.2rem;color:var(--red);
+}
+.hero h1 .row{display:block}
+.hero h1 .gold{color:var(--gold);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;text-shadow:5px 5px 0 var(--ink)}
+.hero-lede{font-size:clamp(1.15rem,2vw,1.35rem);max-width:40ch;color:var(--cocoa)}
+.hero-lede em{font-family:var(--serif);font-style:italic;color:var(--red)}
+.hero-meta{display:flex;flex-wrap:wrap;gap:.6rem 1.4rem;margin:1.8rem 0 2.2rem;font-weight:600}
+.hero-meta span{display:inline-flex;align-items:center;gap:.5rem}
+.hero-meta svg{width:20px;height:20px;color:var(--red)}
+.hero-actions{display:flex;flex-wrap:wrap;gap:1rem}
+.hero-visual{position:relative}
+.hero-frame{
+  border-radius:999px 999px var(--radius) var(--radius);overflow:hidden;border:3px solid var(--ink);
+  aspect-ratio:4/5.2;box-shadow:10px 10px 0 var(--gold);background:var(--cream-2);
+}
+.hero-frame img{width:100%;height:100%;object-fit:cover;transform:scale(1.04);transition:transform 1.2s var(--ease)}
+.hero-visual:hover .hero-frame img{transform:scale(1.09)}
+.sticker{
+  position:absolute;left:-2.4rem;bottom:2.5rem;width:140px;height:140px;border-radius:50%;
+  background:var(--red);color:var(--cream);display:grid;place-items:center;border:3px solid var(--ink);
+}
+.sticker svg.ring{position:absolute;inset:0;width:100%;height:100%;animation:spin 18s linear infinite}
+.sticker img{width:62px;height:62px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.countdown{
+  position:absolute;right:-1rem;top:2rem;background:var(--cream);border:2px solid var(--ink);border-radius:18px;
+  padding:.8rem 1rem;box-shadow:4px 4px 0 var(--ink);display:flex;gap:.9rem;text-align:center
+}
+.countdown div{min-width:2.6rem}
+.countdown b{display:block;font-family:var(--display);font-size:1.6rem;line-height:1;color:var(--red)}
+.countdown small{font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;font-weight:700;color:var(--muted)}
+
+/* Marquee */
+.marquee{background:var(--red);color:var(--cream);border-block:3px solid var(--ink);overflow:hidden;padding-block:1.1rem;transform:rotate(-1.5deg);margin-block:-1rem;position:relative;z-index:2}
+.marquee-track{display:flex;gap:2.5rem;width:max-content;animation:marquee 38s linear infinite}
+.marquee:hover .marquee-track{animation-play-state:paused}
+.marquee span{display:inline-flex;align-items:center;gap:2.5rem;font-family:var(--display);font-weight:800;font-size:clamp(1.4rem,3vw,2.2rem);white-space:nowrap}
+.marquee span svg{width:28px;height:28px;color:var(--gold)}
+@keyframes marquee{to{transform:translateX(-50%)}}
+
+/* About */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,6vw,5rem);align-items:center}
+.about-img{position:relative;border-radius:var(--radius);overflow:hidden;border:3px solid var(--ink);aspect-ratio:5/4;box-shadow:-10px 10px 0 var(--red)}
+.about-img img{width:100%;height:100%;object-fit:cover}
+.about-copy{display:grid;gap:1.3rem}
+.about-copy h2{font-size:clamp(2.4rem,5vw,4rem)}
+.about-copy p{color:var(--cocoa);font-size:1.1rem}
+.pron{display:inline-flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;padding:1rem 1.2rem;border:2px dashed var(--ink);border-radius:var(--radius-sm);background:var(--cream-2)}
+.pron b{font-family:var(--display);font-size:1.5rem;color:var(--red)}
+.pron i{font-family:var(--serif);color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:clamp(3rem,6vw,5rem)}
+.stat{padding:1.6rem;border-radius:var(--radius);background:var(--gold);border:2px solid var(--ink);transition:transform .3s var(--ease)}
+.stat:nth-child(2){background:var(--cream-2)}
+.stat:nth-child(3){background:var(--red);color:var(--cream)}
+.stat:nth-child(4){background:var(--ink);color:var(--cream)}
+.stat:hover{transform:translateY(-6px) rotate(-1deg)}
+.stat b{display:block;font-family:var(--display);font-size:clamp(2.4rem,4vw,3.4rem);line-height:1}
+.stat span{font-weight:600;font-size:.95rem}
+
+/* Menu */
+.menu-section{background:var(--ink);color:var(--cream);border-radius:clamp(28px,5vw,56px);margin-inline:clamp(.5rem,1.5vw,1.25rem)}
+.menu-section .section-head p{color:rgba(255,249,229,.72)}
+.menu-section .eyebrow{color:var(--gold)}
+.filters{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:2.5rem;border:0;padding:0}
+.filters legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip span{
+  display:inline-flex;align-items:center;gap:.45rem;padding:.65rem 1.15rem;border-radius:999px;border:2px solid rgba(255,249,229,.3);
+  font-weight:600;cursor:pointer;transition:background .25s,border-color .25s,color .25s,transform .2s;
+}
+.chip span::before{content:"";width:.6rem;height:.6rem;border-radius:50%;border:2px solid currentColor;transition:background .2s,transform .3s var(--ease)}
+.chip:hover span{border-color:var(--gold)}
+.chip input:checked + span{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+.chip input:checked + span::before{background:var(--red);border-color:var(--red);transform:scale(1.2)}
+.chip input:focus-visible + span{outline:3px solid var(--gold);outline-offset:3px}
+.chip:active span{transform:scale(.95)}
+.dishes{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.4rem}
+.dish{
+  background:var(--cocoa);border-radius:var(--radius);overflow:hidden;border:1px solid rgba(255,249,229,.12);
+  display:flex;flex-direction:column;transition:transform .4s var(--ease),box-shadow .4s var(--ease),opacity .35s;
+}
+.dish:hover{transform:translateY(-8px);box-shadow:0 26px 40px -24px rgba(0,0,0,.8)}
+.dish.hide{display:none}
+.dish figure{margin:0;aspect-ratio:1/0.82;overflow:hidden;position:relative}
+.dish figure img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease)}
+.dish:hover figure img{transform:scale(1.08)}
+.dish .origin{position:absolute;left:1rem;top:1rem;background:var(--cream);color:var(--ink);font-weight:700;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;padding:.35rem .7rem;border-radius:999px}
+.dish-body{padding:1.4rem 1.4rem 1.6rem;display:grid;gap:.6rem;flex:1}
+.dish h3{font-size:1.55rem}
+.dish p{color:rgba(255,249,229,.74);font-size:.98rem}
+.heat{display:flex;gap:.2rem;align-items:center;margin-top:auto;padding-top:.5rem;color:var(--gold);font-size:.82rem;font-weight:600}
+.heat svg{width:16px;height:16px}
+.heat svg.off{opacity:.25}
+.heat span{margin-left:.4rem;color:rgba(255,249,229,.6)}
+
+/* Programme */
+.tabs{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:2rem}
+.tab{
+  font:700 1rem var(--body);padding:.9rem 1.3rem;border-radius:var(--radius-sm);border:2px solid var(--ink);background:var(--cream);
+  cursor:pointer;display:grid;text-align:left;gap:.1rem;transition:background .25s,transform .2s,box-shadow .25s;
+}
+.tab small{font-weight:600;color:var(--muted);font-size:.8rem}
+.tab:hover{background:var(--cream-2)}
+.tab:active{transform:scale(.97)}
+.tab[aria-selected="true"]{background:var(--red);color:var(--cream);box-shadow:4px 4px 0 var(--ink)}
+.tab[aria-selected="true"] small{color:rgba(255,249,229,.8)}
+.panel{display:grid;grid-template-columns:.8fr 1.2fr;gap:2rem;align-items:start}
+html.js .panel[hidden]{display:none}
+html:not(.js) .panel{margin-bottom:3rem}
+html.js .panel:not([hidden]){animation:fadeUp .55s var(--ease)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.panel-intro{background:var(--gold);border:2px solid var(--ink);border-radius:var(--radius);padding:2rem;display:grid;gap:1rem;position:sticky;top:110px}
+.panel-intro h3{font-size:clamp(2rem,3.5vw,2.8rem)}
+.panel-intro p{color:var(--cocoa)}
+.timeline{list-style:none;margin:0;padding:0;display:grid}
+.timeline li{display:grid;grid-template-columns:90px 1fr auto;gap:1.2rem;align-items:center;padding:1.3rem .4rem;border-bottom:1px solid var(--line);transition:background .25s,padding .3s var(--ease)}
+.timeline li:first-child{border-top:1px solid var(--line)}
+.timeline li:hover{background:var(--cream-2);padding-inline:1rem}
+.timeline time{font-family:var(--display);font-weight:800;font-size:1.25rem;color:var(--red)}
+.timeline h4{font-size:1.2rem;letter-spacing:-.01em}
+.timeline p{color:var(--muted);font-size:.95rem}
+.timeline .ico{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--ink);color:var(--gold)}
+.timeline .ico svg{width:20px;height:20px}
+
+/* Tickets */
+.tickets{background:var(--gold);border-block:3px solid var(--ink)}
+.tickets .eyebrow{color:var(--ink)}
+.tickets .section-head p{color:var(--cocoa)}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;align-items:stretch}
+.tier{background:var(--cream);border:2px solid var(--ink);border-radius:var(--radius);padding:2rem;display:flex;flex-direction:column;gap:1.2rem;position:relative;transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+.tier:hover{transform:translateY(-6px);box-shadow:8px 8px 0 var(--ink)}
+.tier.featured{background:var(--ink);color:var(--cream)}
+.tier .badge{position:absolute;top:-14px;right:1.5rem;background:var(--red);color:var(--cream);font-weight:700;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;padding:.4rem .8rem;border-radius:999px;border:2px solid var(--ink)}
+.tier h3{font-size:1.6rem}
+.tier .price{font-family:var(--display);font-weight:800;font-size:3rem;line-height:1}
+.tier .price small{font-family:var(--body);font-size:.95rem;font-weight:600;opacity:.7}
+.tier p.desc{opacity:.8}
+.tier ul{list-style:none;padding:0;margin:0;display:grid;gap:.7rem;flex:1}
+.tier li{display:flex;gap:.6rem;align-items:flex-start}
+.tier li svg{width:20px;height:20px;flex:none;margin-top:.15rem;color:var(--red)}
+.tier.featured li svg{color:var(--gold)}
+.tier .btn{width:100%}
+
+/* Gallery */
+.gallery{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:200px;gap:1rem}
+.gallery figure{margin:0;border-radius:var(--radius);overflow:hidden;position:relative;border:2px solid var(--ink)}
+.gallery figure:nth-child(1){grid-column:span 2;grid-row:span 2}
+.gallery figure:nth-child(2){grid-row:span 2}
+.gallery figure:nth-child(5){grid-column:span 2}
+.gallery img{width:100%;height:100%;object-fit:cover;transition:transform .9s var(--ease),filter .5s}
+.gallery figure:hover img{transform:scale(1.07)}
+.gallery figcaption{position:absolute;left:.8rem;bottom:.8rem;right:.8rem;background:var(--cream);font-weight:600;font-size:.85rem;padding:.45rem .8rem;border-radius:999px;width:fit-content;transform:translateY(8px);opacity:0;transition:.4s var(--ease)}
+.gallery figure:hover figcaption,.gallery figure:focus-within figcaption{transform:none;opacity:1}
+
+/* Form */
+.contact-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(2rem,5vw,4rem);align-items:start}
+.contact-aside{display:grid;gap:1.5rem}
+.contact-aside h2{font-size:clamp(2.4rem,5vw,4rem)}
+.contact-aside p{color:var(--cocoa);font-size:1.1rem}
+.info-list{list-style:none;padding:0;margin:0;display:grid;gap:1rem}
+.info-list li{display:flex;gap:1rem;align-items:flex-start}
+.info-list .ico{width:46px;height:46px;flex:none;border-radius:14px;background:var(--red);color:var(--cream);display:grid;place-items:center;border:2px solid var(--ink)}
+.info-list .ico svg{width:20px;height:20px}
+.info-list b{display:block}
+.info-list span{color:var(--muted)}
+form.card{background:var(--cream-2);border:2px solid var(--ink);border-radius:var(--radius);padding:clamp(1.5rem,4vw,2.5rem);box-shadow:8px 8px 0 var(--ink);display:grid;gap:1.2rem}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.field{display:grid;gap:.45rem}
+label.lbl,.field legend{font-weight:700;font-size:.92rem}
+input[type="text"],input[type="email"],input[type="tel"],textarea,select{
+  width:100%;font:500 1rem var(--body);color:var(--ink);background:var(--cream);
+  border:2px solid var(--ink);border-radius:var(--radius-sm);padding:.9rem 1rem;transition:border-color .2s,box-shadow .2s;
+}
+input::placeholder,textarea::placeholder{color:#9b8576}
+input:focus,textarea:focus,select:focus{outline:none;box-shadow:0 0 0 4px rgba(207,50,52,.25);border-color:var(--red)}
+textarea{min-height:130px;resize:vertical}
+select{
+  appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:2.8rem;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%2322140f' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 1rem center;
+}
+@supports (appearance:base-select){
+  select,::picker(select){appearance:base-select}
+  select{background-image:none;display:flex;align-items:center;justify-content:space-between;padding-right:1rem}
+  select::picker-icon{color:var(--ink);transition:rotate .3s var(--ease)}
+  select:open::picker-icon{rotate:180deg}
+  ::picker(select){
+    border:2px solid var(--ink);border-radius:var(--radius-sm);background:var(--cream);padding:.4rem;margin-block:.4rem;
+    box-shadow:6px 6px 0 var(--ink);
+    opacity:0;translate:0 -6px;transition:opacity .2s,translate .25s var(--ease),overlay .25s allow-discrete,display .25s allow-discrete;
+  }
+  ::picker(select):popover-open{opacity:1;translate:0 0}
+  @starting-style{::picker(select):popover-open{opacity:0;translate:0 -6px}}
+  select option{padding:.65rem .8rem;border-radius:9px;font-weight:500;cursor:pointer;transition:background .15s}
+  select option:hover,select option:focus-visible{background:var(--gold);outline:none}
+  select option:checked{background:var(--red);color:var(--cream)}
+  select option::checkmark{color:currentColor}
+}
+.radios{border:0;padding:0;margin:0;display:grid;gap:.6rem}
+.radio-set{display:flex;flex-wrap:wrap;gap:.6rem}
+.opt{display:inline-flex;align-items:center;gap:.55rem;padding:.6rem .95rem;border:2px solid var(--ink);border-radius:999px;background:var(--cream);cursor:pointer;font-weight:600;font-size:.95rem;transition:background .2s,transform .15s}
+.opt:hover{background:#fff}
+.opt:active{transform:scale(.96)}
+input[type="radio"],input[type="checkbox"]{
+  appearance:none;-webkit-appearance:none;margin:0;flex:none;width:1.3rem;height:1.3rem;border:2px solid var(--ink);
+  background:var(--cream);display:grid;place-content:center;cursor:pointer;transition:background .2s,border-color .2s;
+}
+input[type="radio"]{border-radius:50%}
+input[type="radio"]::before{content:"";width:.6rem;height:.6rem;border-radius:50%;background:var(--cream);transform:scale(0);transition:transform .25s var(--ease)}
+input[type="radio"]:checked{background:var(--red);border-color:var(--red)}
+input[type="radio"]:checked::before{transform:scale(1)}
+input[type="checkbox"]{border-radius:6px}
+input[type="checkbox"]::before{content:"";width:.75rem;height:.75rem;background:var(--cream);clip-path:polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0,43% 62%);transform:scale(0);transition:transform .25s var(--ease)}
+input[type="checkbox"]:checked{background:var(--red);border-color:var(--red)}
+input[type="checkbox"]:checked::before{transform:scale(1)}
+.opt:has(input:checked){background:var(--gold)}
+.check{display:flex;gap:.75rem;align-items:flex-start;font-size:.95rem;color:var(--cocoa);cursor:pointer}
+.check input{margin-top:.15rem}
+.form-foot{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:space-between}
+.form-foot small{color:var(--muted)}
+
+/* FAQ */
+.faq-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(2rem,5vw,4rem)}
+.acc{border-top:2px solid var(--ink)}
+.acc-item{border-bottom:2px solid var(--ink)}
+.acc-item h3{font-size:inherit;letter-spacing:0}
+.acc-btn{
+  width:100%;display:flex;justify-content:space-between;align-items:center;gap:1rem;background:none;border:0;cursor:pointer;
+  font:700 clamp(1.1rem,2vw,1.3rem)/1.3 var(--display);color:var(--ink);padding:1.4rem .2rem;text-align:left;
+}
+.acc-btn .pm{width:38px;height:38px;flex:none;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;transition:transform .4s var(--ease),background .25s}
+.acc-btn .pm svg{width:18px;height:18px}
+.acc-btn:hover .pm{background:var(--gold)}
+.acc-btn[aria-expanded="true"] .pm{transform:rotate(45deg);background:var(--red);color:var(--cream)}
+.acc-panel{display:grid;grid-template-rows:1fr;transition:grid-template-rows .45s var(--ease)}
+html.js .acc-panel{grid-template-rows:0fr}
+html.js .acc-panel.open{grid-template-rows:1fr}
+.acc-panel > div{overflow:hidden}
+.acc-panel p{padding:0 .2rem 1.5rem;color:var(--cocoa);max-width:62ch}
+
+/* Visit */
+.visit{position:relative;color:var(--cream);padding:0;margin-inline:clamp(.5rem,1.5vw,1.25rem);border-radius:clamp(28px,5vw,56px);overflow:hidden;min-height:520px;display:grid;align-items:end}
+.visit > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.visit::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(34,20,15,.15) 10%,rgba(34,20,15,.92))}
+.visit-inner{position:relative;z-index:1;padding-block:clamp(3rem,7vw,5rem);display:grid;grid-template-columns:1.3fr 1fr;gap:2rem;align-items:end}
+.visit h2{font-size:clamp(2.6rem,6vw,5rem)}
+.visit p{color:rgba(255,249,229,.85);font-size:1.1rem;margin-top:1rem;max-width:46ch}
+.visit-facts{display:grid;gap:.8rem}
+.visit-facts div{display:flex;gap:.8rem;align-items:center;background:rgba(255,249,229,.1);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,249,229,.2);padding:1rem 1.1rem;border-radius:var(--radius-sm)}
+.visit-facts svg{width:22px;height:22px;color:var(--gold);flex:none}
+
+/* Footer */
+footer{padding-block:4rem 2.5rem}
+.foot-top{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:2rem;padding-bottom:3rem;border-bottom:2px solid var(--ink)}
+.foot-brand{display:grid;gap:1rem;max-width:34ch}
+.foot-brand img{width:84px;height:84px}
+.foot-brand p{color:var(--muted)}
+footer h4{font-size:1rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:1rem;color:var(--red)}
+footer ul{list-style:none;padding:0;margin:0;display:grid;gap:.6rem}
+footer ul a{text-decoration:none;font-weight:600;background:linear-gradient(var(--red),var(--red)) 0 100%/0 2px no-repeat;transition:background-size .35s var(--ease)}
+footer ul a:hover{background-size:100% 2px}
+.foot-big{font-family:var(--display);font-weight:800;font-size:clamp(4rem,17vw,15rem);line-height:.8;letter-spacing:-.06em;color:var(--red);text-align:center;margin-top:2.5rem;user-select:none}
+.foot-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;margin-top:2rem;color:var(--muted);font-size:.9rem}
+
+/* Reveal */
+html.js .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease),transform .9s var(--ease)}
+html.js .reveal.in{opacity:1;transform:none}
+html.js .reveal[data-delay="1"]{transition-delay:.08s}
+html.js .reveal[data-delay="2"]{transition-delay:.16s}
+html.js .reveal[data-delay="3"]{transition-delay:.24s}
+
+/* Responsive */
+@media (max-width:1000px){
+  .hero-grid,.about-grid,.contact-grid,.faq-grid,.visit-inner{grid-template-columns:1fr}
+  .hero-visual{max-width:460px;margin-inline:auto;width:100%}
+  .panel{grid-template-columns:1fr}
+  .panel-intro{position:static}
+  .tiers{grid-template-columns:1fr;max-width:520px;margin-inline:auto}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .gallery{grid-template-columns:repeat(2,1fr)}
+  .gallery figure:nth-child(2){grid-row:span 1}
+  .foot-top{grid-template-columns:1fr 1fr}
+  .foot-brand{grid-column:1/-1}
+}
+@media (max-width:600px){
+  .field-row{grid-template-columns:1fr}
+  .sticker{width:110px;height:110px;left:-.6rem;bottom:1.2rem}
+  .sticker img{width:48px;height:48px}
+  .countdown{right:-.4rem;top:1rem;gap:.5rem;padding:.6rem .7rem}
+  .countdown b{font-size:1.25rem}
+  .timeline li{grid-template-columns:70px 1fr}
+  .timeline .ico{display:none}
+  .gallery{grid-auto-rows:160px}
+  .gallery figure:nth-child(1),.gallery figure:nth-child(5){grid-column:span 2}
+  .brand span.txt{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;transition-delay:0s!important}
+  html.js .reveal{opacity:1;transform:none}
+  .marquee-track{animation:none;flex-wrap:wrap;width:auto;justify-content:center}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header" id="top">
+  <div class="wrap header-inner">
+    <a class="brand" href="#top" aria-label="Bole Festival home">
+      <img src="https://htmlhost.co/m/673dcaa5-80fc-499b-a37d-03f25c904fc3" alt="" width="52" height="52">
+      <span class="txt">Bole Festival<small>Choplaif 2026</small></span>
+    </a>
+    <nav class="nav" id="site-nav" aria-label="Main">
+      <ul>
+        <li><a href="#about">The Theme</a></li>
+        <li><a href="#menu">The Menu</a></li>
+        <li><a href="#programme">Programme</a></li>
+        <li><a href="#tickets">Tickets</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="header-cta">
+      <a class="btn sm" href="#tickets">Get tickets <i data-lucide="arrow-right"></i></a>
+      <button class="menu-toggle" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu">
+        <i data-lucide="menu" class="i-open"></i><i data-lucide="x" class="i-close"></i>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <!-- HERO -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="hero-tag reveal"><i data-lucide="flame"></i> Bole Festival 2026 · Port Harcourt</span>
+        <h1 id="hero-title" class="reveal" data-delay="1">
+          <span class="row">Chop</span><span class="row gold">laif.</span>
+        </h1>
+        <p class="hero-lede reveal" data-delay="2">Three days of charcoal smoke, palm-oil pepper sauce and the full flavour of the South. Come hungry, leave <em>happy</em> — this is how the Garden City enjoys itself.</p>
+        <div class="hero-meta reveal" data-delay="2">
+          <span><i data-lucide="calendar-days"></i> 11 – 13 December 2026</span>
+          <span><i data-lucide="map-pin"></i> Pleasure Park, Port Harcourt</span>
+        </div>
+        <div class="hero-actions reveal" data-delay="3">
+          <a class="btn" href="#tickets">Reserve your pass <i data-lucide="arrow-right"></i></a>
+          <a class="btn ghost" href="#menu">See the menu <i data-lucide="utensils"></i></a>
+        </div>
+      </div>
+      <div class="hero-visual reveal" data-delay="2">
+        <div class="hero-frame">
+          <img src="https://images.pexels.com/photos/20863887/pexels-photo-20863887.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="Ripe plantain and whole fish roasting over glowing charcoal" width="800" height="1040">
+        </div>
+        <div class="sticker" aria-hidden="true">
+          <svg class="ring" viewBox="0 0 140 140"><defs><path id="circ" d="M70,70 m-52,0 a52,52 0 1,1 104,0 a52,52 0 1,1 -104,0"/></defs><text font-family="Figtree, sans-serif" font-weight="700" font-size="12.5" letter-spacing="3" fill="#fff9e5"><textPath href="#circ">CHOP LIFE • ENJOY YOURSELF • CHOPLAIF • </textPath></text></svg>
+          <img src="https://htmlhost.co/m/673dcaa5-80fc-499b-a37d-03f25c904fc3" alt="">
+        </div>
+        <div class="countdown" role="timer" aria-label="Countdown to the festival">
+          <div><b id="cd-d">—</b><small>Days</small></div>
+          <div><b id="cd-h">—</b><small>Hrs</small></div>
+          <div><b id="cd-m">—</b><small>Min</small></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>Bole &amp; Fish <i data-lucide="flame"></i> Fisherman Soup <i data-lucide="flame"></i> Kekefia <i data-lucide="flame"></i> Onunu <i data-lucide="flame"></i> Banga <i data-lucide="flame"></i> Owo &amp; Starch <i data-lucide="flame"></i> Afang <i data-lucide="flame"></i> Edikang Ikong <i data-lucide="flame"></i></span>
+      <span>Bole &amp; Fish <i data-lucide="flame"></i> Fisherman Soup <i data-lucide="flame"></i> Kekefia <i data-lucide="flame"></i> Onunu <i data-lucide="flame"></i> Banga <i data-lucide="flame"></i> Owo &amp; Starch <i data-lucide="flame"></i> Afang <i data-lucide="flame"></i> Edikang Ikong <i data-lucide="flame"></i></span>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section id="about" aria-labelledby="about-title">
+    <div class="wrap">
+      <div class="about-grid">
+        <div class="about-img reveal">
+          <img src="https://images.pexels.com/photos/7081216/pexels-photo-7081216.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="A lively crowd eating and laughing between food stalls at dusk" width="1000" height="800" loading="lazy">
+        </div>
+        <div class="about-copy">
+          <span class="eyebrow reveal"><i data-lucide="sparkles"></i> This year's theme</span>
+          <h2 id="about-title" class="reveal" data-delay="1">Life is short. <em class="accent">Chop am well.</em></h2>
+          <div class="pron reveal" data-delay="1"><b>Choplaif</b><i>/chop · life/</i><span>— to enjoy yourself, fully and without apology.</span></div>
+          <p class="reveal" data-delay="2">Bole Festival is Rivers State's yearly feast of the dishes we grew up on — roadside bole wrapped in old newspaper, soup pots that simmer from morning, fresh catch straight from the creeks. Every December we bring the best cooks from across the South together in one place.</p>
+          <p class="reveal" data-delay="3">For 2026, the theme is Choplaif: a celebration of good food, loud music and the people you share them with. Buy a plate, find a table, make a new friend. That's the whole plan.</p>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat reveal"><b data-count="120">120</b><span>+ food vendors</span></div>
+        <div class="stat reveal" data-delay="1"><b data-count="40">40</b><span>+ traditional dishes</span></div>
+        <div class="stat reveal" data-delay="2"><b data-count="3">3</b><span>days of feasting</span></div>
+        <div class="stat reveal" data-delay="3"><b data-count="6">6</b><span>southern states on the menu</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MENU -->
+  <section id="menu" class="menu-section" aria-labelledby="menu-title">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow reveal"><i data-lucide="utensils"></i> On the menu</span>
+        <h2 id="menu-title" class="reveal" data-delay="1">Taste the whole <em class="accent">South</em></h2>
+        <p class="reveal" data-delay="2">Bole is the headline, but the stalls stretch from the Niger Delta creeks to the Cross River. Filter by where a dish comes from, then plan your route.</p>
+      </div>
+      <fieldset class="filters reveal" aria-controls="dish-grid">
+        <legend>Filter dishes by state</legend>
+        <label class="chip"><input type="radio" name="region" value="all" checked><span>Everything</span></label>
+        <label class="chip"><input type="radio" name="region" value="rivers"><span>Rivers</span></label>
+        <label class="chip"><input type="radio" name="region" value="delta"><span>Delta</span></label>
+        <label class="chip"><input type="radio" name="region" value="bayelsa"><span>Bayelsa</span></label>
+        <label class="chip"><input type="radio" name="region" value="akwa"><span>Akwa Ibom &amp; Cross River</span></label>
+      </fieldset>
+      <div class="dishes" id="dish-grid" aria-live="polite">
+        <article class="dish reveal" data-region="rivers">
+          <figure><img src="https://images.pexels.com/photos/8743924/pexels-photo-8743924.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="Charred roasted plantain served with red pepper sauce" loading="lazy" width="600" height="600"><span class="origin">Rivers</span></figure>
+          <div class="dish-body"><h3>Bole &amp; Fish</h3><p>Plantain roasted until blistered, paired with grilled fish and a palm-oil pepper sauce full of onions and uziza.</p>
+          <div class="heat" aria-label="Heat level 3 of 4"><i data-lucide="flame"></i><i data-lucide="flame"></i><i data-lucide="flame"></i><i data-lucide="flame" class="off"></i><span>The main event</span></div></div>
+        </article>
+        <article class="dish reveal" data-region="rivers bayelsa" data-delay="1">
+          <figure><img src="https://images.pexels.com/photos/15735751/pexels-photo-15735751.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="A pot of rich seafood soup with prawns and crab" loading="lazy" width="600" height="600"><span class="origin">Rivers · Bayelsa</span></figure>
+          <div class="dish-body"><h3>Fisherman Soup</h3><p>Fresh catch, periwinkle, prawns and crab in a fragrant, peppery broth. Best with a wrap of starch or plantain.</p>
+          <div class="heat" aria-label="Heat level 4 of 4"><i data-lucide="flame"></i><i data-lucide="flame"></i><i data-lucide="flame"></i><i data-lucide="flame"></i><span>Bring water</span></div></div>
+        </article>
+        <article class="dish reveal" data-region="rivers" data-delay="2">
+          <figure><img src="https://images.unsplash.com/photo-1700760933848-194ad3408fc4?ixid=M3wxMDQwMjQxfDB8MXxzZWFyY2h8Mnx8cGxhbnRhaW4lMjBwb3R0YWdlJTIwd2l0aCUyMHNtb2tlZCUyMGZpc2h8ZW58MXwyfHx8MTc5MTEzMTY5Mnww&ixlib=rb-4.1.0&w=1920&q=80&fm=jpg&fit=max" alt="Thick plantain pottage with pieces of smoked fish" loading="lazy" width="600" height="600"><span class="origin">Rivers · Kalabari</span></figure>
+          <div class="dish-body"><h3>Kekefia</h3><p>Grated unripe plantain cooked down into a thick pottage with smoked fish, palm oil and scent leaves.</p>
+          <div class="heat" aria-label="Heat level 2 of 4"><i data-lucide="flame"></i><i data-lucide="flame"></i><i data-lucide="flame" class="off"></i><i data-lucide="flame" class="off"></i><span>Comfort food</span></div></div>
+        </article>
+        <article class="dish reveal" data-region="rivers">
+          <figure><img src="https://images.pexels.com/photos/8580433/pexels-photo-8580433.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="Smooth pounded yam and plantain swallow beside a bowl of soup" loading="lazy" width="600" height="600"><span class="origin">Rivers · Ikwerre</span></figure>
+          <div class="dish-body"><h3>Onunu</h3><p>Boiled yam and ripe plantain pounded together with palm oil — soft, sweet and served with fish pepper soup.</p>
+          <div class="heat" aria-label="Heat level 1 of 4"><i data-lucide="flame"></i><i data-lucide="flame" class="off"></i><i data-lucide="flame" class="off"></i><i data-lucide="flame" class="off"></i><span>Gentle start</span></div></div>
+        </article>
+        <article class="dish reveal" data-region="delta" data-delay="1">
+          <figure><img src="https://images.pexels.com/photos/8696758/pexels-photo-8696758.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="Dark orange palm nut soup with fresh catfish" loading="lazy" width="600" height="600"><span class="origin">Delta</span></figure>
+          <div class="dish-body"><h3>Banga Soup</h3><p>Palm fruit extract simmered with beletete leaves and fresh catfish. Rich, aromatic and made for starch.</p>
+          <div class="heat" aria-label="Heat level 3 of 4"><i data-lucide="flame"></i><i data-lucide="flame"></i><i data-lucide="flame"></i><i data-lucide="flame" class="off"></i><span>Deep flavour</span></div></div>
+        </article>
+        <article class="dish reveal" data-region="delta" data-delay="2">
+          <figure><img src="https://images.pexels.com/photos/6955149/pexels-photo-6955149.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="Glossy yellow starch beside an orange palm oil soup" loading="lazy" width="600" height="600"><span class="origin">Delta · Urhobo</span></figure>
+          <div class="dish-body"><h3>Owo &amp; Starch</h3><p>A smooth palm-oil and potash soup with dried fish, eaten with springy cassava starch. Pure Warri Sunday.</p>
+          <div class="heat" aria-label="Heat level 2 of 4"><i data-lucide="flame"></i><i data-lucide="flame"></i><i data-lucide="flame" class="off"></i><i data-lucide="flame" class="off"></i><span>Silky</span></div></div>
+        </article>
+        <article class="dish reveal" data-region="delta">
+          <figure><img src="https://images.unsplash.com/photo-1708782344071-35ed44b849a9?ixid=M3wxMDQwMjQxfDB8MXxzZWFyY2h8M3x8eWFtJTIwcGVwcGVyJTIwc291cCUyMHdpdGglMjBnb2F0JTIwbWVhdHxlbnwxfDJ8fHwxNzkxMTMxNjkyfDA&ixlib=rb-4.1.0&w=1920&q=80&fm=jpg&fit=max" alt="Yam chunks and goat meat in a spiced pepper soup" loading="lazy" width="600" height="600"><span class="origin">Delta · Urhobo</span></figure>
+          <div class="dish-body"><h3>Ukodo</h3><p>Yam and goat meat slow-cooked in a lemongrass-scented pepper soup. The cure for a long festival night.</p>
+          <div class="heat" aria-label="Heat level 3 of 4"><i data-lucide="flame"></i><i data-lucide="flame"></i><i data-lucide="flame"></i><i data-lucide="flame" class="off"></i><span>Warming</span></div></div>
+        </article>
+        <article class="dish reveal" data-region="bayelsa" data-delay="1">
+          <figure><img src="https://images.pexels.com/photos/14879230/pexels-photo-14879230.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="Rows of golden smoked fish on a wooden rack" loading="lazy" width="600" height="600"><span class="origin">Bayelsa · Ijaw</span></figure>
+          <div class="dish-body"><h3>Creek Smoked Fish</h3><p>Fish smoked low and slow the way the riverine communities do it, sold whole or shredded into your soup.</p>
+          <div class="heat" aria-label="Heat level 1 of 4"><i data-lucide="flame"></i><i data-lucide="flame" class="off"></i><i data-lucide="flame" class="off"></i><i data-lucide="flame" class="off"></i><span>Smoky</span></div></div>
+        </article>
+        <article class="dish reveal" data-region="akwa" data-delay="2">
+          <figure><img src="https://images.pexels.com/photos/17696680/pexels-photo-17696680.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="Deep green vegetable soup with assorted meat" loading="lazy" width="600" height="600"><span class="origin">Akwa Ibom · Cross River</span></figure>
+          <div class="dish-body"><h3>Afang Soup</h3><p>Shredded afang leaves and waterleaf cooked with periwinkle, beef and stockfish. Heavy, green and glorious.</p>
+          <div class="heat" aria-label="Heat level 2 of 4"><i data-lucide="flame"></i><i data-lucide="flame"></i><i data-lucide="flame" class="off"></i><i data-lucide="flame" class="off"></i><span>Hearty</span></div></div>
+        </article>
+        <article class="dish reveal" data-region="akwa">
+          <figure><img src="https://images.pexels.com/photos/8580433/pexels-photo-8580433.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="Fluted pumpkin leaf soup topped with periwinkles" loading="lazy" width="600" height="600"><span class="origin">Akwa Ibom · Cross River</span></figure>
+          <div class="dish-body"><h3>Edikang Ikong</h3><p>Fluted pumpkin and waterleaf loaded with meat and seafood — the soup Calabar is proud to be known for.</p>
+          <div class="heat" aria-label="Heat level 2 of 4"><i data-lucide="flame"></i><i data-lucide="flame"></i><i data-lucide="flame" class="off"></i><i data-lucide="flame" class="off"></i><span>A classic</span></div></div>
+        </article>
+        <article class="dish reveal" data-region="akwa" data-delay="1">
+          <figure><img src="https://images.pexels.com/photos/5815797/pexels-photo-5815797.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="Grated cocoyam parcels wrapped in green leaves in a pot" loading="lazy" width="600" height="600"><span class="origin">Akwa Ibom · Cross River</span></figure>
+          <div class="dish-body"><h3>Ekpang Nkukwo</h3><p>Grated cocoyam wrapped in cocoyam leaves and cooked in a palm-oil broth with periwinkle and smoked fish.</p>
+          <div class="heat" aria-label="Heat level 2 of 4"><i data-lucide="flame"></i><i data-lucide="flame"></i><i data-lucide="flame" class="off"></i><i data-lucide="flame" class="off"></i><span>Patient cooking</span></div></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROGRAMME -->
+  <section id="programme" aria-labelledby="prog-title">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow reveal"><i data-lucide="calendar-days"></i> Programme</span>
+        <h2 id="prog-title" class="reveal" data-delay="1">Three days, <em class="accent">no dull moment</em></h2>
+        <p class="reveal" data-delay="2">Cooking contests, live highlife, cultural troupes and a kids' kitchen. Times may shift slightly — the grills don't wait.</p>
+      </div>
+      <div class="tabs reveal" role="tablist" aria-label="Festival days">
+        <button class="tab" role="tab" id="tab-1" aria-controls="day-1" aria-selected="true">Day 1 · Fire Up<small>Friday 11 Dec</small></button>
+        <button class="tab" role="tab" id="tab-2" aria-controls="day-2" aria-selected="false" tabindex="-1">Day 2 · Choplaif Proper<small>Saturday 12 Dec</small></button>
+        <button class="tab" role="tab" id="tab-3" aria-controls="day-3" aria-selected="false" tabindex="-1">Day 3 · Sunday Cool<small>Sunday 13 Dec</small></button>
+      </div>
+
+      <div class="panel" role="tabpanel" id="day-1" aria-labelledby="tab-1">
+        <div class="panel-intro"><span class="eyebrow">Friday</span><h3>Fire Up</h3><p>The grills are lit, the first plantain hits the coals and the city clocks out early. Opening day sets the pace.</p></div>
+        <ol class="timeline">
+          <li><time>12:00</time><div><h4>Gates open &amp; grill lighting</h4><p>Vendors light up together at the main roasting line.</p></div><span class="ico"><i data-lucide="flame"></i></span></li>
+          <li><time>14:00</time><div><h4>Bole Masters — Heat One</h4><p>Twenty roadside roasters compete for a place in Saturday's final.</p></div><span class="ico"><i data-lucide="trophy"></i></span></li>
+          <li><time>16:00</time><div><h4>Kids' Kitchen</h4><p>Little hands learn to wrap moi moi and pound onunu, with supervision.</p></div><span class="ico"><i data-lucide="baby"></i></span></li>
+          <li><time>18:00</time><div><h4>Cultural troupe procession</h4><p>Drummers and dancers from across Rivers move through the grounds.</p></div><span class="ico"><i data-lucide="drum"></i></span></li>
+          <li><time>20:00</time><div><h4>Highlife Night</h4><p>A live band on the main stage until late. Dance off your second plate.</p></div><span class="ico"><i data-lucide="music"></i></span></li>
+        </ol>
+      </div>
+
+      <div class="panel" role="tabpanel" id="day-2" aria-labelledby="tab-2" hidden>
+        <div class="panel-intro"><span class="eyebrow">Saturday</span><h3>Choplaif Proper</h3><p>The biggest day of the year. Full market, the finals, and the headline concert under the lights.</p></div>
+        <ol class="timeline">
+          <li><time>11:00</time><div><h4>Full market opens</h4><p>All 120+ stalls serving. Arrive early for the shortest queues.</p></div><span class="ico"><i data-lucide="store"></i></span></li>
+          <li><time>13:00</time><div><h4>Pepper Soup Challenge</h4><p>How hot can you go? Five bowls, rising heat, one champion.</p></div><span class="ico"><i data-lucide="flame"></i></span></li>
+          <li><time>15:00</time><div><h4>Chef demo: Kekefia from scratch</h4><p>A Kalabari home cook walks through her grandmother's method.</p></div><span class="ico"><i data-lucide="chef-hat"></i></span></li>
+          <li><time>17:00</time><div><h4>Bole Masters — The Final</h4><p>Five finalists, one grill each, and a judging panel that has eaten a lot of bole.</p></div><span class="ico"><i data-lucide="trophy"></i></span></li>
+          <li><time>19:30</time><div><h4>Headline concert</h4><p>The night's big performance on the main stage. Bring your voice.</p></div><span class="ico"><i data-lucide="mic-vocal"></i></span></li>
+        </ol>
+      </div>
+
+      <div class="panel" role="tabpanel" id="day-3" aria-labelledby="tab-3" hidden>
+        <div class="panel-intro"><span class="eyebrow">Sunday</span><h3>Sunday Cool</h3><p>Family day. Long tables, slower music and a proper send-off before the coals go out.</p></div>
+        <ol class="timeline">
+          <li><time>12:00</time><div><h4>Family lunch tables</h4><p>Shared tables across the lawn — order from any stall, sit anywhere.</p></div><span class="ico"><i data-lucide="users"></i></span></li>
+          <li><time>14:00</time><div><h4>Stories from the pot</h4><p>Elders and cooks share the history behind the South's favourite dishes.</p></div><span class="ico"><i data-lucide="book-open"></i></span></li>
+          <li><time>16:00</time><div><h4>Awards: Best Bole &amp; Best Stall</h4><p>Crowd votes and judges' picks, announced on the main stage.</p></div><span class="ico"><i data-lucide="award"></i></span></li>
+          <li><time>18:00</time><div><h4>Lantern parade &amp; closing</h4><p>One last lap of the grounds, then see you next December.</p></div><span class="ico"><i data-lucide="sparkles"></i></span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- TICKETS -->
+  <section id="tickets" class="tickets" aria-labelledby="tickets-title">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow reveal"><i data-lucide="ticket"></i> Tickets</span>
+        <h2 id="tickets-title" class="reveal" data-delay="1">Pick your <em class="accent">appetite</em></h2>
+        <p class="reveal" data-delay="2">Entry passes get you through the gates. Food is bought directly from vendors at the stalls, so every naira goes to the cooks.</p>
+      </div>
+      <div class="tiers">
+        <article class="tier reveal">
+          <h3>Day Pass</h3>
+          <div class="price">₦5,000 <small>/ one day</small></div>
+          <p class="desc">Choose any one day and eat your way through the market.</p>
+          <ul>
+            <li><i data-lucide="check"></i> Entry for one festival day</li>
+            <li><i data-lucide="check"></i> Access to all food stalls</li>
+            <li><i data-lucide="check"></i> Main stage performances</li>
+          </ul>
+          <a class="btn ghost" href="#contact" data-ticket="Day Pass">Reserve Day Pass <i data-lucide="arrow-right"></i></a>
+        </article>
+        <article class="tier featured reveal" data-delay="1">
+          <span class="badge">Most loved</span>
+          <h3>Weekend Pass</h3>
+          <div class="price">₦12,000 <small>/ all 3 days</small></div>
+          <p class="desc">The full Choplaif experience, Friday through Sunday.</p>
+          <ul>
+            <li><i data-lucide="check"></i> Entry for all three days</li>
+            <li><i data-lucide="check"></i> Vote in the Best Bole awards</li>
+            <li><i data-lucide="check"></i> Festival tote and tasting card</li>
+            <li><i data-lucide="check"></i> Fast-lane entry on Saturday</li>
+          </ul>
+          <a class="btn gold" href="#contact" data-ticket="Weekend Pass">Reserve Weekend Pass <i data-lucide="arrow-right"></i></a>
+        </article>
+        <article class="tier reveal" data-delay="2">
+          <h3>Big Man Table</h3>
+          <div class="price">₦50,000 <small>/ per person</small></div>
+          <p class="desc">Shaded lounge, hosted tasting and the best seats for the finals.</p>
+          <ul>
+            <li><i data-lucide="check"></i> Everything in Weekend Pass</li>
+            <li><i data-lucide="check"></i> Hosted tasting of 10 signature dishes</li>
+            <li><i data-lucide="check"></i> Reserved lounge with table service</li>
+            <li><i data-lucide="check"></i> Front seats for Bole Masters final</li>
+          </ul>
+          <a class="btn" href="#contact" data-ticket="Big Man Table">Reserve a table <i data-lucide="arrow-right"></i></a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section aria-labelledby="gallery-title">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow reveal"><i data-lucide="camera"></i> The atmosphere</span>
+        <h2 id="gallery-title" class="reveal" data-delay="1">Smoke, sound <em class="accent">&amp; sweet plantain</em></h2>
+      </div>
+      <div class="gallery">
+        <figure class="reveal"><img src="https://images.pexels.com/photos/6872124/pexels-photo-6872124.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="Women tending plantain on a long open-air grill" loading="lazy"><figcaption>The roasting line</figcaption></figure>
+        <figure class="reveal" data-delay="1"><img src="https://images.pexels.com/photos/30526351/pexels-photo-30526351.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="A cook stirring a large pot of soup over firewood" loading="lazy"><figcaption>Soup since sunrise</figcaption></figure>
+        <figure class="reveal" data-delay="2"><img src="https://images.pexels.com/photos/29253300/pexels-photo-29253300.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="Friends' hands reaching for roasted fish on a shared table" loading="lazy"><figcaption>Everyone shares</figcaption></figure>
+        <figure class="reveal" data-delay="3"><img src="https://htmlhost.co/photo/square/vendor-serving-food-under-canopy" alt="A smiling vendor handing over a plate of food under a canopy" loading="lazy"><figcaption>Meet the cooks</figcaption></figure>
+        <figure class="reveal"><img src="https://htmlhost.co/photo/landscape/live-band-playing-at-outdoor-night-festival" alt="A live band performing on an outdoor stage at night" loading="lazy"><figcaption>Highlife after dark</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" aria-labelledby="contact-title" style="padding-top:0">
+    <div class="wrap contact-grid">
+      <div class="contact-aside">
+        <span class="eyebrow reveal"><i data-lucide="send"></i> Get involved</span>
+        <h2 id="contact-title" class="reveal" data-delay="1">Pull up a <em class="accent">chair</em></h2>
+        <p class="reveal" data-delay="2">Reserve passes, apply for a vendor stall, or talk to us about sponsorship and press. We reply to every message within two working days.</p>
+        <ul class="info-list reveal" data-delay="3">
+          <li><span class="ico"><i data-lucide="store"></i></span><div><b>Vendor applications</b><span>Stall applications close 15 November 2026.</span></div></li>
+          <li><span class="ico"><i data-lucide="handshake"></i></span><div><b>Partners &amp; sponsors</b><span>Brand activations, stage naming and more.</span></div></li>
+          <li><span class="ico"><i data-lucide="mail"></i></span><div><b>Email</b><span>hello@bolefestival.ng</span></div></li>
+        </ul>
+      </div>
+      <form class="card reveal" action="/__hh/form" method="post" data-delay="1">
+        <input type="hidden" name="_form" value="Contact">
+        <div class="field-row">
+          <div class="field"><label class="lbl" for="f-name">Full name</label><input id="f-name" type="text" name="name" autocomplete="name" placeholder="Tamuno Briggs" required></div>
+          <div class="field"><label class="lbl" for="f-email">Email</label><input id="f-email" type="email" name="email" autocomplete="email" placeholder="you@example.com" required></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label class="lbl" for="f-phone">Phone (WhatsApp)</label><input id="f-phone" type="tel" name="phone" autocomplete="tel" placeholder="+234 803 000 0000"></div>
+          <div class="field">
+            <label class="lbl" for="f-interest">I'm interested in</label>
+            <select id="f-interest" name="interest" required>
+              <option value="Day Pass">Day Pass</option>
+              <option value="Weekend Pass" selected>Weekend Pass</option>
+              <option value="Big Man Table">Big Man Table</option>
+              <option value="Vendor stall">A vendor stall</option>
+              <option value="Sponsorship">Sponsorship</option>
+              <option value="Press">Press &amp; media</option>
+            </select>
+          </div>
+        </div>
+        <fieldset class="radios">
+          <legend class="lbl">Which day are you coming?</legend>
+          <div class="radio-set">
+            <label class="opt"><input type="radio" name="day" value="Friday"> Friday</label>
+            <label class="opt"><input type="radio" name="day" value="Saturday"> Saturday</label>
+            <label class="opt"><input type="radio" name="day" value="Sunday"> Sunday</label>
+            <label class="opt"><input type="radio" name="day" value="All three" checked> All three</label>
+          </div>
+        </fieldset>
+        <div class="field">
+          <label class="lbl" for="f-msg">Anything else?</label>
+          <textarea id="f-msg" name="message" placeholder="Group size, the dish you'd sell, or what you'd like to sponsor…"></textarea>
+        </div>
+        <label class="check"><input type="checkbox" name="updates" value="yes" checked> Send me line-up announcements and vendor news. No spam, just food.</label>
+        <div class="form-foot">
+          <small>Passes are confirmed by email with payment details.</small>
+          <button class="btn" type="submit">Send it <i data-lucide="arrow-right"></i></button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" aria-labelledby="faq-title" style="padding-top:0">
+    <div class="wrap faq-grid">
+      <div class="section-head" style="margin-bottom:0">
+        <span class="eyebrow reveal"><i data-lucide="message-circle-question"></i> Good to know</span>
+        <h2 id="faq-title" class="reveal" data-delay="1">Questions <em class="accent">before you chop</em></h2>
+        <p class="reveal" data-delay="2">Can't find your answer? Drop us a message using the form above.</p>
+      </div>
+      <div class="acc reveal" data-delay="1">
+        <div class="acc-item">
+          <h3><button class="acc-btn" aria-expanded="false" aria-controls="faq-1" id="q-1">Is food included in the ticket price?<span class="pm"><i data-lucide="plus"></i></span></button></h3>
+          <div class="acc-panel" id="faq-1" role="region" aria-labelledby="q-1"><div><p>Your pass covers entry, performances and activities. Food is bought directly from each vendor, with most plates between ₦1,500 and ₦6,000. Big Man Table holders get a hosted tasting included.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <h3><button class="acc-btn" aria-expanded="false" aria-controls="faq-2" id="q-2">How do I pay at the stalls?<span class="pm"><i data-lucide="plus"></i></span></button></h3>
+          <div class="acc-panel" id="faq-2" role="region" aria-labelledby="q-2"><div><p>Vendors accept cash and bank transfer, and many take POS cards. Network can get busy on Saturday, so carrying some cash is a smart move.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <h3><button class="acc-btn" aria-expanded="false" aria-controls="faq-3" id="q-3">Can I bring my children?<span class="pm"><i data-lucide="plus"></i></span></button></h3>
+          <div class="acc-panel" id="faq-3" role="region" aria-labelledby="q-3"><div><p>Absolutely. Children under 12 enter free with a paying adult, and the Kids' Kitchen runs on Friday afternoon. Sunday is our dedicated family day.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <h3><button class="acc-btn" aria-expanded="false" aria-controls="faq-4" id="q-4">Are there options if I don't eat meat or fish?<span class="pm"><i data-lucide="plus"></i></span></button></h3>
+          <div class="acc-panel" id="faq-4" role="region" aria-labelledby="q-4"><div><p>Yes. Plain bole with pepper sauce, roasted yam, boiled corn, ukwa and fruit stalls are all available. Ask vendors about ingredients — most soups use fish or crayfish.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <h3><button class="acc-btn" aria-expanded="false" aria-controls="faq-5" id="q-5">How do I become a vendor?<span class="pm"><i data-lucide="plus"></i></span></button></h3>
+          <div class="acc-panel" id="faq-5" role="region" aria-labelledby="q-5"><div><p>Choose "A vendor stall" in the form and tell us what you cook. Our team will contact you with stall sizes, fees and the food safety checklist every vendor completes before the festival.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <h3><button class="acc-btn" aria-expanded="false" aria-controls="faq-6" id="q-6">What happens if it rains?<span class="pm"><i data-lucide="plus"></i></span></button></h3>
+          <div class="acc-panel" id="faq-6" role="region" aria-labelledby="q-6"><div><p>December is usually dry in Port Harcourt, but the main seating areas and stage are covered. The festival goes ahead rain or shine.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISIT -->
+  <section class="visit" aria-labelledby="visit-title">
+    <img src="https://htmlhost.co/photo/landscape/riverside-city-skyline-at-golden-hour" alt="" loading="lazy">
+    <div class="wrap visit-inner">
+      <div>
+        <span class="eyebrow reveal" style="color:var(--gold)"><i data-lucide="map-pin"></i> Find us</span>
+        <h2 id="visit-title" class="reveal" data-delay="1">See you in the Garden City</h2>
+        <p class="reveal" data-delay="2">Follow the smoke. Gates open at noon every day and the last plates are served at 11pm.</p>
+      </div>
+      <div class="visit-facts reveal" data-delay="2">
+        <div><i data-lucide="map-pin"></i><span>Pleasure Park, Port Harcourt, Rivers State</span></div>
+        <div><i data-lucide="clock"></i><span>12:00 – 23:00 daily · 11 – 13 Dec 2026</span></div>
+        <div><i data-lucide="car"></i><span>Secured parking on site; drop-off point at the main gate</span></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <img src="https://htmlhost.co/m/673dcaa5-80fc-499b-a37d-03f25c904fc3" alt="Bole Festival logo" width="84" height="84" loading="lazy">
+        <p>Rivers State's annual celebration of bole and the traditional food of southern Nigeria.</p>
+      </div>
+      <div>
+        <h4>Festival</h4>
+        <ul><li><a href="#menu">The Menu</a></li><li><a href="#programme">Programme</a></li><li><a href="#tickets">Tickets</a></li><li><a href="#faq">FAQ</a></li></ul>
+      </div>
+      <div>
+        <h4>Work with us</h4>
+        <ul><li><a href="#contact">Become a vendor</a></li><li><a href="#contact">Sponsorship</a></li><li><a href="#contact">Press</a></li><li><a href="mailto:hello@bolefestival.ng">hello@bolefestival.ng</a></li></ul>
+      </div>
+    </div>
+    <div class="foot-big" aria-hidden="true">Choplaif</div>
+    <div class="foot-bottom">
+      <span>© 2026 Bole Festival. Made in Port Harcourt.</span>
+      <a href="#top">Back to top ↑</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.documentElement.classList.add('js');
+if (window.lucide) lucide.createIcons();
+
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* Header state */
+const header = document.querySelector('.site-header');
+const onScroll = () => header.classList.toggle('scrolled', scrollY > 12);
+onScroll(); addEventListener('scroll', onScroll, {passive:true});
+
+/* Mobile menu */
+const toggle = document.querySelector('.menu-toggle');
+const nav = document.getElementById('site-nav');
+const setMenu = open => {
+  nav.classList.toggle('open', open);
+  toggle.setAttribute('aria-expanded', open);
+  toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+};
+toggle.addEventListener('click', () => setMenu(!nav.classList.contains('open')));
+nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+addEventListener('keydown', e => { if (e.key === 'Escape' && nav.classList.contains('open')) { setMenu(false); toggle.focus(); } });
+
+/* Scroll reveals */
+const reveals = document.querySelectorAll('.reveal');
+if ('IntersectionObserver' in window && !reduce) {
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+  }, {threshold:.12, rootMargin:'0px 0px -40px 0px'});
+  reveals.forEach(el => io.observe(el));
+} else reveals.forEach(el => el.classList.add('in'));
+
+/* Count-up stats */
+const counters = document.querySelectorAll('[data-count]');
+if ('IntersectionObserver' in window && !reduce) {
+  const cio = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (!en.isIntersecting) return;
+      const el = en.target, end = +el.dataset.count, t0 = performance.now(), dur = 1400;
+      const tick = now => {
+        const p = Math.min((now - t0) / dur, 1);
+        el.textContent = Math.round(end * (1 - Math.pow(1 - p, 3)));
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick); cio.unobserve(el);
+    });
+  }, {threshold:.6});
+  counters.forEach(c => cio.observe(c));
+}
+
+/* Countdown */
+const target = new Date('2026-12-11T12:00:00+01:00').getTime();
+const cd = {d:document.getElementById('cd-d'), h:document.getElementById('cd-h'), m:document.getElementById('cd-m')};
+const updateCd = () => {
+  let diff = Math.max(0, target - Date.now());
+  const d = Math.floor(diff / 864e5); diff -= d * 864e5;
+  const h = Math.floor(diff / 36e5); diff -= h * 36e5;
+  const m = Math.floor(diff / 6e4);
+  cd.d.textContent = d; cd.h.textContent = String(h).padStart(2,'0'); cd.m.textContent = String(m).padStart(2,'0');
+};
+updateCd(); setInterval(updateCd, 30000);
+
+/* Dish filter */
+document.querySelectorAll('input[name="region"]').forEach(r => r.addEventListener('change', () => {
+  const v = r.value;
+  document.querySelectorAll('.dish').forEach(d => {
+    const show = v === 'all' || d.dataset.region.split(' ').includes(v);
+    d.classList.toggle('hide', !show);
+    if (show) d.classList.add('in');
+  });
+}));
+
+/* Tabs */
+const tabs = [...document.querySelectorAll('[role="tab"]')];
+const selectTab = tab => {
+  tabs.forEach(t => {
+    const on = t === tab;
+    t.setAttribute('aria-selected', on);
+    t.tabIndex = on ? 0 : -1;
+    document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+  });
+};
+tabs.forEach((t, i) => {
+  t.addEventListener('click', () => selectTab(t));
+  t.addEventListener('keydown', e => {
+    let n = null;
+    if (e.key === 'ArrowRight') n = tabs[(i + 1) % tabs.length];
+    if (e.key === 'ArrowLeft') n = tabs[(i - 1 + tabs.length) % tabs.length];
+    if (e.key === 'Home') n = tabs[0];
+    if (e.key === 'End') n = tabs[tabs.length - 1];
+    if (n) { e.preventDefault(); selectTab(n); n.focus(); }
+  });
+});
+
+/* Accordion */
+document.querySelectorAll('.acc-btn').forEach(btn => btn.addEventListener('click', () => {
+  const open = btn.getAttribute('aria-expanded') === 'true';
+  btn.setAttribute('aria-expanded', !open);
+  document.getElementById(btn.getAttribute('aria-controls')).classList.toggle('open', !open);
+}));
+
+/* Ticket buttons preselect the form */
+const interest = document.getElementById('f-interest');
+document.querySelectorAll('[data-ticket]').forEach(b => b.addEventListener('click', () => {
+  interest.value = b.dataset.ticket;
+  setTimeout(() => document.getElementById('f-name').focus({preventScroll:true}), 600);
+}));
+</script>
+</body>
+</html>

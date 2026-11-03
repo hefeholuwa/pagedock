@@ -1,0 +1,1548 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Spec — Prompt scaffolding for senior designers v3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
+      },
+    },
+  },
+};
+</script>
+<style>
+  html, body { background: #0a0a0a; }
+  html.light, html.light body { background: #fafafa; }
+  * { -webkit-font-smoothing: antialiased; }
+  body { font-family: Inter, system-ui, sans-serif; font-feature-settings: "cv11","ss01","ss03"; }
+  /* hairline */
+  .hr { border-color: rgba(255,255,255,0.08); }
+  html.light .hr { border-color: rgba(0,0,0,0.10); }
+  /* hide scrollbar chrome but keep functional */
+  .nice-scroll::-webkit-scrollbar { width: 10px; height: 10px; }
+  .nice-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 999px; }
+  .nice-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.16); }
+  html.light .nice-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.10); }
+  html.light .nice-scroll::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.20); }
+  /* selection */
+  ::selection { background: #f5d90a; color: #0a0a0a; }
+  /* range input styling */
+  input[type="range"] { -webkit-appearance: none; background: transparent; height: 14px; }
+  input[type="range"]::-webkit-slider-runnable-track { height: 1px; background: rgba(255,255,255,0.18); }
+  html.light input[type="range"]::-webkit-slider-runnable-track { background: rgba(0,0,0,0.18); }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; background: #f5d90a; border-radius: 0; margin-top: -4.5px; cursor: pointer; }
+  /* tighter caret on inputs */
+  input, textarea, select { caret-color: #f5d90a; }
+  /* color input native chrome reset */
+  input[type="color"] { -webkit-appearance: none; appearance: none; border: 0; background: transparent; padding: 0; cursor: pointer; }
+  input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+  input[type="color"]::-webkit-color-swatch { border: 1px solid rgba(255,255,255,0.18); border-radius: 0; }
+  html.light input[type="color"]::-webkit-color-swatch { border-color: rgba(0,0,0,0.18); }
+  /* prevent FOUC of dark default */
+</style>
+<script>
+  // set dark by default before paint
+  (function() {
+    try {
+      var saved = localStorage.getItem('spec.theme');
+      if (saved === 'light') document.documentElement.classList.add('light');
+    } catch(e){}
+  })();
+</script>
+</head>
+<body class="text-neutral-200">
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useMemo, useRef, useCallback } = React;
+
+/* ---------------------------------- DATA ---------------------------------- */
+
+const AESTHETICS = [
+  'Swiss editorial', 'Brutalist', 'Neo-brutalist', 'Minimal SaaS', 'Monochrome enterprise',
+  'Glassmorphism', 'Bento', 'Notion-style', 'Linear-style', 'Stripe-style', 'Vercel-style',
+  'Luxury editorial', 'Terminal / dev-tool', 'Magazine print', 'Japanese minimalism',
+  'Scandinavian', 'Archive / library', 'Government / civic', 'Academic paper',
+  'Y2K revival', 'Vaporwave (restrained)', 'Retro CRT', 'Postmodern', 'Memphis',
+  'Art deco', 'Bauhaus', 'Constructivist', 'Wabi-sabi', 'Default browser (ironic)',
+  'Plain text web 1.0', 'Print catalogue', 'Indie hacker',
+];
+
+const TYPEFACES = [
+  'Inter', 'IBM Plex Sans', 'Geist', 'Söhne', 'GT America', 'Aeonik', 'Founders Grotesk',
+  'Suisse Int\'l', 'Helvetica Neue', 'Neue Haas Grotesk', 'ABC Diatype',
+  'Tiempos Text', 'Reckless', 'Editorial New', 'Garamond', 'Times', 'Migra',
+  'IBM Plex Mono', 'JetBrains Mono', 'Berkeley Mono', 'Departure Mono', 'Operator Mono',
+  'Geist Mono', 'PP Neue Montreal', 'Mondwest', 'Gambarino',
+];
+const SCALE_RATIOS = ['1.067', '1.125', '1.2', '1.25', '1.333', '1.414', '1.5', '1.618', '1.778'];
+const WEIGHTS = ['100', '200', '300', '400', '500', '600', '700', '800', '900'];
+const LINE_HEIGHTS = ['Tight (1.05)', 'Snug (1.2)', 'Normal (1.4)', 'Comfortable (1.55)', 'Relaxed (1.7)', 'Loose (1.9)'];
+const TRACKING = ['Tight (-0.02em)', 'Default (0)', 'Open (+0.01em)', 'Wide (+0.04em)', 'Display caps (+0.08em)'];
+const CASE_STYLES = ['Mixed case', 'Sentence case', 'Title Case', 'UPPERCASE display', 'lowercase display'];
+const NUMERIC_STYLES = ['Tabular lining', 'Tabular oldstyle', 'Proportional lining', 'Proportional oldstyle'];
+
+const BASE_UNITS = ['2pt', '4pt', '8pt', '12pt'];
+const CONTAINERS = ['960', '1024', '1120', '1200', '1280', '1440', '1536', '1680', 'fluid'];
+const RHYTHMS = ['Compressed', 'Tight', 'Standard', 'Generous', 'Editorial', 'Cinematic'];
+const GUTTERS = ['8', '16', '24', '32', '48', '64'];
+const PADDING_PHIL = ['Edge-to-edge', 'Hairline inset', 'Standard inset', 'Generous inset', 'Margin-heavy'];
+
+const PALETTE_MODES = ['Monochrome', 'Duotone', 'Triadic', 'Analogous', 'Muted', 'Earthy', 'Pastel', 'Vibrant', 'Neon', 'High-contrast'];
+const DARK_OPTIONS = ['Light only', 'Dark only', 'Both (toggle)', 'System-driven'];
+const SURFACES = ['Flat', 'Single tier', 'Subtle elevation', 'Layered elevation', 'Heavy elevation', 'Inset / sunken'];
+const CONTRAST = ['AA minimum', 'AA preferred', 'AAA target', 'Editorial high-contrast', 'Soft / low-contrast'];
+const COLOR_TEMP = ['Cool', 'Neutral', 'Warm', 'Mixed'];
+const BG_TREATMENT = ['Solid', 'Subtle noise', 'Subtle grid', 'Hairline divider', 'Soft vignette', 'Plain paper'];
+
+const GRIDS = ['8-col', '12-col', '16-col', '24-col', 'Asymmetric', 'Mondrian', 'Freeform', 'Single column'];
+const HEROES = ['Centered text', 'Left-aligned text', 'Split (text + visual)', 'Split (text + product)', 'Full-bleed visual', 'Full-bleed video', 'Off-grid editorial', 'Type-only', 'Marquee statement', 'No hero'];
+const NAVS = ['Top bar (full)', 'Top bar (minimal)', 'Sidebar', 'Floating pill', 'Mega menu', 'Anchored TOC', 'Breadcrumb-only', 'Hidden until scroll', 'None'];
+const PAGE_SECTIONS = [
+  'Hero', 'Logo bar', 'Feature grid', 'Feature deep-dives', 'Product walkthrough',
+  'How it works', 'Use cases', 'Testimonials', 'Stats / metrics', 'Pricing',
+  'Comparison table', 'FAQ', 'Integrations', 'Press / quotes', 'Roadmap',
+  'Changelog', 'Team', 'Manifesto', 'Final CTA', 'Footer (mini)', 'Footer (full)',
+];
+const FOLD_STRATEGY = ['Above-fold dense', 'Above-fold spare', 'Progressive reveal', 'Long-scroll narrative', 'Single-screen'];
+
+const RADII = ['0', '2', '4', '6', '8', '10', '12', '16', '24', 'pill', 'mixed'];
+const BORDERS = ['None', 'Hairline (0.5px)', 'Standard (1px)', 'Bold (2px)', 'Heavy (3px+)', 'Dashed', 'Inset only'];
+const SHADOWS = ['None', 'Hairline only', 'Subtle (1 layer)', 'Standard (2 layers)', 'Pronounced (3+ layers)', 'Hard offset (brutalist)'];
+const BTN_STYLE = ['Solid', 'Outline', 'Ghost', 'Underlined link', 'Pill solid', 'Pill outline', 'Square hard', 'Iconographic'];
+const CARD_STYLE = ['Bordered flat', 'Borderless flat', 'Tinted fill', 'Elevated', 'Glass', 'Cut-out', 'Stacked paper'];
+const ICON_STYLE = ['None', 'Lucide / Feather', 'Phosphor (regular)', 'Phosphor (duotone)', 'Heroicons', 'Material symbols', 'Custom line', 'Custom solid', 'Pixel / 8-bit', 'Hand-drawn'];
+
+const ANIM_DENSITY = ['None', 'Restrained', 'Standard', 'Expressive', 'Maximalist'];
+const FEELS = ['Instant', 'Crisp', 'Soft', 'Springy', 'Bouncy', 'Cinematic'];
+const SCROLLS = ['Static', 'Anchor jumps', 'Snap sections', 'Parallax (subtle)', 'Parallax (heavy)', 'Scroll-triggered reveals', 'Pinned narratives', 'Horizontal section'];
+const HOVER_FEEL = ['None', 'Color shift', 'Underline', 'Lift / shadow', 'Border highlight', 'Inverse', 'Magnetic'];
+const PAGE_TRANSITION = ['None', 'Fade', 'Slide', 'Crossfade', 'Shared element'];
+
+const VOICE = ['Plain & precise', 'Confident declarative', 'Editorial / essay', 'Technical & exact', 'Playful', 'Minimal corporate', 'Manifesto', 'Conversational', 'Sarcastic / dry'];
+const COPY_DENSITY = ['Headline-only', 'Spare', 'Balanced', 'Long-form', 'Magazine'];
+const HEADLINE_STYLE = ['One-liner statement', 'Two-line w/ break', 'Question', 'Verb-led action', 'Noun phrase', 'Number-led claim'];
+const PERSON = ['First-person plural (we)', 'Second-person (you)', 'Third-person product', 'No pronouns'];
+const TONE_FORMALITY = ['Formal', 'Neutral', 'Informal', 'Slangy'];
+
+const IMAGERY_STYLE = ['None', 'Product UI screenshots', 'Editorial photography', 'Studio still-life', 'Abstract render', 'Diagrams / schematics', '3D illustration (matte)', '3D illustration (glossy)', 'Flat illustration', 'Hand-drawn illustration', 'Iconographic only', 'Generative / wgl', 'Archival / found image'];
+const IMAGE_TREATMENT = ['Untreated', 'Duotone', 'Grayscale', 'Color-graded', 'Heavy crop', 'Bordered frame', 'Bleed past container'];
+const ASPECT_PHIL = ['Mostly square', 'Mostly 16:9', 'Tall portraits', 'Wide cinematic', 'Mixed editorial'];
+
+const FORMS_FIELD = ['Bordered', 'Underlined only', 'Filled / tinted', 'Floating label', 'Inline grid'];
+const FORMS_VALIDATION = ['Inline as-you-type', 'On blur', 'On submit', 'Toast / banner'];
+const FORMS_DENSITY = ['Compact', 'Standard', 'Spacious', 'One-per-screen'];
+
+const DATA_TABLE = ['Hairline rows', 'Zebra striped', 'Bordered cells', 'Card per row', 'Dense compact', 'Editorial wide'];
+const DATA_CHART = ['None', 'Line minimal', 'Bar minimal', 'Sparkline-only', 'Editorial annotated', 'Dashboard-style'];
+const EMPTY_STATE = ['Plain text', 'Iconographic', 'Illustrated', 'Skeleton placeholder', 'Suggested next action'];
+
+const A11Y_FOCUS = ['Default ring', 'Yellow signal ring', 'Inverted block', 'Underline only', 'Custom outline'];
+const A11Y_MOTION = ['Respect prefers-reduced-motion', 'Always animate', 'Always static'];
+const A11Y_TARGET = ['WCAG AA', 'WCAG AAA', 'Section 508', 'EN 301 549'];
+
+const PERF_BUDGET = ['No constraint', 'Lighthouse 90+', 'Lighthouse 95+', 'Sub-100kb JS', 'Static / no JS'];
+const IMG_LOADING = ['Lazy below fold', 'Eager hero only', 'All eager', 'Blurhash placeholders', 'LQIP'];
+
+const CTA_HIERARCHY = ['Single primary', 'Primary + secondary', 'Primary + ghost', 'Triple equal', 'No buttons (links only)'];
+const CTA_STYLE = ['Solid block', 'Outlined', 'Underlined link', 'Pill', 'Arrow link', 'Icon-led'];
+const CTA_PLACEMENT = ['Hero only', 'Hero + footer', 'Repeated per section', 'Sticky bar', 'Floating'];
+
+const TRUST = ['Logo bar', 'Press quotes', 'User testimonials', 'Numbered stats', 'Case studies', 'Awards / badges', 'GitHub stars', 'Customer count', 'None'];
+
+const FOOTER = ['Minimal (1 line)', 'Standard 4-col', 'Maxi sitemap', 'Editorial', 'Sign-off only'];
+
+const ANTI_PATTERNS = [
+  'No gradients', 'No purple-to-pink gradients', 'No rainbow gradients',
+  'No glassmorphism', 'No frosted blur',
+  'No emoji', 'No emoji in headlines',
+  'No stock-photo hero', 'No stock photography anywhere',
+  'No AI-generated illustrations', 'No AI-generated photography',
+  'No infinite scroll marquee', 'No logo carousels',
+  'No glow effects', 'No neon shadows',
+  'No skeuomorphism',
+  'No drop shadows', 'No soft shadows', 'No coloured shadows',
+  'No floating CTAs', 'No sticky chat widgets',
+  'No carousels', 'No auto-playing video',
+  'No modal popups', 'No exit-intent popups', 'No newsletter modal',
+  'No cookie wall', 'No GDPR banner over content',
+  'No "Trusted by" without permission',
+  'No fake testimonials', 'No headshot avatars from Unsplash',
+  'No 3D blob shapes', 'No isometric illustration',
+  'No purple', 'No pure black', 'No pure white',
+  'No "AI-powered" copy', 'No "revolutionary" / "game-changing"',
+  'No rounded corners over 8px',
+  'No center-aligned body paragraphs',
+  'No animated underlines on every link',
+  'No parallax on body text',
+  'No dark patterns', 'No urgency timers',
+  'No autoplaying audio',
+  'No emoji bullets',
+  'No grid of identical cards', 'No pricing toggle deception',
+];
+
+const FRAMEWORKS = ['React', 'Next.js', 'Remix', 'Astro', 'SvelteKit', 'SolidStart', 'Vue / Nuxt', 'Vanilla HTML', '11ty', 'Hugo'];
+const STYLING = ['Tailwind', 'CSS modules', 'Vanilla CSS', 'CSS-in-JS (styled)', 'CSS-in-JS (vanilla-extract)', 'Panda CSS', 'UnoCSS', 'Sass'];
+const LIBRARIES = ['shadcn/ui', 'Radix primitives', 'Headless UI', 'Ark UI', 'Mantine', 'Chakra', 'Park UI', 'Custom (none)'];
+const RESPONSIVE = ['Mobile-first', 'Desktop-first', 'Desktop-only', 'Tablet-aware', 'Container queries'];
+const RENDERING = ['Static (SSG)', 'Server (SSR)', 'ISR', 'Edge', 'CSR', 'Hybrid'];
+const STATE_MGMT = ['Local only', 'URL params', 'Zustand', 'Jotai', 'Redux Toolkit', 'TanStack Query', 'Context-only'];
+
+const LOCALE = ['English (US)', 'English (UK)', 'Multi-lang ready', 'RTL-aware', 'CJK-aware'];
+
+/* --------------------------------- DEFAULT -------------------------------- */
+
+const initialState = {
+  // each section has an `on` flag — when off, omitted from output
+  brief:        { on: true,  product: '', audience: '', action: '', secondary: '', constraints: '' },
+  aesthetic:    { on: true,  value: 'Swiss editorial', custom: '', references: '' },
+  typography:   { on: true,  typeface: 'Inter', custom: '', mono: 'IBM Plex Mono', scale: '1.25', heading: '600', body: '400', leading: 'Normal (1.4)', tracking: 'Default (0)', caseStyle: 'Mixed case', numerics: 'Tabular lining' },
+  spacing:      { on: true,  base: '8pt', container: '1280', rhythm: 'Standard', gutter: '24', padding: 'Standard inset' },
+  color:        { on: true,  mode: 'Monochrome', accent: '#f5d90a', secondary: '#000000', dark: 'Both (toggle)', surface: 'Flat', contrast: 'AA preferred', temp: 'Neutral', bg: 'Solid' },
+  layout:       { on: true,  grid: '12-col', hero: 'Split (text + visual)', nav: 'Top bar (full)', fold: 'Above-fold spare' },
+  sections:     { on: false, values: ['Hero', 'Feature grid', 'Final CTA', 'Footer (mini)'] },
+  components:   { on: true,  radius: '4', border: 'Hairline (0.5px)', shadow: 'None', button: 'Solid', card: 'Bordered flat', icons: 'Lucide / Feather' },
+  imagery:      { on: false, style: 'Product UI screenshots', treatment: 'Untreated', aspect: 'Mostly 16:9' },
+  motion:       { on: false, density: 'Restrained', feel: 'Instant', scroll: 'Static', hover: 'Color shift', transition: 'None' },
+  voice:        { on: false, register: 'Plain & precise', density: 'Spare', headline: 'One-liner statement', person: 'Second-person (you)', formality: 'Neutral' },
+  cta:          { on: false, hierarchy: 'Single primary', style: 'Solid block', placement: 'Hero only' },
+  trust:        { on: false, values: ['Logo bar', 'User testimonials'] },
+  forms:        { on: false, field: 'Bordered', validation: 'Inline as-you-type', density: 'Standard' },
+  data:         { on: false, table: 'Hairline rows', chart: 'Line minimal', empty: 'Plain text' },
+  a11y:         { on: false, target: 'WCAG AA', focus: 'Yellow signal ring', motion: 'Respect prefers-reduced-motion' },
+  perf:         { on: false, budget: 'Lighthouse 95+', images: 'Lazy below fold' },
+  footer:       { on: false, value: 'Standard 4-col' },
+  anti:         { on: true,  values: ['No gradients', 'No glassmorphism', 'No emoji', 'No AI-generated illustrations'] },
+  stack:        { on: false, framework: 'React', styling: 'Tailwind', library: 'shadcn/ui', responsive: 'Mobile-first', rendering: 'Static (SSG)', state: 'Local only' },
+  locale:       { on: false, value: 'English (US)' },
+};
+
+/* ----------------------------- RANDOMIZE COHERENT ----------------------------- */
+// Curated coherent profiles, not chaos.
+const PROFILES = [
+  {
+    name: 'Swiss editorial',
+    aesthetic: 'Swiss editorial',
+    typography: { typeface: 'IBM Plex Sans', scale: '1.333', heading: '500', body: '400', leading: 'Snug (1.2)', tracking: 'Tight (-0.02em)', caseStyle: 'Mixed case', numerics: 'Tabular lining' },
+    spacing:    { base: '8pt', container: '1280', rhythm: 'Editorial', gutter: '24', padding: 'Generous inset' },
+    color:      { mode: 'Monochrome', accent: '#dc2626', dark: 'Light only', surface: 'Flat', contrast: 'Editorial high-contrast', temp: 'Neutral', bg: 'Hairline divider' },
+    layout:     { grid: '12-col', hero: 'Off-grid editorial', nav: 'Top bar (minimal)', fold: 'Above-fold spare' },
+    components: { radius: '0', border: 'Hairline (0.5px)', shadow: 'None', button: 'Underlined link', card: 'Bordered flat', icons: 'None' },
+    motion:     { density: 'Restrained', feel: 'Instant', scroll: 'Static', hover: 'Underline', transition: 'None' },
+    anti:       ['No gradients', 'No glassmorphism', 'No emoji', 'No AI-generated illustrations', 'No glow effects', 'No drop shadows'],
+  },
+  {
+    name: 'Linear-style',
+    aesthetic: 'Linear-style',
+    typography: { typeface: 'Inter', scale: '1.25', heading: '600', body: '400', leading: 'Normal (1.4)', tracking: 'Tight (-0.02em)', caseStyle: 'Mixed case', numerics: 'Tabular lining' },
+    spacing:    { base: '4pt', container: '1200', rhythm: 'Standard', gutter: '24', padding: 'Standard inset' },
+    color:      { mode: 'Duotone', accent: '#5b6cff', dark: 'Both (toggle)', surface: 'Subtle elevation', contrast: 'AA preferred', temp: 'Cool', bg: 'Subtle noise' },
+    layout:     { grid: '12-col', hero: 'Centered text', nav: 'Top bar (minimal)', fold: 'Above-fold spare' },
+    components: { radius: '8', border: 'Hairline (0.5px)', shadow: 'Subtle (1 layer)', button: 'Solid', card: 'Borderless flat', icons: 'Lucide / Feather' },
+    motion:     { density: 'Standard', feel: 'Springy', scroll: 'Scroll-triggered reveals', hover: 'Lift / shadow', transition: 'Fade' },
+    anti:       ['No emoji', 'No stock-photo hero', 'No infinite scroll marquee', 'No AI-generated illustrations'],
+  },
+  {
+    name: 'Brutalist',
+    aesthetic: 'Brutalist',
+    typography: { typeface: 'IBM Plex Mono', scale: '1.5', heading: '700', body: '400', leading: 'Tight (1.05)', tracking: 'Default (0)', caseStyle: 'UPPERCASE display', numerics: 'Tabular lining' },
+    spacing:    { base: '8pt', container: 'fluid', rhythm: 'Tight', gutter: '16', padding: 'Edge-to-edge' },
+    color:      { mode: 'High-contrast', accent: '#000000', dark: 'Light only', surface: 'Flat', contrast: 'Editorial high-contrast', temp: 'Neutral', bg: 'Solid' },
+    layout:     { grid: 'Freeform', hero: 'Full-bleed visual', nav: 'None', fold: 'Above-fold dense' },
+    components: { radius: '0', border: 'Heavy (3px+)', shadow: 'Hard offset (brutalist)', button: 'Square hard', card: 'Bordered flat', icons: 'None' },
+    motion:     { density: 'None', feel: 'Instant', scroll: 'Static', hover: 'Inverse', transition: 'None' },
+    anti:       ['No gradients', 'No glassmorphism', 'No drop shadows', 'No glow effects', 'No rounded corners over 8px'],
+  },
+  {
+    name: 'Stripe-style',
+    aesthetic: 'Stripe-style',
+    typography: { typeface: 'Söhne', scale: '1.25', heading: '600', body: '400', leading: 'Normal (1.4)', tracking: 'Tight (-0.02em)', caseStyle: 'Mixed case', numerics: 'Tabular lining' },
+    spacing:    { base: '8pt', container: '1200', rhythm: 'Generous', gutter: '32', padding: 'Generous inset' },
+    color:      { mode: 'Vibrant', accent: '#635bff', dark: 'Light only', surface: 'Subtle elevation', contrast: 'AA preferred', temp: 'Cool', bg: 'Solid' },
+    layout:     { grid: '12-col', hero: 'Split (text + product)', nav: 'Top bar (full)', fold: 'Above-fold spare' },
+    components: { radius: '12', border: 'None', shadow: 'Standard (2 layers)', button: 'Pill solid', card: 'Elevated', icons: 'Custom line' },
+    motion:     { density: 'Standard', feel: 'Soft', scroll: 'Parallax (subtle)', hover: 'Lift / shadow', transition: 'Fade' },
+    anti:       ['No stock-photo hero', 'No emoji', 'No AI-generated illustrations'],
+  },
+  {
+    name: 'Terminal / dev-tool',
+    aesthetic: 'Terminal / dev-tool',
+    typography: { typeface: 'Berkeley Mono', scale: '1.2', heading: '500', body: '400', leading: 'Snug (1.2)', tracking: 'Default (0)', caseStyle: 'lowercase display', numerics: 'Tabular lining' },
+    spacing:    { base: '4pt', container: '1280', rhythm: 'Tight', gutter: '16', padding: 'Hairline inset' },
+    color:      { mode: 'Monochrome', accent: '#00ff9c', dark: 'Dark only', surface: 'Flat', contrast: 'AAA target', temp: 'Cool', bg: 'Subtle grid' },
+    layout:     { grid: '12-col', hero: 'Type-only', nav: 'Top bar (minimal)', fold: 'Single-screen' },
+    components: { radius: '0', border: 'Hairline (0.5px)', shadow: 'None', button: 'Outline', card: 'Bordered flat', icons: 'None' },
+    motion:     { density: 'None', feel: 'Instant', scroll: 'Static', hover: 'Color shift', transition: 'None' },
+    anti:       ['No gradients', 'No glassmorphism', 'No emoji', 'No glow effects', 'No AI-generated illustrations', 'No drop shadows'],
+  },
+  {
+    name: 'Luxury editorial',
+    aesthetic: 'Luxury editorial',
+    typography: { typeface: 'Tiempos Text', scale: '1.5', heading: '400', body: '400', leading: 'Relaxed (1.7)', tracking: 'Open (+0.01em)', caseStyle: 'Mixed case', numerics: 'Proportional oldstyle' },
+    spacing:    { base: '8pt', container: '1440', rhythm: 'Cinematic', gutter: '48', padding: 'Margin-heavy' },
+    color:      { mode: 'Muted', accent: '#9a7b4f', dark: 'Light only', surface: 'Flat', contrast: 'Soft / low-contrast', temp: 'Warm', bg: 'Plain paper' },
+    layout:     { grid: 'Asymmetric', hero: 'Full-bleed visual', nav: 'Top bar (minimal)', fold: 'Long-scroll narrative' },
+    components: { radius: '0', border: 'None', shadow: 'None', button: 'Underlined link', card: 'Borderless flat', icons: 'None' },
+    motion:     { density: 'Restrained', feel: 'Cinematic', scroll: 'Parallax (subtle)', hover: 'Underline', transition: 'Crossfade' },
+    anti:       ['No gradients', 'No emoji', 'No glassmorphism', 'No glow effects', 'No drop shadows'],
+  },
+  {
+    name: 'Neo-brutalist',
+    aesthetic: 'Neo-brutalist',
+    typography: { typeface: 'PP Neue Montreal', scale: '1.414', heading: '700', body: '500', leading: 'Snug (1.2)', tracking: 'Default (0)', caseStyle: 'Mixed case', numerics: 'Tabular lining' },
+    spacing:    { base: '8pt', container: '1200', rhythm: 'Standard', gutter: '24', padding: 'Standard inset' },
+    color:      { mode: 'Vibrant', accent: '#ffd60a', dark: 'Light only', surface: 'Flat', contrast: 'Editorial high-contrast', temp: 'Warm', bg: 'Solid' },
+    layout:     { grid: '12-col', hero: 'Marquee statement', nav: 'Top bar (full)', fold: 'Above-fold dense' },
+    components: { radius: '4', border: 'Bold (2px)', shadow: 'Hard offset (brutalist)', button: 'Solid', card: 'Bordered flat', icons: 'Phosphor (regular)' },
+    motion:     { density: 'Standard', feel: 'Bouncy', scroll: 'Snap sections', hover: 'Inverse', transition: 'Slide' },
+    anti:       ['No gradients', 'No glassmorphism', 'No glow effects', 'No 3D blob shapes'],
+  },
+  {
+    name: 'Japanese minimalism',
+    aesthetic: 'Japanese minimalism',
+    typography: { typeface: 'Suisse Int\'l', scale: '1.2', heading: '300', body: '400', leading: 'Comfortable (1.55)', tracking: 'Open (+0.01em)', caseStyle: 'Mixed case', numerics: 'Proportional lining' },
+    spacing:    { base: '8pt', container: '1120', rhythm: 'Cinematic', gutter: '48', padding: 'Margin-heavy' },
+    color:      { mode: 'Earthy', accent: '#a4332a', dark: 'Light only', surface: 'Flat', contrast: 'Soft / low-contrast', temp: 'Warm', bg: 'Plain paper' },
+    layout:     { grid: 'Asymmetric', hero: 'Type-only', nav: 'Top bar (minimal)', fold: 'Above-fold spare' },
+    components: { radius: '0', border: 'None', shadow: 'None', button: 'Underlined link', card: 'Borderless flat', icons: 'None' },
+    motion:     { density: 'Restrained', feel: 'Soft', scroll: 'Static', hover: 'Color shift', transition: 'Fade' },
+    anti:       ['No gradients', 'No glassmorphism', 'No emoji', 'No drop shadows', 'No glow effects', 'No 3D blob shapes'],
+  },
+];
+
+/* --------------------------------- OUTPUT --------------------------------- */
+
+function buildPrompt(s) {
+  const out = [];
+  const push = (...xs) => out.push(...xs);
+  const sec = (title, body) => { if (body.length) { push(`## ${title}`, ...body, ''); } };
+
+  push('# Design spec', '');
+
+  if (s.brief.on) {
+    const b = [];
+    if (s.brief.product)    b.push(`- Product: ${s.brief.product}`);
+    if (s.brief.audience)   b.push(`- Audience: ${s.brief.audience}`);
+    if (s.brief.action)     b.push(`- Primary action: ${s.brief.action}`);
+    if (s.brief.secondary)  b.push(`- Secondary action: ${s.brief.secondary}`);
+    if (s.brief.constraints)b.push(`- Constraints: ${s.brief.constraints}`);
+    sec('Brief', b);
+  }
+
+  if (s.aesthetic.on) {
+    const v = s.aesthetic.value === 'Custom' ? (s.aesthetic.custom || 'Custom') : s.aesthetic.value;
+    const b = [`- Direction: ${v}`];
+    if (s.aesthetic.references) b.push(`- References: ${s.aesthetic.references}`);
+    sec('Aesthetic', b);
+  }
+
+  if (s.typography.on) {
+    const tf = s.typography.typeface === 'Custom' ? (s.typography.custom || 'Custom') : s.typography.typeface;
+    sec('Typography', [
+      `- Typeface: ${tf}`,
+      `- Mono: ${s.typography.mono}`,
+      `- Type scale: ${s.typography.scale}`,
+      `- Heading weight: ${s.typography.heading}`,
+      `- Body weight: ${s.typography.body}`,
+      `- Line height: ${s.typography.leading}`,
+      `- Tracking: ${s.typography.tracking}`,
+      `- Case: ${s.typography.caseStyle}`,
+      `- Numerics: ${s.typography.numerics}`,
+    ]);
+  }
+
+  if (s.spacing.on) {
+    sec('Spacing', [
+      `- Base unit: ${s.spacing.base}`,
+      `- Container: ${s.spacing.container === 'fluid' ? 'Fluid' : s.spacing.container + 'px'}`,
+      `- Section rhythm: ${s.spacing.rhythm}`,
+      `- Gutter: ${s.spacing.gutter}px`,
+      `- Padding: ${s.spacing.padding}`,
+    ]);
+  }
+
+  if (s.color.on) {
+    sec('Color', [
+      `- Palette: ${s.color.mode}`,
+      `- Accent: ${s.color.accent}`,
+      `- Secondary: ${s.color.secondary}`,
+      `- Dark mode: ${s.color.dark}`,
+      `- Surface: ${s.color.surface}`,
+      `- Contrast: ${s.color.contrast}`,
+      `- Temperature: ${s.color.temp}`,
+      `- Background: ${s.color.bg}`,
+    ]);
+  }
+
+  if (s.layout.on) {
+    sec('Layout', [
+      `- Grid: ${s.layout.grid}`,
+      `- Hero: ${s.layout.hero}`,
+      `- Nav: ${s.layout.nav}`,
+      `- Above-fold: ${s.layout.fold}`,
+    ]);
+  }
+
+  if (s.sections.on && s.sections.values.length) {
+    sec('Page sections', s.sections.values.map(v => `- ${v}`));
+  }
+
+  if (s.components.on) {
+    sec('Components', [
+      `- Radius: ${s.components.radius === 'pill' ? 'Pill' : s.components.radius === 'mixed' ? 'Mixed' : s.components.radius + 'px'}`,
+      `- Borders: ${s.components.border}`,
+      `- Shadows: ${s.components.shadow}`,
+      `- Buttons: ${s.components.button}`,
+      `- Cards: ${s.components.card}`,
+      `- Icons: ${s.components.icons}`,
+    ]);
+  }
+
+  if (s.imagery.on) {
+    sec('Imagery', [
+      `- Style: ${s.imagery.style}`,
+      `- Treatment: ${s.imagery.treatment}`,
+      `- Aspect: ${s.imagery.aspect}`,
+    ]);
+  }
+
+  if (s.motion.on) {
+    sec('Motion', [
+      `- Density: ${s.motion.density}`,
+      `- Feel: ${s.motion.feel}`,
+      `- Scroll: ${s.motion.scroll}`,
+      `- Hover: ${s.motion.hover}`,
+      `- Page transition: ${s.motion.transition}`,
+    ]);
+  }
+
+  if (s.voice.on) {
+    sec('Voice & copy', [
+      `- Register: ${s.voice.register}`,
+      `- Density: ${s.voice.density}`,
+      `- Headline style: ${s.voice.headline}`,
+      `- Person: ${s.voice.person}`,
+      `- Formality: ${s.voice.formality}`,
+    ]);
+  }
+
+  if (s.cta.on) {
+    sec('CTAs', [
+      `- Hierarchy: ${s.cta.hierarchy}`,
+      `- Style: ${s.cta.style}`,
+      `- Placement: ${s.cta.placement}`,
+    ]);
+  }
+
+  if (s.trust.on && s.trust.values.length) {
+    sec('Trust signals', s.trust.values.map(v => `- ${v}`));
+  }
+
+  if (s.forms.on) {
+    sec('Forms', [
+      `- Field treatment: ${s.forms.field}`,
+      `- Validation: ${s.forms.validation}`,
+      `- Density: ${s.forms.density}`,
+    ]);
+  }
+
+  if (s.data.on) {
+    sec('Data display', [
+      `- Tables: ${s.data.table}`,
+      `- Charts: ${s.data.chart}`,
+      `- Empty states: ${s.data.empty}`,
+    ]);
+  }
+
+  if (s.a11y.on) {
+    sec('Accessibility', [
+      `- Target: ${s.a11y.target}`,
+      `- Focus style: ${s.a11y.focus}`,
+      `- Motion: ${s.a11y.motion}`,
+    ]);
+  }
+
+  if (s.perf.on) {
+    sec('Performance', [
+      `- Budget: ${s.perf.budget}`,
+      `- Image loading: ${s.perf.images}`,
+    ]);
+  }
+
+  if (s.footer.on) {
+    sec('Footer', [`- Style: ${s.footer.value}`]);
+  }
+
+  if (s.stack.on) {
+    sec('Stack', [
+      `- Framework: ${s.stack.framework}`,
+      `- Styling: ${s.stack.styling}`,
+      `- Components: ${s.stack.library}`,
+      `- Responsive: ${s.stack.responsive}`,
+      `- Rendering: ${s.stack.rendering}`,
+      `- State: ${s.stack.state}`,
+    ]);
+  }
+
+  if (s.locale.on) {
+    sec('Locale', [`- ${s.locale.value}`]);
+  }
+
+  if (s.anti.on && s.anti.values.length) {
+    sec('Do not include', s.anti.values.map(v => `- ${v}`));
+  }
+
+  while (out.length && out[out.length-1] === '') out.pop();
+  return out.join('\n');
+}
+
+function tokenCount(text) {
+  // crude approximation: ~4 chars/token
+  return Math.max(1, Math.round(text.length / 4));
+}
+
+/* --------------------------------- ATOMS ---------------------------------- */
+
+function Chip({ active, children, onClick, title, dim }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      title={title}
+      className={[
+        'h-7 px-2.5 inline-flex items-center justify-center text-[11px] font-medium tracking-tight border transition-colors duration-75',
+        'focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-yellow-300',
+        active
+          ? 'bg-yellow-300 text-neutral-950 border-yellow-300'
+          : dim
+            ? 'bg-transparent text-neutral-500 border-neutral-200/10 hover:text-neutral-200 hover:border-neutral-200/30 light:border-black/10 light:text-neutral-500 light:hover:text-neutral-900'
+            : 'bg-transparent text-neutral-300 border-neutral-200/15 hover:border-neutral-200/40 hover:text-white',
+      ].join(' ')}
+      style={{ borderRadius: 0 }}
+    >
+      {children}
+    </button>
+  );
+}
+
+function FieldLabel({ children, hint }) {
+  return (
+    <div className="flex items-center justify-between mb-1.5">
+      <div className="text-[10px] uppercase tracking-[0.14em] text-neutral-500 font-medium">{children}</div>
+      {hint && <div className="text-[10px] text-neutral-600 font-mono">{hint}</div>}
+    </div>
+  );
+}
+
+function ChipRow({ options, value, onChange }) {
+  return (
+    <div className="flex flex-wrap gap-1">
+      {options.map(o => (
+        <Chip key={o} active={value === o} onClick={() => onChange(o)}>{o}</Chip>
+      ))}
+    </div>
+  );
+}
+
+function MultiChips({ options, values, onChange, stripPrefix }) {
+  return (
+    <div className="flex flex-wrap gap-1">
+      {options.map(o => {
+        const active = values.includes(o);
+        return (
+          <Chip key={o} active={active} onClick={() => {
+            onChange(active ? values.filter(x => x !== o) : [...values, o]);
+          }}>
+            {stripPrefix ? o.replace(new RegExp('^' + stripPrefix), '') : o}
+          </Chip>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ------------------------------- TOOLTIP -------------------------------- */
+function InfoTip({ title, body, examples }) {
+  const [open, setOpen] = useState(false);
+  const [coords, setCoords] = useState({ left: 0, top: 0, placement: 'right' });
+  const ref = useRef(null);
+  const timer = useRef(null);
+
+  const show = () => {
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      const el = ref.current; if (!el) return;
+      const r = el.getBoundingClientRect();
+      const TOOLTIP_W = 308;
+      const vw = window.innerWidth, vh = window.innerHeight;
+      let left = r.right + 10;
+      let placement = 'right';
+      if (left + TOOLTIP_W + 12 > vw) {
+        left = r.left - TOOLTIP_W - 10;
+        placement = 'left';
+      }
+      let top = r.top + r.height / 2;
+      // clamp top so tooltip stays in viewport (assume ~140px tall)
+      const APPROX_H = 160;
+      top = Math.max(12 + APPROX_H/2, Math.min(vh - 12 - APPROX_H/2, top));
+      setCoords({ left, top, placement });
+      setOpen(true);
+    }, 90);
+  };
+  const hide = () => {
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => setOpen(false), 60);
+  };
+
+  return (
+    <>
+      <button
+        type="button"
+        ref={ref}
+        onMouseEnter={show}
+        onMouseLeave={hide}
+        onFocus={show}
+        onBlur={hide}
+        onClick={(e) => e.stopPropagation()}
+        aria-label={`About: ${title}`}
+        className="w-4 h-4 inline-flex items-center justify-center border border-neutral-200/20 text-[9px] font-mono text-neutral-400 hover:border-yellow-300/70 hover:text-yellow-300 focus:outline-none focus-visible:border-yellow-300 focus-visible:text-yellow-300 transition-colors duration-75"
+        style={{ borderRadius: 0 }}
+        tabIndex={0}
+      >i</button>
+      {open && ReactDOM.createPortal(
+        <div
+          onMouseEnter={() => clearTimeout(timer.current)}
+          onMouseLeave={hide}
+          className="fixed z-50 pointer-events-auto"
+          style={{
+            left: coords.left,
+            top: coords.top,
+            transform: 'translateY(-50%)',
+            width: 308,
+          }}
+        >
+          {/* connector tick */}
+          <div
+            className="absolute w-2 h-px bg-yellow-300"
+            style={{
+              top: '50%',
+              [coords.placement === 'right' ? 'left' : 'right']: -8,
+              transform: 'translateY(-0.5px)',
+            }}
+          />
+          <div className="bg-neutral-950 border border-neutral-200/20 light-tip-bg shadow-[0_0_0_1px_rgba(0,0,0,0.4)] light:shadow-none">
+            <div className="border-b border-neutral-200/15 px-3 py-2 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-yellow-300" />
+                <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-400">Section</span>
+              </div>
+              <span className="font-mono text-[10px] text-neutral-600">/help</span>
+            </div>
+            <div className="px-3 pt-2.5 pb-3">
+              <div className="text-[12.5px] font-medium text-neutral-100 light-tip-h tracking-tight mb-1.5">{title}</div>
+              <div className="text-[11.5px] leading-[1.55] text-neutral-400 light-tip-body">{body}</div>
+              {examples && (
+                <div className="mt-2.5 pt-2.5 border-t border-neutral-200/10">
+                  <div className="text-[9px] font-mono uppercase tracking-[0.16em] text-neutral-600 mb-1">Affects</div>
+                  <div className="text-[10.5px] font-mono text-neutral-500 leading-[1.55]">{examples}</div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+    </>
+  );
+}
+
+const SECTION_INFO = {
+  brief: {
+    title: 'Brief — anchor in reality',
+    body: 'Three plain sentences a senior PM would write before opening Figma: what it is, who it serves, what they do. Without these, the model fills in generic SaaS by default.',
+    examples: 'hero copy · primary CTA target · audience-appropriate density',
+  },
+  aesthetic: {
+    title: 'Aesthetic direction',
+    body: 'Single declarative style anchor. Everything downstream is interpreted against this — a Linear-style spec with bento layout means something different than a Brutalist one with the same layout.',
+    examples: 'composition rhythm · component personality · imagery vocabulary',
+  },
+  typography: {
+    title: 'Typography — typesetter-grade',
+    body: 'Type system at the level of detail you would give a typesetter. Tracking, leading, numeric style and case all change perceived gravity — a tight 1.05 leading reads as editorial; 1.7 reads as corporate.',
+    examples: 'h1 size · pull-quote feel · tabular alignment in pricing tables',
+  },
+  spacing: {
+    title: 'Spacing system',
+    body: 'The 8pt-grid debate, made explicit. Base unit, container, gutter and section rhythm together determine whether the page feels editorial or operational.',
+    examples: 'section padding · grid gap · max-width of body copy',
+  },
+  color: {
+    title: 'Color',
+    body: 'Beyond palette mode and accent, contrast target and surface treatment do most of the perceptual work. Lock these and the model stops inventing pastel gradients to "feel modern."',
+    examples: 'background tint · button color · divider visibility',
+  },
+  layout: {
+    title: 'Layout architecture',
+    body: 'How the page is composed before any content is placed: grid scaffold, hero archetype, navigation presence, and what survives above the fold.',
+    examples: 'hero composition · nav style · column count',
+  },
+  sections: {
+    title: 'Page sections — explicit architecture',
+    body: 'List exactly the sections you want, in roughly scroll order. The model will not invent extras and will not skip any. The single biggest lever for shipping a focused page.',
+    examples: 'IA · scroll order · what NOT to build',
+  },
+  components: {
+    title: 'Component density',
+    body: 'The DNA of every primitive: radius, border, shadow, button, card, icon set. Every component on the site inherits from these six choices.',
+    examples: 'every button · every card · every input outline',
+  },
+  imagery: {
+    title: 'Imagery',
+    body: 'What kind of imagery is permitted at all. Most AI defaults to stock photography or 3D blob renders; specifying here forces the model to reach for product UI, schematics, or none.',
+    examples: 'hero visual · feature illustrations · about-page art',
+  },
+  motion: {
+    title: 'Motion',
+    body: 'Animation budget. Density × feel × scroll behavior governs whether interactions feel deliberately spec\'d or sprayed on at the end.',
+    examples: 'hover transitions · scroll reveals · page-to-page navigation',
+  },
+  voice: {
+    title: 'Voice & copy',
+    body: 'Copywriting register. Most AI ships in a default helpful-product voice — register, density, headline pattern and person are how you escape it.',
+    examples: 'hero headline · button microcopy · empty-state tone',
+  },
+  cta: {
+    title: 'CTA strategy',
+    body: 'How calls-to-action are weighted, styled, and placed. One primary or three equal — this is where conversion logic lives, separate from button styling.',
+    examples: 'hero CTAs · sticky bar · per-section follow-ups',
+  },
+  trust: {
+    title: 'Trust signals',
+    body: 'Social proof inventory. Pick only the signals you actually have; otherwise the model fabricates plausible-but-fake testimonials, logos and numbers.',
+    examples: 'logo bar · testimonial format · stat presentation',
+  },
+  forms: {
+    title: 'Forms',
+    body: 'Field treatment, validation timing, and density. Form design is where AI-generated UI fails most reliably — specifying here keeps signup and contact pages coherent.',
+    examples: 'input style · error messaging · multi-step density',
+  },
+  data: {
+    title: 'Data display',
+    body: 'Tables, charts, and empty states. Skip entirely if the product has no data UI.',
+    examples: 'pricing tables · admin dashboards · changelog lists',
+  },
+  a11y: {
+    title: 'Accessibility',
+    body: 'Target standard, focus ring, and motion preference handling. Locks the model into accessible defaults instead of decorative-only states.',
+    examples: 'keyboard focus · color contrast · prefers-reduced-motion',
+  },
+  perf: {
+    title: 'Performance',
+    body: 'Performance budget hint. Affects rendering strategy, image loading, and how aggressively the model reaches for heavy client-side libraries.',
+    examples: 'image strategy · JS bundle size · time-to-interactive',
+  },
+  footer: {
+    title: 'Footer',
+    body: 'Footer scope. Most marketing sites end up with a maxi 4-column sitemap by default; constrain explicitly if you want minimal or editorial.',
+    examples: 'link density · sign-off line · social presence',
+  },
+  anti: {
+    title: 'Anti-patterns — explicit forbids',
+    body: 'The negative space of the spec — often more useful than the positives, because it prevents the model from reaching for its trained-in defaults.',
+    examples: 'forbidden gradients · banned shapes · prohibited copy clichés',
+  },
+  stack: {
+    title: 'Stack',
+    body: 'Implementation surface. Framework, styling, and rendering strategy together pin the output to a real codebase rather than a Frankenstein of patterns.',
+    examples: 'framework conventions · CSS organization · server vs client',
+  },
+  locale: {
+    title: 'Locale',
+    body: 'Language, region, and direction. Important for RTL or multi-language projects; safely ignored when shipping English-only.',
+    examples: 'currency format · text direction · CJK line-break behavior',
+  },
+};
+
+function Section({ id, n, title, on, onToggle, hint, children, openMap, setOpenMap }) {
+  const open = openMap[id] !== false;
+  const info = SECTION_INFO[id];
+  return (
+    <section className="border-b hr">
+      <header className="flex items-center justify-between gap-2 px-4 h-10 select-none">
+        <button
+          type="button"
+          onClick={() => setOpenMap({ ...openMap, [id]: !open })}
+          className="flex items-center gap-2 flex-1 text-left h-full min-w-0"
+        >
+          <span className="text-[10px] font-mono text-neutral-600 tabular-nums w-5">{String(n).padStart(2,'0')}</span>
+          <span className={['text-[12px] tracking-tight font-medium', on ? 'text-neutral-100' : 'text-neutral-500'].join(' ')}>{title}</span>
+          {hint && <span className="text-[11px] text-neutral-500 font-mono truncate ml-1">{hint}</span>}
+        </button>
+        <div className="flex items-center gap-2">
+          {info && <InfoTip title={info.title} body={info.body} examples={info.examples} />}
+          <button
+            type="button"
+            onClick={onToggle}
+            className={[
+              'text-[10px] font-mono uppercase tracking-[0.16em] h-6 px-2 border',
+              on
+                ? 'border-yellow-300/70 text-yellow-300'
+                : 'border-neutral-200/15 text-neutral-500 hover:text-neutral-300 hover:border-neutral-200/35',
+            ].join(' ')}
+            style={{ borderRadius: 0 }}
+            title={on ? 'Disable (omit from output)' : 'Enable'}
+          >
+            {on ? 'ON' : 'OFF'}
+          </button>
+          <span className={['text-neutral-500 font-mono text-[11px] w-3 inline-block transition-transform', open ? 'rotate-90' : ''].join(' ')}>›</span>
+        </div>
+      </header>
+      {open && on && <div className="px-4 pb-4 pt-1 space-y-4">{children}</div>}
+    </section>
+  );
+}
+
+/* --------------------------------- APP ----------------------------------- */
+
+function App() {
+  const [state, setState] = useState(() => {
+    try {
+      const raw = localStorage.getItem('spec.state');
+      if (raw) {
+        const saved = JSON.parse(raw);
+        // deep-merge per-section so old saved state still gets new fields
+        const merged = { ...initialState };
+        for (const k of Object.keys(initialState)) {
+          merged[k] = { ...initialState[k], ...(saved[k] || {}) };
+        }
+        return merged;
+      }
+    } catch (e) {}
+    return initialState;
+  });
+  const [openMap, setOpenMap] = useState(() => {
+    try {
+      const raw = localStorage.getItem('spec.open');
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return {};
+  });
+  const [theme, setTheme] = useState(() => {
+    try { return localStorage.getItem('spec.theme') || 'dark'; } catch(e) { return 'dark'; }
+  });
+  const [copied, setCopied] = useState(false);
+  const [flash, setFlash] = useState(false);
+  const previewRef = useRef(null);
+
+  /* persist */
+  useEffect(() => {
+    try { localStorage.setItem('spec.state', JSON.stringify(state)); } catch (e) {}
+  }, [state]);
+  useEffect(() => {
+    try { localStorage.setItem('spec.open', JSON.stringify(openMap)); } catch (e) {}
+  }, [openMap]);
+  useEffect(() => {
+    try { localStorage.setItem('spec.theme', theme); } catch (e) {}
+    if (theme === 'light') document.documentElement.classList.add('light');
+    else document.documentElement.classList.remove('light');
+  }, [theme]);
+
+  const prompt = useMemo(() => buildPrompt(state), [state]);
+  const tokens = useMemo(() => tokenCount(prompt), [prompt]);
+  const lineCount = useMemo(() => prompt.split('\n').length, [prompt]);
+
+  /* flash on change */
+  const lastPromptRef = useRef(prompt);
+  useEffect(() => {
+    if (lastPromptRef.current !== prompt) {
+      setFlash(true);
+      const t = setTimeout(() => setFlash(false), 120);
+      lastPromptRef.current = prompt;
+      return () => clearTimeout(t);
+    }
+  }, [prompt]);
+
+  const copy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(prompt);
+    } catch (e) {
+      // fallback
+      const ta = document.createElement('textarea');
+      ta.value = prompt; document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); } catch(e){}
+      ta.remove();
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 900);
+  }, [prompt]);
+
+  /* ⌘C / Ctrl+C global — only when nothing selected */
+  useEffect(() => {
+    function onKey(e) {
+      const isMeta = e.metaKey || e.ctrlKey;
+      if (!isMeta) return;
+      if (e.key.toLowerCase() !== 'c') return;
+      const sel = window.getSelection();
+      if (sel && sel.toString().length > 0) return; // let normal copy work
+      const t = e.target;
+      const tag = (t && t.tagName || '').toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || (t && t.isContentEditable)) return;
+      e.preventDefault();
+      copy();
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [copy]);
+
+  const update = (key, patch) => setState(s => ({ ...s, [key]: { ...s[key], ...patch } }));
+  const toggle = (key) => setState(s => ({ ...s, [key]: { ...s[key], on: !s[key].on } }));
+
+  const reset = () => setState(initialState);
+
+  const randomize = () => {
+    const profile = PROFILES[Math.floor(Math.random() * PROFILES.length)];
+    setState(s => ({
+      ...s,
+      aesthetic:  { ...s.aesthetic, on: true, value: profile.aesthetic, custom: '' },
+      typography: { ...s.typography, on: true, ...profile.typography, custom: '' },
+      spacing:    { ...s.spacing, on: true, ...profile.spacing },
+      color:      { ...s.color, on: true, ...profile.color },
+      layout:     { ...s.layout, on: true, ...profile.layout },
+      components: { ...s.components, on: true, ...profile.components },
+      motion:     { ...s.motion, on: true, ...profile.motion },
+      anti:       { ...s.anti, on: true, values: profile.anti },
+      // brief and stack are user-domain — leave alone
+    }));
+  };
+
+  /* hint generators (collapsed-state previews) */
+  const hint = {
+    brief: [state.brief.product, state.brief.audience, state.brief.action].filter(Boolean).join(' · ') || 'empty',
+    aesthetic: state.aesthetic.value === 'Custom' ? (state.aesthetic.custom || 'custom') : state.aesthetic.value,
+    typography: `${state.typography.typeface === 'Custom' ? state.typography.custom || 'custom' : state.typography.typeface} · ${state.typography.scale} · ${state.typography.heading}/${state.typography.body}`,
+    spacing: `${state.spacing.base} · ${state.spacing.container === 'fluid' ? 'fluid' : state.spacing.container} · ${state.spacing.rhythm.toLowerCase()}`,
+    color: `${state.color.mode} · ${state.color.accent} · ${state.color.dark.toLowerCase()}`,
+    layout: `${state.layout.grid} · ${state.layout.hero}`,
+    sections: `${state.sections.values.length} sections`,
+    components: `r:${state.components.radius} · ${state.components.button.toLowerCase()} · ${state.components.shadow.toLowerCase()}`,
+    imagery: `${state.imagery.style} · ${state.imagery.treatment.toLowerCase()}`,
+    motion: `${state.motion.density} · ${state.motion.feel} · ${state.motion.scroll}`,
+    voice: `${state.voice.register} · ${state.voice.density.toLowerCase()}`,
+    cta: `${state.cta.hierarchy} · ${state.cta.style.toLowerCase()}`,
+    trust: `${state.trust.values.length} signals`,
+    forms: `${state.forms.field.toLowerCase()} · ${state.forms.density.toLowerCase()}`,
+    data: `${state.data.table} · ${state.data.chart}`,
+    a11y: `${state.a11y.target} · focus:${state.a11y.focus.toLowerCase()}`,
+    perf: `${state.perf.budget} · ${state.perf.images.toLowerCase()}`,
+    footer: state.footer.value,
+    anti: `${state.anti.values.length} forbid${state.anti.values.length===1?'':'s'}`,
+    stack: `${state.stack.framework} · ${state.stack.styling}`,
+    locale: state.locale.value,
+  };
+
+  /* --------------------------- LEFT PANEL ----------------------------- */
+
+  const tfList = [...TYPEFACES, 'Custom'];
+  const aesList = [...AESTHETICS, 'Custom'];
+
+  return (
+    <div className="min-h-screen w-screen flex flex-col text-neutral-200 light:text-neutral-900" data-screen-label="01 Spec">
+      {/* TOP BAR */}
+      <header className="h-12 flex items-center justify-between border-b hr px-4 select-none">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="flex items-center gap-2">
+            <div className="w-3.5 h-3.5 bg-yellow-300" />
+            <div className="font-mono text-[13px] tracking-tight text-neutral-100 light-text-fix">spec</div>
+          </div>
+          <div className="hidden sm:block w-px h-4 bg-neutral-200/15" />
+          <div className="hidden sm:block text-[11px] font-mono text-neutral-500 truncate">
+            prompt scaffolding · constraint compiler
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={randomize}
+            className="h-7 px-2.5 text-[11px] font-mono uppercase tracking-[0.14em] text-neutral-300 border border-neutral-200/15 hover:border-neutral-200/35 hover:text-white"
+          >
+            Randomize
+          </button>
+          <button
+            type="button"
+            onClick={reset}
+            className="h-7 px-2.5 text-[11px] font-mono uppercase tracking-[0.14em] text-neutral-500 border border-neutral-200/15 hover:border-neutral-200/35 hover:text-neutral-300"
+          >
+            Reset
+          </button>
+          <div className="hidden sm:flex items-center border border-neutral-200/15 h-7">
+            <button
+              type="button"
+              onClick={() => setTheme('dark')}
+              className={['h-full px-2 text-[11px] font-mono uppercase tracking-[0.14em]', theme === 'dark' ? 'bg-yellow-300 text-neutral-950' : 'text-neutral-500 hover:text-neutral-300'].join(' ')}
+              title="Dark theme"
+            >Dk</button>
+            <button
+              type="button"
+              onClick={() => setTheme('light')}
+              className={['h-full px-2 text-[11px] font-mono uppercase tracking-[0.14em] border-l border-neutral-200/15', theme === 'light' ? 'bg-yellow-300 text-neutral-950' : 'text-neutral-500 hover:text-neutral-300'].join(' ')}
+              title="Light theme"
+            >Lt</button>
+          </div>
+        </div>
+      </header>
+
+      {/* MAIN */}
+      <main className="flex-1 grid grid-cols-1 lg:grid-cols-[minmax(360px,440px)_1fr] min-h-0">
+        {/* LEFT — CONSTRAINT STACK */}
+        <aside className="lg:border-r hr min-h-0 overflow-y-auto nice-scroll">
+          {/* Section: Brief */}
+          <Section id="brief" n={1} title="Brief" on={state.brief.on} onToggle={() => toggle('brief')} hint={hint.brief} openMap={openMap} setOpenMap={setOpenMap}>
+            <div className="grid grid-cols-1 gap-3">
+              <TextField label="Product" placeholder="e.g. Spec — prompt scaffolding tool"
+                value={state.brief.product} onChange={v => update('brief', { product: v })} />
+              <TextField label="Audience" placeholder="e.g. senior product designers, staff engineers"
+                value={state.brief.audience} onChange={v => update('brief', { audience: v })} />
+              <TextField label="Primary action" placeholder="e.g. copy a structured spec to clipboard"
+                value={state.brief.action} onChange={v => update('brief', { action: v })} />
+              <TextField label="Secondary action" placeholder="e.g. read the manifesto"
+                value={state.brief.secondary} onChange={v => update('brief', { secondary: v })} />
+              <TextField label="Hard constraints" placeholder="e.g. must work without JS · must fit on a postcard"
+                value={state.brief.constraints} onChange={v => update('brief', { constraints: v })} />
+            </div>
+          </Section>
+
+          {/* Section: Aesthetic */}
+          <Section id="aesthetic" n={2} title="Aesthetic direction" on={state.aesthetic.on} onToggle={() => toggle('aesthetic')} hint={hint.aesthetic} openMap={openMap} setOpenMap={setOpenMap}>
+            <div>
+              <FieldLabel hint={`single · ${aesList.length} options`}>Direction</FieldLabel>
+              <ChipRow options={aesList} value={state.aesthetic.value} onChange={v => update('aesthetic', { value: v })} />
+            </div>
+            {state.aesthetic.value === 'Custom' && (
+              <TextField label="Custom direction" placeholder="describe the aesthetic in 1–2 phrases"
+                value={state.aesthetic.custom} onChange={v => update('aesthetic', { custom: v })} />
+            )}
+            <TextField label="Reference sites (optional)" placeholder="e.g. linear.app, are.na, jjjjound.com"
+              value={state.aesthetic.references} onChange={v => update('aesthetic', { references: v })} />
+          </Section>
+
+          {/* Section: Typography */}
+          <Section id="typography" n={3} title="Typography" on={state.typography.on} onToggle={() => toggle('typography')} hint={hint.typography} openMap={openMap} setOpenMap={setOpenMap}>
+            <div>
+              <FieldLabel hint={`${tfList.length} typefaces`}>Display / body typeface</FieldLabel>
+              <ChipRow options={tfList} value={state.typography.typeface} onChange={v => update('typography', { typeface: v })} />
+            </div>
+            {state.typography.typeface === 'Custom' && (
+              <TextField label="Custom typeface" placeholder="e.g. Söhne Mono / GT America"
+                value={state.typography.custom} onChange={v => update('typography', { custom: v })} />
+            )}
+            <div>
+              <FieldLabel>Mono / code typeface</FieldLabel>
+              <ChipRow options={['IBM Plex Mono', 'JetBrains Mono', 'Berkeley Mono', 'Departure Mono', 'Geist Mono', 'Operator Mono', 'system-ui mono']} value={state.typography.mono} onChange={v => update('typography', { mono: v })} />
+            </div>
+            <div>
+              <FieldLabel hint="modular scale">Type scale</FieldLabel>
+              <ChipRow options={SCALE_RATIOS} value={state.typography.scale} onChange={v => update('typography', { scale: v })} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <FieldLabel>Heading wt</FieldLabel>
+                <ChipRow options={WEIGHTS} value={state.typography.heading} onChange={v => update('typography', { heading: v })} />
+              </div>
+              <div>
+                <FieldLabel>Body wt</FieldLabel>
+                <ChipRow options={WEIGHTS} value={state.typography.body} onChange={v => update('typography', { body: v })} />
+              </div>
+            </div>
+            <div>
+              <FieldLabel>Line height</FieldLabel>
+              <ChipRow options={LINE_HEIGHTS} value={state.typography.leading} onChange={v => update('typography', { leading: v })} />
+            </div>
+            <div>
+              <FieldLabel>Tracking</FieldLabel>
+              <ChipRow options={TRACKING} value={state.typography.tracking} onChange={v => update('typography', { tracking: v })} />
+            </div>
+            <div>
+              <FieldLabel>Display case</FieldLabel>
+              <ChipRow options={CASE_STYLES} value={state.typography.caseStyle} onChange={v => update('typography', { caseStyle: v })} />
+            </div>
+            <div>
+              <FieldLabel>Numerics</FieldLabel>
+              <ChipRow options={NUMERIC_STYLES} value={state.typography.numerics} onChange={v => update('typography', { numerics: v })} />
+            </div>
+          </Section>
+
+          {/* Section: Spacing */}
+          <Section id="spacing" n={4} title="Spacing system" on={state.spacing.on} onToggle={() => toggle('spacing')} hint={hint.spacing} openMap={openMap} setOpenMap={setOpenMap}>
+            <div>
+              <FieldLabel>Base unit</FieldLabel>
+              <ChipRow options={BASE_UNITS} value={state.spacing.base} onChange={v => update('spacing', { base: v })} />
+            </div>
+            <div>
+              <FieldLabel hint="px">Container width</FieldLabel>
+              <ChipRow options={CONTAINERS} value={state.spacing.container} onChange={v => update('spacing', { container: v })} />
+            </div>
+            <div>
+              <FieldLabel>Section rhythm</FieldLabel>
+              <ChipRow options={RHYTHMS} value={state.spacing.rhythm} onChange={v => update('spacing', { rhythm: v })} />
+            </div>
+            <div>
+              <FieldLabel hint="px">Gutter</FieldLabel>
+              <ChipRow options={GUTTERS} value={state.spacing.gutter} onChange={v => update('spacing', { gutter: v })} />
+            </div>
+            <div>
+              <FieldLabel>Padding philosophy</FieldLabel>
+              <ChipRow options={PADDING_PHIL} value={state.spacing.padding} onChange={v => update('spacing', { padding: v })} />
+            </div>
+          </Section>
+
+          {/* Section: Color */}
+          <Section id="color" n={5} title="Color" on={state.color.on} onToggle={() => toggle('color')} hint={hint.color} openMap={openMap} setOpenMap={setOpenMap}>
+            <div>
+              <FieldLabel>Palette mode</FieldLabel>
+              <ChipRow options={PALETTE_MODES} value={state.color.mode} onChange={v => update('color', { mode: v })} />
+            </div>
+            <div>
+              <FieldLabel hint={state.color.accent.toUpperCase()}>Accent</FieldLabel>
+              <div className="flex items-center gap-2">
+                <input type="color" value={state.color.accent} onChange={e => update('color', { accent: e.target.value })} className="w-7 h-7 cursor-pointer" />
+                <input type="text" value={state.color.accent} onChange={e => update('color', { accent: e.target.value })}
+                  className="flex-1 h-7 bg-transparent border border-neutral-200/15 px-2 font-mono text-[12px] text-neutral-200 focus:border-yellow-300/70 focus:outline-none light-input" />
+                <div className="flex gap-1">
+                  {['#f5d90a','#dc2626','#ffffff','#000000','#5b6cff','#10b981','#f97316','#a4332a'].map(c => (
+                    <button key={c} type="button" onClick={() => update('color', { accent: c })}
+                      className="w-5 h-5 border border-neutral-200/15 hover:border-neutral-200/40" style={{ background: c }} title={c} />
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div>
+              <FieldLabel hint={state.color.secondary.toUpperCase()}>Secondary</FieldLabel>
+              <div className="flex items-center gap-2">
+                <input type="color" value={state.color.secondary} onChange={e => update('color', { secondary: e.target.value })} className="w-7 h-7 cursor-pointer" />
+                <input type="text" value={state.color.secondary} onChange={e => update('color', { secondary: e.target.value })}
+                  className="flex-1 h-7 bg-transparent border border-neutral-200/15 px-2 font-mono text-[12px] text-neutral-200 focus:border-yellow-300/70 focus:outline-none light-input" />
+              </div>
+            </div>
+            <div>
+              <FieldLabel>Dark mode</FieldLabel>
+              <ChipRow options={DARK_OPTIONS} value={state.color.dark} onChange={v => update('color', { dark: v })} />
+            </div>
+            <div>
+              <FieldLabel>Surface</FieldLabel>
+              <ChipRow options={SURFACES} value={state.color.surface} onChange={v => update('color', { surface: v })} />
+            </div>
+            <div>
+              <FieldLabel>Contrast</FieldLabel>
+              <ChipRow options={CONTRAST} value={state.color.contrast} onChange={v => update('color', { contrast: v })} />
+            </div>
+            <div>
+              <FieldLabel>Color temperature</FieldLabel>
+              <ChipRow options={COLOR_TEMP} value={state.color.temp} onChange={v => update('color', { temp: v })} />
+            </div>
+            <div>
+              <FieldLabel>Background treatment</FieldLabel>
+              <ChipRow options={BG_TREATMENT} value={state.color.bg} onChange={v => update('color', { bg: v })} />
+            </div>
+          </Section>
+
+          {/* Section: Layout */}
+          <Section id="layout" n={6} title="Layout architecture" on={state.layout.on} onToggle={() => toggle('layout')} hint={hint.layout} openMap={openMap} setOpenMap={setOpenMap}>
+            <div>
+              <FieldLabel>Grid</FieldLabel>
+              <ChipRow options={GRIDS} value={state.layout.grid} onChange={v => update('layout', { grid: v })} />
+            </div>
+            <div>
+              <FieldLabel>Hero pattern</FieldLabel>
+              <ChipRow options={HEROES} value={state.layout.hero} onChange={v => update('layout', { hero: v })} />
+            </div>
+            <div>
+              <FieldLabel>Navigation</FieldLabel>
+              <ChipRow options={NAVS} value={state.layout.nav} onChange={v => update('layout', { nav: v })} />
+            </div>
+            <div>
+              <FieldLabel>Above-fold strategy</FieldLabel>
+              <ChipRow options={FOLD_STRATEGY} value={state.layout.fold} onChange={v => update('layout', { fold: v })} />
+            </div>
+          </Section>
+
+          {/* Section: Page sections (multi) */}
+          <Section id="sections" n={7} title="Page sections" on={state.sections.on} onToggle={() => toggle('sections')} hint={hint.sections} openMap={openMap} setOpenMap={setOpenMap}>
+            <FieldLabel hint="multi-select · order = scroll order">Include</FieldLabel>
+            <MultiChips options={PAGE_SECTIONS} values={state.sections.values} onChange={v => update('sections', { values: v })} />
+          </Section>
+
+          {/* Section: Components */}
+          <Section id="components" n={8} title="Component density" on={state.components.on} onToggle={() => toggle('components')} hint={hint.components} openMap={openMap} setOpenMap={setOpenMap}>
+            <div>
+              <FieldLabel hint="px">Radius scale</FieldLabel>
+              <ChipRow options={RADII} value={state.components.radius} onChange={v => update('components', { radius: v })} />
+            </div>
+            <div>
+              <FieldLabel>Border treatment</FieldLabel>
+              <ChipRow options={BORDERS} value={state.components.border} onChange={v => update('components', { border: v })} />
+            </div>
+            <div>
+              <FieldLabel>Shadow philosophy</FieldLabel>
+              <ChipRow options={SHADOWS} value={state.components.shadow} onChange={v => update('components', { shadow: v })} />
+            </div>
+            <div>
+              <FieldLabel>Button style</FieldLabel>
+              <ChipRow options={BTN_STYLE} value={state.components.button} onChange={v => update('components', { button: v })} />
+            </div>
+            <div>
+              <FieldLabel>Card style</FieldLabel>
+              <ChipRow options={CARD_STYLE} value={state.components.card} onChange={v => update('components', { card: v })} />
+            </div>
+            <div>
+              <FieldLabel>Icon set</FieldLabel>
+              <ChipRow options={ICON_STYLE} value={state.components.icons} onChange={v => update('components', { icons: v })} />
+            </div>
+          </Section>
+
+          {/* Section: Imagery */}
+          <Section id="imagery" n={9} title="Imagery" on={state.imagery.on} onToggle={() => toggle('imagery')} hint={hint.imagery} openMap={openMap} setOpenMap={setOpenMap}>
+            <div>
+              <FieldLabel>Image style</FieldLabel>
+              <ChipRow options={IMAGERY_STYLE} value={state.imagery.style} onChange={v => update('imagery', { style: v })} />
+            </div>
+            <div>
+              <FieldLabel>Treatment</FieldLabel>
+              <ChipRow options={IMAGE_TREATMENT} value={state.imagery.treatment} onChange={v => update('imagery', { treatment: v })} />
+            </div>
+            <div>
+              <FieldLabel>Aspect philosophy</FieldLabel>
+              <ChipRow options={ASPECT_PHIL} value={state.imagery.aspect} onChange={v => update('imagery', { aspect: v })} />
+            </div>
+          </Section>
+
+          {/* Section: Motion */}
+          <Section id="motion" n={10} title="Motion" on={state.motion.on} onToggle={() => toggle('motion')} hint={hint.motion} openMap={openMap} setOpenMap={setOpenMap}>
+            <div>
+              <FieldLabel>Animation density</FieldLabel>
+              <ChipRow options={ANIM_DENSITY} value={state.motion.density} onChange={v => update('motion', { density: v })} />
+            </div>
+            <div>
+              <FieldLabel>Interaction feel</FieldLabel>
+              <ChipRow options={FEELS} value={state.motion.feel} onChange={v => update('motion', { feel: v })} />
+            </div>
+            <div>
+              <FieldLabel>Scroll behavior</FieldLabel>
+              <ChipRow options={SCROLLS} value={state.motion.scroll} onChange={v => update('motion', { scroll: v })} />
+            </div>
+            <div>
+              <FieldLabel>Hover feel</FieldLabel>
+              <ChipRow options={HOVER_FEEL} value={state.motion.hover} onChange={v => update('motion', { hover: v })} />
+            </div>
+            <div>
+              <FieldLabel>Page transitions</FieldLabel>
+              <ChipRow options={PAGE_TRANSITION} value={state.motion.transition} onChange={v => update('motion', { transition: v })} />
+            </div>
+          </Section>
+
+          {/* Section: Voice */}
+          <Section id="voice" n={11} title="Voice & copy" on={state.voice.on} onToggle={() => toggle('voice')} hint={hint.voice} openMap={openMap} setOpenMap={setOpenMap}>
+            <div>
+              <FieldLabel>Register</FieldLabel>
+              <ChipRow options={VOICE} value={state.voice.register} onChange={v => update('voice', { register: v })} />
+            </div>
+            <div>
+              <FieldLabel>Copy density</FieldLabel>
+              <ChipRow options={COPY_DENSITY} value={state.voice.density} onChange={v => update('voice', { density: v })} />
+            </div>
+            <div>
+              <FieldLabel>Headline style</FieldLabel>
+              <ChipRow options={HEADLINE_STYLE} value={state.voice.headline} onChange={v => update('voice', { headline: v })} />
+            </div>
+            <div>
+              <FieldLabel>Person</FieldLabel>
+              <ChipRow options={PERSON} value={state.voice.person} onChange={v => update('voice', { person: v })} />
+            </div>
+            <div>
+              <FieldLabel>Formality</FieldLabel>
+              <ChipRow options={TONE_FORMALITY} value={state.voice.formality} onChange={v => update('voice', { formality: v })} />
+            </div>
+          </Section>
+
+          {/* Section: CTAs */}
+          <Section id="cta" n={12} title="CTA strategy" on={state.cta.on} onToggle={() => toggle('cta')} hint={hint.cta} openMap={openMap} setOpenMap={setOpenMap}>
+            <div>
+              <FieldLabel>Hierarchy</FieldLabel>
+              <ChipRow options={CTA_HIERARCHY} value={state.cta.hierarchy} onChange={v => update('cta', { hierarchy: v })} />
+            </div>
+            <div>
+              <FieldLabel>Primary style</FieldLabel>
+              <ChipRow options={CTA_STYLE} value={state.cta.style} onChange={v => update('cta', { style: v })} />
+            </div>
+            <div>
+              <FieldLabel>Placement</FieldLabel>
+              <ChipRow options={CTA_PLACEMENT} value={state.cta.placement} onChange={v => update('cta', { placement: v })} />
+            </div>
+          </Section>
+
+          {/* Section: Trust signals */}
+          <Section id="trust" n={13} title="Trust signals" on={state.trust.on} onToggle={() => toggle('trust')} hint={hint.trust} openMap={openMap} setOpenMap={setOpenMap}>
+            <FieldLabel hint="multi-select">Include</FieldLabel>
+            <MultiChips options={TRUST} values={state.trust.values} onChange={v => update('trust', { values: v })} />
+          </Section>
+
+          {/* Section: Forms */}
+          <Section id="forms" n={14} title="Forms" on={state.forms.on} onToggle={() => toggle('forms')} hint={hint.forms} openMap={openMap} setOpenMap={setOpenMap}>
+            <div>
+              <FieldLabel>Field treatment</FieldLabel>
+              <ChipRow options={FORMS_FIELD} value={state.forms.field} onChange={v => update('forms', { field: v })} />
+            </div>
+            <div>
+              <FieldLabel>Validation</FieldLabel>
+              <ChipRow options={FORMS_VALIDATION} value={state.forms.validation} onChange={v => update('forms', { validation: v })} />
+            </div>
+            <div>
+              <FieldLabel>Density</FieldLabel>
+              <ChipRow options={FORMS_DENSITY} value={state.forms.density} onChange={v => update('forms', { density: v })} />
+            </div>
+          </Section>
+
+          {/* Section: Data display */}
+          <Section id="data" n={15} title="Data display" on={state.data.on} onToggle={() => toggle('data')} hint={hint.data} openMap={openMap} setOpenMap={setOpenMap}>
+            <div>
+              <FieldLabel>Tables</FieldLabel>
+              <ChipRow options={DATA_TABLE} value={state.data.table} onChange={v => update('data', { table: v })} />
+            </div>
+            <div>
+              <FieldLabel>Charts</FieldLabel>
+              <ChipRow options={DATA_CHART} value={state.data.chart} onChange={v => update('data', { chart: v })} />
+            </div>
+            <div>
+              <FieldLabel>Empty states</FieldLabel>
+              <ChipRow options={EMPTY_STATE} value={state.data.empty} onChange={v => update('data', { empty: v })} />
+            </div>
+          </Section>
+
+          {/* Section: Accessibility */}
+          <Section id="a11y" n={16} title="Accessibility" on={state.a11y.on} onToggle={() => toggle('a11y')} hint={hint.a11y} openMap={openMap} setOpenMap={setOpenMap}>
+            <div>
+              <FieldLabel>Target</FieldLabel>
+              <ChipRow options={A11Y_TARGET} value={state.a11y.target} onChange={v => update('a11y', { target: v })} />
+            </div>
+            <div>
+              <FieldLabel>Focus style</FieldLabel>
+              <ChipRow options={A11Y_FOCUS} value={state.a11y.focus} onChange={v => update('a11y', { focus: v })} />
+            </div>
+            <div>
+              <FieldLabel>Motion preference</FieldLabel>
+              <ChipRow options={A11Y_MOTION} value={state.a11y.motion} onChange={v => update('a11y', { motion: v })} />
+            </div>
+          </Section>
+
+          {/* Section: Performance */}
+          <Section id="perf" n={17} title="Performance" on={state.perf.on} onToggle={() => toggle('perf')} hint={hint.perf} openMap={openMap} setOpenMap={setOpenMap}>
+            <div>
+              <FieldLabel>Budget</FieldLabel>
+              <ChipRow options={PERF_BUDGET} value={state.perf.budget} onChange={v => update('perf', { budget: v })} />
+            </div>
+            <div>
+              <FieldLabel>Image loading</FieldLabel>
+              <ChipRow options={IMG_LOADING} value={state.perf.images} onChange={v => update('perf', { images: v })} />
+            </div>
+          </Section>
+
+          {/* Section: Footer */}
+          <Section id="footer" n={18} title="Footer" on={state.footer.on} onToggle={() => toggle('footer')} hint={hint.footer} openMap={openMap} setOpenMap={setOpenMap}>
+            <div>
+              <FieldLabel>Style</FieldLabel>
+              <ChipRow options={FOOTER} value={state.footer.value} onChange={v => update('footer', { value: v })} />
+            </div>
+          </Section>
+
+          {/* Section: Anti-patterns */}
+          <Section id="anti" n={19} title="Anti-patterns" on={state.anti.on} onToggle={() => toggle('anti')} hint={hint.anti} openMap={openMap} setOpenMap={setOpenMap}>
+            <FieldLabel hint={`multi-select · ${ANTI_PATTERNS.length} options`}>Do not include</FieldLabel>
+            <MultiChips options={ANTI_PATTERNS} values={state.anti.values} onChange={v => update('anti', { values: v })} stripPrefix="No " />
+          </Section>
+
+          {/* Section: Stack */}
+          <Section id="stack" n={20} title="Stack" on={state.stack.on} onToggle={() => toggle('stack')} hint={hint.stack} openMap={openMap} setOpenMap={setOpenMap}>
+            <div>
+              <FieldLabel>Framework</FieldLabel>
+              <ChipRow options={FRAMEWORKS} value={state.stack.framework} onChange={v => update('stack', { framework: v })} />
+            </div>
+            <div>
+              <FieldLabel>Styling</FieldLabel>
+              <ChipRow options={STYLING} value={state.stack.styling} onChange={v => update('stack', { styling: v })} />
+            </div>
+            <div>
+              <FieldLabel>Component library</FieldLabel>
+              <ChipRow options={LIBRARIES} value={state.stack.library} onChange={v => update('stack', { library: v })} />
+            </div>
+            <div>
+              <FieldLabel>Responsive target</FieldLabel>
+              <ChipRow options={RESPONSIVE} value={state.stack.responsive} onChange={v => update('stack', { responsive: v })} />
+            </div>
+            <div>
+              <FieldLabel>Rendering</FieldLabel>
+              <ChipRow options={RENDERING} value={state.stack.rendering} onChange={v => update('stack', { rendering: v })} />
+            </div>
+            <div>
+              <FieldLabel>State management</FieldLabel>
+              <ChipRow options={STATE_MGMT} value={state.stack.state} onChange={v => update('stack', { state: v })} />
+            </div>
+          </Section>
+
+          {/* Section: Locale */}
+          <Section id="locale" n={21} title="Locale" on={state.locale.on} onToggle={() => toggle('locale')} hint={hint.locale} openMap={openMap} setOpenMap={setOpenMap}>
+            <div>
+              <FieldLabel>Target locale</FieldLabel>
+              <ChipRow options={LOCALE} value={state.locale.value} onChange={v => update('locale', { value: v })} />
+            </div>
+          </Section>
+
+          {/* footer space */}
+          <div className="h-16" />
+        </aside>
+
+        {/* RIGHT — PROMPT PREVIEW */}
+        <section className="relative min-h-0 flex flex-col bg-neutral-950 light-bg-card">
+          <div className="h-10 flex items-center justify-between border-b hr px-4 shrink-0">
+            <div className="flex items-center gap-3 text-[11px] font-mono text-neutral-500">
+              <span className="text-neutral-300">prompt.md</span>
+              <span>·</span>
+              <span className="tabular-nums">{lineCount} ln</span>
+              <span>·</span>
+              <span className="tabular-nums">~{tokens} tok</span>
+              <span className={['inline-block w-1.5 h-1.5 transition-opacity duration-100', flash ? 'opacity-100 bg-yellow-300' : 'opacity-0 bg-yellow-300'].join(' ')} />
+            </div>
+            <div className="flex items-center gap-2">
+              <kbd className="hidden md:inline-flex items-center h-6 px-1.5 border border-neutral-200/15 text-[10px] font-mono text-neutral-500">⌘C</kbd>
+              <button
+                type="button"
+                onClick={copy}
+                className={[
+                  'h-7 px-3 text-[11px] font-mono uppercase tracking-[0.14em] border transition-colors duration-75',
+                  copied
+                    ? 'bg-yellow-300 text-neutral-950 border-yellow-300'
+                    : 'bg-neutral-100/0 border-neutral-200/30 text-neutral-100 hover:bg-yellow-300 hover:text-neutral-950 hover:border-yellow-300',
+                ].join(' ')}
+              >
+                {copied ? 'Copied' : 'Copy'}
+              </button>
+            </div>
+          </div>
+
+          <div ref={previewRef} className="flex-1 min-h-0 overflow-auto nice-scroll">
+            <PromptView text={prompt} />
+          </div>
+
+          {/* status bar */}
+          <div className="h-7 border-t hr px-4 flex items-center justify-between text-[10px] font-mono text-neutral-500 shrink-0">
+            <div className="flex items-center gap-3">
+              <span>spec/0.1</span>
+              <span className="text-neutral-700">·</span>
+              <span>{Object.values(state).filter(s => s.on).length}/{Object.keys(state).length} sections active</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span>localstorage:saved</span>
+              <span className="text-neutral-700">·</span>
+              <span>utf-8</span>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* light mode patches via CSS-in-JSX */}
+      <style>{`
+        html.light .light-text-fix, html.light .text-neutral-100 { color: #0a0a0a; }
+        html.light .text-neutral-200 { color: #171717; }
+        html.light .text-neutral-300 { color: #404040; }
+        html.light .text-neutral-500 { color: #737373; }
+        html.light .text-neutral-600 { color: #525252; }
+        html.light .text-neutral-700 { color: #a3a3a3; }
+        html.light .bg-neutral-950, html.light .light-bg-card { background: #ffffff; }
+        html.light .light-tip-bg { background: #ffffff !important; }
+        html.light .light-tip-h { color: #0a0a0a !important; }
+        html.light .light-tip-body { color: #404040 !important; }
+        html.light body { background: #fafafa; }
+        html.light .light-input { color: #0a0a0a; }
+        html.light .border-neutral-200\\/15 { border-color: rgba(0,0,0,0.12); }
+        html.light .border-neutral-200\\/30 { border-color: rgba(0,0,0,0.22); }
+        html.light .border-neutral-200\\/35 { border-color: rgba(0,0,0,0.28); }
+        html.light .border-neutral-200\\/40 { border-color: rgba(0,0,0,0.32); }
+        html.light .hover\\:border-neutral-200\\/40:hover { border-color: rgba(0,0,0,0.40); }
+        html.light .hover\\:border-neutral-200\\/35:hover { border-color: rgba(0,0,0,0.35); }
+        html.light .hover\\:text-white:hover { color: #0a0a0a; }
+        html.light .bg-neutral-200\\/15, html.light .bg-neutral-200\\/15 { background: rgba(0,0,0,0.12); }
+        html.light kbd { color: #525252; }
+      `}</style>
+    </div>
+  );
+}
+
+function TextField({ label, placeholder, value, onChange }) {
+  return (
+    <label className="block">
+      <FieldLabel>{label}</FieldLabel>
+      <input
+        type="text"
+        value={value}
+        placeholder={placeholder}
+        onChange={e => onChange(e.target.value)}
+        className="w-full h-8 bg-transparent border border-neutral-200/15 px-2.5 text-[12.5px] text-neutral-100 placeholder:text-neutral-600 focus:border-yellow-300/70 focus:outline-none light-input"
+        style={{ borderRadius: 0 }}
+      />
+    </label>
+  );
+}
+
+/* Syntax-tinted prompt rendering — keep monospace. */
+function PromptView({ text }) {
+  const lines = text.split('\n');
+  return (
+    <pre className="font-mono text-[12.5px] leading-[1.65] px-6 py-5 whitespace-pre-wrap break-words m-0 select-text">
+      {lines.map((ln, i) => {
+        let cls = 'text-neutral-300 light:text-neutral-700';
+        let content = ln;
+        if (/^# /.test(ln))         cls = 'text-neutral-100 font-semibold';
+        else if (/^## /.test(ln))   cls = 'text-yellow-300';
+        else if (/^- /.test(ln)) {
+          // split key:value
+          const m = ln.match(/^- ([^:]+):\s*(.*)$/);
+          if (m) {
+            return (
+              <div key={i} className="text-neutral-300">
+                <span className="text-neutral-600">- </span>
+                <span className="text-neutral-500">{m[1]}: </span>
+                <span className="text-neutral-100">{m[2]}</span>
+              </div>
+            );
+          }
+          return (
+            <div key={i} className="text-neutral-300">
+              <span className="text-neutral-600">- </span>
+              <span className="text-neutral-100">{ln.slice(2)}</span>
+            </div>
+          );
+        }
+        return <div key={i} className={cls}>{content || '\u00A0'}</div>;
+      })}
+    </pre>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

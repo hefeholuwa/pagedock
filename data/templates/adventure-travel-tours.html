@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fjelvik — Tours & Adventure Travel</title>
+<meta name="description" content="Fjelvik is a free travel agency HTML template — photo hero with a working booking panel, destination bento, tour listings, tour detail, about and contact pages." />
+<meta name="theme-color" content="#101412" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%23101412'/%3E%3Ccircle cx='16' cy='12' r='4' fill='%23D5E4E1'/%3E%3Cpath d='M5 24l7-8 4 4 3-3 8 7z' fill='%23fff'/%3E%3C/svg%3E" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=SUSE:wght@400;500;600&family=Golos+Text:wght@400;500;600&family=Ubuntu+Sans+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="preconnect" href="https://images.pexels.com" crossorigin />
+
+<link rel="stylesheet" href="assets/css/tokens.css?v=hwm8soge" />
+<link rel="stylesheet" href="assets/css/site.css?v=hwm8soge" />
+<link rel="stylesheet" href="assets/css/pages.css?v=hwm8soge" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="header" data-header="photo">
+  <div class="container header__inner">
+    <a class="brand" href="index.html" aria-label="Fjelvik — home">
+      <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true">
+        <circle cx="16" cy="16" r="15" fill="none" stroke="currentColor" stroke-width="2" />
+        <circle cx="16" cy="11.5" r="3.2" fill="currentColor" />
+        <path d="M5.5 23.5 12.5 16l4 4 3-3 7 6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
+      </svg>
+      <span class="brand__word">fjelvik</span>
+    </a>
+
+    <nav class="nav" id="site-nav" aria-label="Main">
+      <a href="index.html" aria-current="page">Home</a>
+      <a href="tours.html">Tours</a>
+      <a href="about.html">About Us</a>
+      <a href="contact.html">Contact Us</a>
+      <a class="nav__signin-mobile" href="contact.html">Plan a trip</a>
+    </nav>
+
+    <div class="header__tools">
+      <a class="btn header__signin" href="contact.html">Plan a trip</a>
+      <button class="burger" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<!-- ===== Hero: full-bleed photograph + booking panel ===== -->
+<section class="hero on-photo" aria-labelledby="hero-title">
+  <img class="hero__img" src="https://images.pexels.com/photos/4104906/pexels-photo-4104906.jpeg?auto=compress&cs=tinysrgb&w=2000" alt="An alpine lake at dusk, forest and mountains reflected in still water" width="2000" height="1333" fetchpriority="high" decoding="async" />
+  <div class="container hero__grid">
+    <div class="hero__copy">
+      <p class="hero__eyebrow"><span class="hero__dot" aria-hidden="true"></span>42 guided departures this season</p>
+      <h1 id="hero-title" class="hero__title">Let&rsquo;s find your next adventure</h1>
+      <p class="hero__sub">Small-group tours to lakes, volcanoes and island chains, led by guides who grew up there. You bring the curiosity; we handle the rest.</p>
+      <a class="cta-orbit" href="tours.html">
+        <span class="cta-orbit__text">Take a tour</span>
+        <span class="cta-orbit__dot" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+      </a>
+    </div>
+
+    <form class="booking" data-booking aria-label="Search trips">
+      <div class="booking__tabs" role="tablist" aria-label="Trip type">
+        <button type="button" role="tab" id="tab-tour" aria-selected="true" aria-controls="panel-tour">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 11 18-8-8 18-2-8-8-2Z"/></svg>Tour
+        </button>
+        <button type="button" role="tab" id="tab-flight" aria-selected="false" aria-controls="panel-flight" tabindex="-1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 16h20M5 16l-1-5h3l2 3h4l-2-8h3l5 8"/></svg>Flight
+        </button>
+        <button type="button" role="tab" id="tab-hotel" aria-selected="false" aria-controls="panel-hotel" tabindex="-1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4h10v17M15 9h4v12M9 8h2M9 12h2M9 16h2M3 21h18"/></svg>Hotels
+        </button>
+      </div>
+
+      <div class="booking__panel" id="panel-tour" role="tabpanel" aria-labelledby="tab-tour">
+        <div class="field">
+          <label class="field__label" for="tour-dest">Destination</label>
+          <span class="input">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+            <select id="tour-dest" name="destination">
+              <option>Mount Bromo, Indonesia</option>
+              <option>Lago di Braies, Italy</option>
+              <option>Ha Long Bay, Vietnam</option>
+              <option>Mount Fuji, Japan</option>
+              <option>Raja Ampat, Indonesia</option>
+              <option>Sete Cidades, Azores</option>
+            </select>
+          </span>
+        </div>
+        <div class="booking__row" data-date-pair>
+          <div class="field">
+            <label class="field__label" for="tour-in">Check in</label>
+            <span class="input"><input id="tour-in" type="date" data-date="start" /></span>
+          </div>
+          <div class="field">
+            <label class="field__label" for="tour-out">Check out</label>
+            <span class="input"><input id="tour-out" type="date" data-date="end" /></span>
+          </div>
+        </div>
+        <div class="field">
+          <span class="field__label" id="guest-label">Guests</span>
+          <div class="input stepper" data-stepper data-min="1" data-max="12" role="group" aria-labelledby="guest-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>
+            <output aria-live="polite" data-count="4">4 people</output>
+            <button type="button" data-step="-1" aria-label="Fewer guests">&minus;</button>
+            <button type="button" data-step="1" aria-label="More guests">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="booking__panel" id="panel-flight" role="tabpanel" aria-labelledby="tab-flight" hidden>
+        <div class="booking__row">
+          <div class="field">
+            <label class="field__label" for="fl-from">From</label>
+            <span class="input"><input id="fl-from" type="text" value="Oslo (OSL)" autocomplete="off" /></span>
+          </div>
+          <div class="field">
+            <label class="field__label" for="fl-to">To</label>
+            <span class="input"><input id="fl-to" type="text" value="Denpasar (DPS)" autocomplete="off" /></span>
+          </div>
+        </div>
+        <div class="booking__row" data-date-pair>
+          <div class="field">
+            <label class="field__label" for="fl-dep">Depart</label>
+            <span class="input"><input id="fl-dep" type="date" data-date="start" /></span>
+          </div>
+          <div class="field">
+            <label class="field__label" for="fl-ret">Return</label>
+            <span class="input"><input id="fl-ret" type="date" data-date="end" /></span>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field__label" for="fl-cabin">Cabin</label>
+          <span class="input"><select id="fl-cabin"><option>Economy</option><option>Premium economy</option><option>Business</option></select></span>
+        </div>
+      </div>
+
+      <div class="booking__panel" id="panel-hotel" role="tabpanel" aria-labelledby="tab-hotel" hidden>
+        <div class="field">
+          <label class="field__label" for="ht-city">City or area</label>
+          <span class="input"><input id="ht-city" type="text" value="Fujikawaguchiko, Japan" autocomplete="off" /></span>
+        </div>
+        <div class="booking__row" data-date-pair>
+          <div class="field">
+            <label class="field__label" for="ht-in">Check in</label>
+            <span class="input"><input id="ht-in" type="date" data-date="start" /></span>
+          </div>
+          <div class="field">
+            <label class="field__label" for="ht-out">Check out</label>
+            <span class="input"><input id="ht-out" type="date" data-date="end" /></span>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field__label" for="ht-rooms">Rooms</label>
+          <span class="input"><select id="ht-rooms"><option>1 room, 2 adults</option><option>2 rooms, 4 adults</option><option>1 room, 1 adult</option></select></span>
+        </div>
+      </div>
+
+      <button class="btn btn--dark btn--block booking__submit" type="submit">Reserve</button>
+    </form>
+  </div>
+  <div class="container hero__rail" aria-hidden="true"><span></span></div>
+</section>
+
+<!-- ===== Statement with inline photo pills ===== -->
+<section class="section statement" aria-labelledby="statement-title">
+  <div class="container">
+    <h2 id="statement-title" class="statement__line" data-reveal>
+      Take the step and explore
+      <span class="pill-img"><img src="https://images.pexels.com/photos/18166239/pexels-photo-18166239.jpeg?auto=compress&cs=tinysrgb&w=600" alt="" width="600" height="400" loading="lazy" decoding="async" /></span>
+      the world
+      <span class="pill-img pill-img--wide"><img src="https://images.pexels.com/photos/27608329/pexels-photo-27608329.jpeg?auto=compress&cs=tinysrgb&w=600" alt="" width="600" height="400" loading="lazy" decoding="async" /></span>
+      waiting for you.
+    </h2>
+    <p class="statement__sub" data-reveal>Travelling changes you. You see new places, meet new people, and come home a slightly different version of yourself.</p>
+  </div>
+</section>
+
+<!-- ===== Split: photograph + stat ledger ===== -->
+<section class="section section--flush-top" aria-labelledby="closer-title">
+  <div class="container split">
+    <figure class="split__media" data-reveal>
+      <img src="https://images.pexels.com/photos/19153480/pexels-photo-19153480.jpeg?auto=compress&cs=tinysrgb&w=1100" alt="Travellers in a wooden rowing boat on the green water of Lago di Braies" width="1100" height="1375" loading="lazy" decoding="async" />
+      <figcaption class="split__cap"><span class="label">Lago di Braies · 06:40</span></figcaption>
+    </figure>
+    <div class="split__copy">
+      <p class="label">Why travel with us</p>
+      <h2 id="closer-title">Travelling brings you closer to new places, people and memories</h2>
+      <p>We keep groups to twelve, book family-run stays, and pay local guides properly. It makes for slower, better trips &mdash; and it&rsquo;s why most of our travellers come back.</p>
+      <dl class="ledger">
+        <div><dt>Customer satisfaction</dt><dd>97%</dd></div>
+        <div><dt>Popular destinations</dt><dd>85+</dd></div>
+        <div><dt>Experienced guides</dt><dd>245+</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Destination bento ===== -->
+<section class="section destinations" aria-labelledby="dest-title">
+  <div class="container">
+    <div class="shead shead--split">
+      <div>
+        <p class="label">Destinations</p>
+        <h2 id="dest-title">Experience our destinations</h2>
+      </div>
+      <a class="link-arrow" href="tours.html">See all tours <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+    </div>
+    <div class="bento">
+        <a class="dtile " href="tours.html">
+          <img src="https://images.pexels.com/photos/29298066/pexels-photo-29298066.jpeg?auto=compress&cs=tinysrgb&w=1100" alt="Lago di Braies, Italy" width="1100" height="733" loading="lazy" decoding="async" />
+          <span class="dtile__meta">
+            <span class="dtile__name">Lago di Braies</span>
+            <span class="dtile__place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Italy</span>
+          </span>
+          <span class="dtile__count">6 tours</span>
+        </a>
+        <a class="dtile " href="tours.html">
+          <img src="https://images.pexels.com/photos/12278092/pexels-photo-12278092.jpeg?auto=compress&cs=tinysrgb&w=1100" alt="Mount Bromo, Indonesia" width="1100" height="733" loading="lazy" decoding="async" />
+          <span class="dtile__meta">
+            <span class="dtile__name">Mount Bromo</span>
+            <span class="dtile__place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Indonesia</span>
+          </span>
+          <span class="dtile__count">4 tours</span>
+        </a>
+        <a class="dtile dtile--wide" href="tours.html">
+          <img src="https://images.pexels.com/photos/6871874/pexels-photo-6871874.jpeg?auto=compress&cs=tinysrgb&w=1100" alt="Ha Long Bay, Vietnam" width="1100" height="733" loading="lazy" decoding="async" />
+          <span class="dtile__meta">
+            <span class="dtile__name">Ha Long Bay</span>
+            <span class="dtile__place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Vietnam</span>
+          </span>
+          <span class="dtile__count">5 tours</span>
+        </a>
+        <a class="dtile " href="tours.html">
+          <img src="https://images.pexels.com/photos/31710067/pexels-photo-31710067.jpeg?auto=compress&cs=tinysrgb&w=1100" alt="Mount Fuji, Japan" width="1100" height="733" loading="lazy" decoding="async" />
+          <span class="dtile__meta">
+            <span class="dtile__name">Mount Fuji</span>
+            <span class="dtile__place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Japan</span>
+          </span>
+          <span class="dtile__count">7 tours</span>
+        </a>
+        <a class="dtile " href="tours.html">
+          <img src="https://images.pexels.com/photos/37805584/pexels-photo-37805584.jpeg?auto=compress&cs=tinysrgb&w=1100" alt="Raja Ampat, Indonesia" width="1100" height="733" loading="lazy" decoding="async" />
+          <span class="dtile__meta">
+            <span class="dtile__name">Raja Ampat</span>
+            <span class="dtile__place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Indonesia</span>
+          </span>
+          <span class="dtile__count">3 tours</span>
+        </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Why us — three promises ===== -->
+<section class="section promises" aria-labelledby="prom-title">
+  <div class="container">
+    <div class="shead shead--center">
+      <p class="label">The Fjelvik promise</p>
+      <h2 id="prom-title">Get a good travel experience</h2>
+      <p>A good trip isn&rsquo;t only about the places you see. It&rsquo;s the stories and small lessons you bring home.</p>
+    </div>
+    <ul class="promise-row">
+      <li class="promise" data-reveal>
+        <span class="promise__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h6a4 4 0 0 0 0-8h-4a4 4 0 0 1 0-8h6"/></svg></span>
+        <h3>Ease of travel</h3>
+        <p>Transfers, permits and stays are booked before you land. One contact, one itinerary, no surprises.</p>
+      </li>
+      <li class="promise" data-reveal>
+        <span class="promise__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="3.5"/><path d="M5 21a7 7 0 0 1 14 0M12 14v3"/></svg></span>
+        <h3>Local guides</h3>
+        <p>Guides who live where you&rsquo;re going, so you reach the quiet viewpoints the coaches miss.</p>
+      </li>
+      <li class="promise" data-reveal>
+        <span class="promise__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+        <h3>Safe and reliable</h3>
+        <p>First-aid trained leaders, 24/7 support and flexible rebooking if the weather turns.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== Featured tours ===== -->
+<section class="section" aria-labelledby="feat-title">
+  <div class="container">
+    <div class="shead shead--split">
+      <div>
+        <p class="label">Departing soon</p>
+        <h2 id="feat-title">Popular right now</h2>
+      </div>
+      <a class="link-arrow" href="tours.html">Browse 9 tours <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+    </div>
+    <div class="tgrid">
+        <article class="tcard" data-kind="trek" data-price="1890" data-days="7">
+          <div class="tcard__media">
+            <img src="https://images.pexels.com/photos/29298066/pexels-photo-29298066.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Lago di Braies, Italy" width="800" height="600" loading="lazy" decoding="async" />
+            <span class="tcard__kind">Trekking</span>
+          </div>
+          <div class="tcard__body">
+            <p class="tcard__place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Lago di Braies, Italy</p>
+            <h3 class="tcard__name"><a href="tour.html">Dolomites Lakes & Ridges</a></h3>
+            <p class="tcard__facts">
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>7 days</span>
+              <span>Moderate</span>
+              <span class="tcard__rating"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9Z"/></svg>4.9 <small>(212)</small></span>
+            </p>
+            <p class="tcard__foot">
+              <span class="tcard__price"><small>from</small> $1,890</span>
+              <span class="tcard__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+            </p>
+          </div>
+        </article>
+        <article class="tcard" data-kind="volcano" data-price="740" data-days="4">
+          <div class="tcard__media">
+            <img src="https://images.pexels.com/photos/12278092/pexels-photo-12278092.jpeg?auto=compress&cs=tinysrgb&w=800" alt="East Java, Indonesia" width="800" height="600" loading="lazy" decoding="async" />
+            <span class="tcard__kind">Volcanoes</span>
+          </div>
+          <div class="tcard__body">
+            <p class="tcard__place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>East Java, Indonesia</p>
+            <h3 class="tcard__name"><a href="tour.html">Bromo Sunrise Expedition</a></h3>
+            <p class="tcard__facts">
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>4 days</span>
+              <span>Easy</span>
+              <span class="tcard__rating"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9Z"/></svg>4.8 <small>(388)</small></span>
+            </p>
+            <p class="tcard__foot">
+              <span class="tcard__price"><small>from</small> $740</span>
+              <span class="tcard__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+            </p>
+          </div>
+        </article>
+        <article class="tcard" data-kind="island" data-price="560" data-days="3">
+          <div class="tcard__media">
+            <img src="https://images.pexels.com/photos/6871874/pexels-photo-6871874.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Quảng Ninh, Vietnam" width="800" height="600" loading="lazy" decoding="async" />
+            <span class="tcard__kind">Islands</span>
+          </div>
+          <div class="tcard__body">
+            <p class="tcard__place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Quảng Ninh, Vietnam</p>
+            <h3 class="tcard__name"><a href="tour.html">Ha Long Bay by Junk Boat</a></h3>
+            <p class="tcard__facts">
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>3 days</span>
+              <span>Easy</span>
+              <span class="tcard__rating"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9Z"/></svg>4.7 <small>(451)</small></span>
+            </p>
+            <p class="tcard__foot">
+              <span class="tcard__price"><small>from</small> $560</span>
+              <span class="tcard__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+            </p>
+          </div>
+        </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Voice of a traveller ===== -->
+<section class="section quote-band on-photo" aria-labelledby="quote-title">
+  <img class="quote-band__img" src="https://images.pexels.com/photos/1365425/pexels-photo-1365425.jpeg?auto=compress&cs=tinysrgb&w=2000" alt="A group of hikers with backpacks climbing a rocky mountain ridge" width="2000" height="1333" loading="lazy" decoding="async" />
+  <div class="container quote-band__inner">
+    <h2 id="quote-title" class="sr-only">What travellers say</h2>
+    <figure>
+      <blockquote>&ldquo;Four days, eleven strangers and one volcano at sunrise. I booked the next trip on the flight home.&rdquo;</blockquote>
+      <figcaption><strong>Maya Lindqvist</strong> · Bromo Sunrise Expedition</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ===== Closing call to action ===== -->
+<section class="section closer" aria-labelledby="closer-cta">
+  <div class="container closer__card">
+    <div>
+      <p class="label">Ready when you are</p>
+      <h2 id="closer-cta">Tell us where you&rsquo;d like to wake up</h2>
+    </div>
+    <div class="closer__actions">
+      <a class="btn btn--dark" href="contact.html">Plan my trip</a>
+      <a class="btn btn--ghost" href="tours.html">Browse tours</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- hh:shared footer -->
+<link rel="stylesheet" href="/shared/footer.css?v=hwm8soge">
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__lead">
+        <p class="footer__title">Letters from the trail</p>
+        <p class="footer__sub">One email a month: new routes, early-bird departures and a field note from a guide. No spam, ever.</p>
+        <form class="subscribe" data-demo-form novalidate>
+          <label class="sr-only" for="sub-email">Email address</label>
+          <input id="sub-email" type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+          <button class="btn btn--glacier" type="submit">Subscribe</button>
+          <p class="form-note" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+
+      <div class="footer__cols">
+        <div>
+          <p class="label footer__h">Explore</p>
+          <ul>
+            <li><a href="tours.html">All tours</a></li>
+            <li><a href="tours.html">Trekking</a></li>
+            <li><a href="tours.html">Island hopping</a></li>
+            <li><a href="tour.html">Tour detail</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="label footer__h">Company</p>
+          <ul>
+            <li><a href="about.html">About us</a></li>
+            <li><a href="about.html">Our guides</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="404.html">404 page</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="label footer__h">Visit</p>
+          <address>
+            14 Harbour Lane<br />Bergen 5003, Norway<br />
+            <a href="tel:+4755000000">+47 55 00 00 00</a><br />
+            <a href="mailto:hello@example.com">hello@example.com</a>
+          </address>
+        </div>
+      </div>
+    </div>
+
+    <p class="footer__word" aria-hidden="true">fjelvik</p>
+
+    <div class="footer__bottom">
+      <p>&copy; <span data-year>2026</span> Fjelvik Travel. Free template by <a href="https://html.design/">html.design</a>.</p>
+      <p>Photography via <a href="https://www.pexels.com/">Pexels</a></p>
+    </div>
+  </div>
+</footer>
+<link href="https://fonts.googleapis.com/css2?family=SUSE:wght@400;500;600&family=Golos+Text:wght@400;500;600&family=Ubuntu+Sans+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style data-hh-shared-styles="footer" data-hh-shared-source="/">
+:where(.footer) {
+  --glacier-hi:   #E6F0EE;
+  --glacier-deep: #B9D0CB;
+  --snow-soft:    rgba(255, 255, 255, .82);
+  --snow-line:    rgba(255, 255, 255, .34);
+  --font-body:    "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono:    "Ubuntu Sans Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --text-xs:   .75rem;
+  --text-sm:   .875rem;
+  --text-base: 1rem;
+  --text-md:   clamp(1.0625rem, 1rem + .25vw, 1.1875rem);
+  --text-lg:   clamp(1.25rem, 1.1rem + .6vw, 1.5rem);
+  --text-xl:   clamp(1.6rem, 1.3rem + 1.2vw, 2.25rem);
+  --text-2xl:  clamp(2rem, 1.5rem + 2vw, 3.25rem);
+  --text-hero: clamp(2.6rem, 1.6rem + 3.6vw, 5rem);
+  --gutter:    clamp(1rem, .5rem + 2.4vw, 3rem);
+  --section:   clamp(4rem, 3rem + 4vw, 7.5rem);
+
+  --r-sm:   10px;
+  --r-md:   18px;
+  --r-lg:   28px;
+  --r-pill: 999px;
+
+  --shadow-card: 0 1px 2px rgba(16, 20, 18, .06), 0 18px 48px -18px rgba(16, 20, 18, .28);
+  --shadow-lift: 0 30px 70px -30px rgba(16, 20, 18, .45);
+
+  --ease:     cubic-bezier(.2, .7, .2, 1);
+  --dur-fast: 160ms;
+  --dur:      320ms;
+
+  --z-header: 50;
+  --z-menu:   60;}
+
+:where(.footer) {
+  color: var(--pine-soft, #3A423E);
+  font-family: var(--font-body, "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif);
+  font-size: var(--text-base, 1rem);
+  line-height: 1.6;}
+
+:is(:root):where(.footer, .footer *) {
+  /* Ground + ink -------------------------------------------------------- */
+  --fog:          #F3F4F1;   /* page ground — cool off-white               */
+  --paper:        #FFFFFF;   /* cards, booking panel, inputs               */
+  --fog-deep:     #E6E9E4;   /* hairlines on fog, tab track                */
+  --line:         #DCE1DB;   /* input borders                              */
+  --pine:         #101412;   /* headings, primary buttons (17.9:1 on fog)  */
+  --pine-soft:    #3A423E;   /* body copy (10.2:1 on fog)                  */
+  --pine-mute:    #66706B;   /* meta text (4.9:1 on fog)                   */
+  --pine-night:   #0B1210;   /* footer / dark bands                        */
+
+  /* The only colour: glacier melt, used as a FIELD not a mark ----------- */
+  --glacier:      #D5E4E1;
+  --glacier-hi:   #E6F0EE;
+  --glacier-deep: #B9D0CB;
+
+  /* Light ink that sits on photographs — never remap these in a dark band */
+  --snow:         #FFFFFF;
+  --snow-soft:    rgba(255, 255, 255, .82);
+  --snow-line:    rgba(255, 255, 255, .34);
+
+  /* Type ------------------------------------------------------------------ */
+  --font-display: "SUSE", "Golos Text", system-ui, sans-serif;
+  --font-body:    "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono:    "Ubuntu Sans Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --text-xs:   .75rem;
+  --text-sm:   .875rem;
+  --text-base: 1rem;
+  --text-md:   clamp(1.0625rem, 1rem + .25vw, 1.1875rem);
+  --text-lg:   clamp(1.25rem, 1.1rem + .6vw, 1.5rem);
+  --text-xl:   clamp(1.6rem, 1.3rem + 1.2vw, 2.25rem);
+  --text-2xl:  clamp(2rem, 1.5rem + 2vw, 3.25rem);
+  --text-hero: clamp(2.6rem, 1.6rem + 3.6vw, 5rem);
+
+  /* Space + shape --------------------------------------------------------- */
+  --container: 1320px;
+  --gutter:    clamp(1rem, .5rem + 2.4vw, 3rem);
+  --section:   clamp(4rem, 3rem + 4vw, 7.5rem);
+
+  --r-sm:   10px;
+  --r-md:   18px;
+  --r-lg:   28px;
+  --r-pill: 999px;
+
+  --shadow-card: 0 1px 2px rgba(16, 20, 18, .06), 0 18px 48px -18px rgba(16, 20, 18, .28);
+  --shadow-lift: 0 30px 70px -30px rgba(16, 20, 18, .45);
+
+  --ease:     cubic-bezier(.2, .7, .2, 1);
+  --dur-fast: 160ms;
+  --dur:      320ms;
+
+  --z-header: 50;
+  --z-menu:   60;
+}
+
+:is(*):where(.footer, .footer *), :is(*):where(.footer, .footer *)::before, :is(*):where(.footer, .footer *)::after { box-sizing: border-box; }
+
+:is(p):where(.footer, .footer *) { margin: 0; }
+
+:is(a):where(.footer, .footer *) { color: inherit; text-decoration: none; }
+
+:is(button):where(.footer, .footer *), :is(input):where(.footer, .footer *) { font: inherit; color: inherit; }
+
+:is(button):where(.footer, .footer *) { cursor: pointer; }
+
+:is(ul):where(.footer, .footer *) { margin: 0; padding: 0; list-style: none; }
+
+:is(:focus-visible):where(.footer, .footer *) { outline: 2px solid var(--pine, #101412); outline-offset: 3px; border-radius: 6px; }
+
+:is(.on-photo :focus-visible):where(.footer, .footer *) { outline-color: var(--snow, #FFFFFF); }
+
+@media (prefers-reduced-motion: reduce) {
+  :is(*):where(.footer, .footer *), :is(*):where(.footer, .footer *)::before, :is(*):where(.footer, .footer *)::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+:is(.container):where(.footer, .footer *) {
+  width: 100%;
+  max-width: var(--container, 1320px);
+  margin-inline: auto;
+  padding-inline: var(--gutter, clamp(1rem, .5rem + 2.4vw, 3rem));
+}
+
+:is(.sr-only):where(.footer, .footer *) {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+:is(.label):where(.footer, .footer *) {
+  font-family: var(--font-mono, "Ubuntu Sans Mono", ui-monospace, "SFMono-Regular", Menlo, monospace);
+  font-size: var(--text-xs, .75rem);
+  font-weight: 500;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--pine-mute, #66706B);
+}
+
+:is(.btn):where(.footer, .footer *) {
+  display: inline-flex; align-items: center; justify-content: center; gap: .6rem;
+  min-height: 48px; padding: .8rem 1.5rem;
+  border: 1px solid transparent; border-radius: var(--r-pill, 999px);
+  font-weight: 500; font-size: var(--text-base, 1rem); line-height: 1;
+  transition: background var(--dur-fast, 160ms) var(--ease, cubic-bezier(.2, .7, .2, 1)), color var(--dur-fast, 160ms) var(--ease, cubic-bezier(.2, .7, .2, 1)),
+              border-color var(--dur-fast, 160ms) var(--ease, cubic-bezier(.2, .7, .2, 1)), transform var(--dur-fast, 160ms) var(--ease, cubic-bezier(.2, .7, .2, 1));
+}
+
+:is(.btn:active):where(.footer, .footer *) { transform: translateY(1px); }
+
+:is(.btn--glacier):where(.footer, .footer *) { background: var(--glacier, #D5E4E1); color: var(--pine, #101412); }
+
+:is(.btn--glacier:hover):where(.footer, .footer *) { background: var(--glacier-deep, #B9D0CB); }
+
+:is(.input input):where(.footer, .footer *) {
+  flex: 1; min-width: 0; height: 48px;
+  border: 0; background: transparent; outline: none;
+  appearance: none; -webkit-appearance: none;
+}
+
+:is(.nav a):where(.footer, .footer *) {
+  position: relative; padding-block: .4rem;
+  font-size: var(--text-md, clamp(1.0625rem, 1rem + .25vw, 1.1875rem)); font-weight: 400;
+}
+
+:is(.nav a):where(.footer, .footer *)::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+  background: currentColor; transform: scaleX(0); transform-origin: left;
+  transition: transform var(--dur, 320ms) var(--ease, cubic-bezier(.2, .7, .2, 1));
+}
+
+:is(.nav a:hover):where(.footer, .footer *)::after, :is(.nav a[aria-current="page"]):where(.footer, .footer *)::after { transform: scaleX(1); }
+
+:is(.burger span):where(.footer, .footer *) {
+  position: absolute; left: 13px; right: 13px; height: 1.5px; background: currentColor;
+  transition: transform var(--dur, 320ms) var(--ease, cubic-bezier(.2, .7, .2, 1)), top var(--dur, 320ms) var(--ease, cubic-bezier(.2, .7, .2, 1));
+}
+
+:is(.burger span:first-child):where(.footer, .footer *) { top: 18px; }
+
+:is(.burger span:last-child):where(.footer, .footer *) { top: 26px; }
+
+:is(.menu-open .burger span:first-child):where(.footer, .footer *) { top: 22px; transform: rotate(45deg); }
+
+:is(.menu-open .burger span:last-child):where(.footer, .footer *) { top: 22px; transform: rotate(-45deg); }
+
+@media (max-width: 960px) {
+  :is(.nav a):where(.footer, .footer *) { font-family: var(--font-display, "SUSE", "Golos Text", system-ui, sans-serif); font-size: clamp(2rem, 8vw, 3rem); letter-spacing: -.03em; line-height: 1.25; }
+  :is(.nav a):where(.footer, .footer *)::after { display: none; }
+}
+
+:is(.shead p:not(.label)):where(.footer, .footer *) { max-width: 52ch; color: var(--pine-mute, #66706B); font-size: var(--text-md, clamp(1.0625rem, 1rem + .25vw, 1.1875rem)); }
+
+:is(.tcard__name a):where(.footer, .footer *)::after { content: ""; position: absolute; inset: 0; }
+
+:is(.tcard__facts span):where(.footer, .footer *) { display: inline-flex; align-items: center; gap: .35rem; }
+
+:is(.phead p:not(.label)):where(.footer, .footer *) { margin-top: 1.1rem; max-width: 56ch; font-size: var(--text-md, clamp(1.0625rem, 1rem + .25vw, 1.1875rem)); color: var(--pine-mute, #66706B); }
+
+:is(.phead .label):where(.footer, .footer *) { margin-bottom: 1rem; }
+
+:is(.footer):where(.footer, .footer *) {
+  background: var(--pine-night, #0B1210); color: rgba(255, 255, 255, .72);
+  padding-top: clamp(3.5rem, 3rem + 3vw, 6rem); overflow: hidden;
+}
+
+:is(.footer a:hover):where(.footer, .footer *) { color: var(--snow, #FFFFFF); }
+
+:is(.footer__top):where(.footer, .footer *) {
+  display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr); gap: 3rem;
+  padding-bottom: 3rem; border-bottom: 1px solid rgba(255, 255, 255, .12);
+}
+
+:is(.footer__title):where(.footer, .footer *) { font-family: var(--font-display, "SUSE", "Golos Text", system-ui, sans-serif); color: var(--snow, #FFFFFF); font-size: var(--text-xl, clamp(1.6rem, 1.3rem + 1.2vw, 2.25rem)); letter-spacing: -.025em; line-height: 1.15; }
+
+:is(.footer__sub):where(.footer, .footer *) { margin-top: .75rem; max-width: 42ch; }
+
+:is(.subscribe):where(.footer, .footer *) { position: relative; display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.5rem; max-width: 460px; }
+
+:is(.subscribe input):where(.footer, .footer *) {
+  flex: 1 1 220px; min-height: 50px; padding: 0 1.2rem;
+  border-radius: var(--r-pill, 999px); border: 1px solid rgba(255, 255, 255, .2);
+  background: rgba(255, 255, 255, .06); color: var(--snow, #FFFFFF);
+}
+
+:is(.subscribe input):where(.footer, .footer *)::placeholder { color: rgba(255, 255, 255, .5); }
+
+:is(.subscribe input:focus):where(.footer, .footer *) { outline: none; border-color: var(--glacier, #D5E4E1); }
+
+:is(.subscribe .form-note):where(.footer, .footer *) { flex-basis: 100%; min-height: 1.4em; font-size: var(--text-sm, .875rem); color: var(--glacier, #D5E4E1); }
+
+:is(.footer__cols):where(.footer, .footer *) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; }
+
+:is(.footer__h):where(.footer, .footer *) { color: rgba(255, 255, 255, .5); margin-bottom: 1rem; }
+
+:is(.footer__cols li + li):where(.footer, .footer *) { margin-top: .55rem; }
+
+:is(.footer address):where(.footer, .footer *) { font-style: normal; line-height: 1.9; }
+
+:is(.footer__word):where(.footer, .footer *) {
+  margin: .05em 0 0; padding-bottom: .12em; text-align: center;
+  font-family: var(--font-display, "SUSE", "Golos Text", system-ui, sans-serif); font-weight: 600; line-height: 1.05;
+  font-size: calc((min(100vw, var(--container, 1320px)) - 2 * var(--gutter, clamp(1rem, .5rem + 2.4vw, 3rem))) / 3.7);
+  /* Solid colour, not rgba: overlapping glyphs double-paint translucent ink. */
+  letter-spacing: -.04em; color: #18221F;
+  user-select: none;
+}
+
+:is(.footer__bottom):where(.footer, .footer *) {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: .75rem;
+  padding-block: 1.5rem; border-top: 1px solid rgba(255, 255, 255, .12);
+  font-size: var(--text-sm, .875rem);
+}
+
+:is(.footer__bottom a):where(.footer, .footer *) { text-decoration: underline; text-underline-offset: 3px; }
+
+@media (max-width: 900px) {
+  :is(.footer__top):where(.footer, .footer *) { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 520px) {
+  :is(.footer__cols):where(.footer, .footer *) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+:is(.form-note):where(.footer, .footer *) { font-size: var(--text-sm, .875rem); color: var(--pine-soft, #3A423E); min-height: 1.4em; }
+
+:is(.js-reveal [data-reveal]):where(.footer, .footer *) { opacity: 0; transform: translateY(24px); transition: opacity 800ms var(--ease, cubic-bezier(.2, .7, .2, 1)), transform 800ms var(--ease, cubic-bezier(.2, .7, .2, 1)); }
+
+:is(.booking__tabs button):where(.footer, .footer *) {
+  display: inline-flex; align-items: center; justify-content: center; gap: .45rem;
+  min-height: 46px; border: 0; border-radius: var(--r-pill, 999px);
+  background: transparent; color: var(--pine-mute, #66706B); font-size: var(--text-sm, .875rem);
+  transition: background var(--dur-fast, 160ms) var(--ease, cubic-bezier(.2, .7, .2, 1)), color var(--dur-fast, 160ms) var(--ease, cubic-bezier(.2, .7, .2, 1)), box-shadow var(--dur-fast, 160ms) var(--ease, cubic-bezier(.2, .7, .2, 1));
+}
+
+:is(.booking__tabs button:hover):where(.footer, .footer *) { color: var(--pine, #101412); }
+
+:is(.booking__tabs button[aria-selected="true"]):where(.footer, .footer *) { background: var(--paper, #FFFFFF); color: var(--pine, #101412); box-shadow: 0 2px 8px rgba(16, 20, 18, .08); }
+
+:is(.stepper button):where(.footer, .footer *) {
+  display: grid; place-items: center; width: 34px; height: 34px; flex: none;
+  border: 1px solid var(--line, #DCE1DB); border-radius: 50%; background: var(--fog, #F3F4F1);
+  font-size: 1.1rem; line-height: 1;
+}
+
+:is(.stepper button:hover):where(.footer, .footer *) { border-color: var(--pine, #101412); }
+
+:is(.hero__rail span):where(.footer, .footer *) {
+  display: block; height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, var(--snow, #FFFFFF) 0 34%, var(--snow-line, rgba(255, 255, 255, .34)) 34% 100%);
+}
+
+:is(.split__cap .label):where(.footer, .footer *) { color: var(--pine, #101412); }
+
+:is(.split__copy > p:not(.label)):where(.footer, .footer *) { max-width: 48ch; color: var(--pine-mute, #66706B); font-size: var(--text-md, clamp(1.0625rem, 1rem + .25vw, 1.1875rem)); }
+
+:is(.ledger div):where(.footer, .footer *) {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+  padding-block: 1.1rem; border-top: 1px solid var(--fog-deep, #E6E9E4);
+}
+
+:is(.ledger div:last-child):where(.footer, .footer *) { border-bottom: 1px solid var(--fog-deep, #E6E9E4); }
+
+:is(.bento > :nth-child(1)):where(.footer, .footer *) { grid-column: span 5; }
+
+:is(.bento > :nth-child(2)):where(.footer, .footer *) { grid-column: span 7; }
+
+:is(.bento > :nth-child(3)):where(.footer, .footer *) { grid-column: span 12; }
+
+:is(.bento > :nth-child(4)):where(.footer, .footer *) { grid-column: span 7; }
+
+:is(.bento > :nth-child(5)):where(.footer, .footer *) { grid-column: span 5; }
+
+@media (max-width: 760px) {
+  :is(.bento > *):where(.footer, .footer *) { grid-column: auto !important; }
+}
+
+:is(.promise p):where(.footer, .footer *) { max-width: 30ch; color: var(--pine-mute, #66706B); font-size: var(--text-sm, .875rem); }
+
+:is(.closer__card > div:first-child):where(.footer, .footer *) { display: grid; gap: .9rem; }
+
+:is(.range input):where(.footer, .footer *) { width: 160px; accent-color: var(--pine, #101412); }
+
+:is(.lost p:not(.lost__code)):where(.footer, .footer *) { margin-top: 1rem; max-width: 42ch; color: var(--pine-mute, #66706B); font-size: var(--text-md, clamp(1.0625rem, 1rem + .25vw, 1.1875rem)); }
+
+:is(.crumbs a:hover):where(.footer, .footer *) { color: var(--snow, #FFFFFF); }
+
+:is(.thero__facts li):where(.footer, .footer *) { display: grid; gap: .2rem; font-size: var(--text-md, clamp(1.0625rem, 1rem + .25vw, 1.1875rem)); }
+
+:is(.thero__facts .label):where(.footer, .footer *) { color: var(--snow-soft, rgba(255, 255, 255, .82)); }
+
+:is(.gallery__thumbs button):where(.footer, .footer *) { padding: 0; border: 2px solid transparent; border-radius: var(--r-md, 18px); overflow: hidden; background: none; opacity: .65; transition: opacity var(--dur-fast, 160ms) var(--ease, cubic-bezier(.2, .7, .2, 1)), border-color var(--dur-fast, 160ms) var(--ease, cubic-bezier(.2, .7, .2, 1)); }
+
+:is(.gallery__thumbs button:hover):where(.footer, .footer *) { opacity: 1; }
+
+:is(.gallery__thumbs button[aria-pressed="true"]):where(.footer, .footer *) { opacity: 1; border-color: var(--pine, #101412); }
+
+:is(.prose p):where(.footer, .footer *) { font-size: var(--text-md, clamp(1.0625rem, 1rem + .25vw, 1.1875rem)); }
+
+:is(.includes li):where(.footer, .footer *) { position: relative; padding-left: 1.75rem; color: var(--pine, #101412); }
+
+:is(.includes li):where(.footer, .footer *)::before { content: ""; position: absolute; left: 0; top: .45em; width: 1rem; height: .55rem; border-left: 2px solid var(--pine, #101412); border-bottom: 2px solid var(--pine, #101412); transform: rotate(-45deg); }
+
+:is(.acc__btn .label):where(.footer, .footer *) { min-width: 6.5ch; }
+
+:is(.acc__panel p):where(.footer, .footer *) { max-width: 60ch; }
+
+:is(.figures__grid div):where(.footer, .footer *) { display: flex; flex-direction: column; justify-content: space-between; gap: 2rem; padding: clamp(1.25rem, 2.5vw, 2rem); border-radius: var(--r-lg, 28px); background: var(--paper, #FFFFFF); }
+
+:is(.figures__grid div:nth-child(2)):where(.footer, .footer *) { background: var(--glacier, #D5E4E1); }
+
+:is(.figures__grid div:nth-child(3)):where(.footer, .footer *) { background: var(--pine, #101412); }
+
+:is(.values__list li):where(.footer, .footer *) { display: grid; gap: .75rem; align-content: start; padding-top: 1.25rem; border-top: 2px solid var(--pine, #101412); }
+
+:is(.values__list p):where(.footer, .footer *) { color: var(--pine-mute, #66706B); }
+
+:is(.guide p):where(.footer, .footer *) { font-size: var(--text-sm, .875rem); color: var(--pine-mute, #66706B); }
+
+:is(.guide .label):where(.footer, .footer *) { margin-top: .75rem; }
+
+:is(.contact__form .btn):where(.footer, .footer *) { justify-self: start; }
+
+:is(.radio-chip input):where(.footer, .footer *) { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+
+:is(.radio-chip span):where(.footer, .footer *) { display: inline-flex; align-items: center; min-height: 42px; padding: 0 1.2rem; border-radius: var(--r-pill, 999px); border: 1px solid var(--line, #DCE1DB); font-size: var(--text-sm, .875rem); color: var(--pine, #101412); transition: background var(--dur-fast, 160ms) var(--ease, cubic-bezier(.2, .7, .2, 1)), color var(--dur-fast, 160ms) var(--ease, cubic-bezier(.2, .7, .2, 1)); }
+
+:is(.radio-chip input:checked + span):where(.footer, .footer *) { background: var(--pine, #101412); border-color: var(--pine, #101412); color: var(--snow, #FFFFFF); }
+
+:is(.radio-chip input:focus-visible + span):where(.footer, .footer *) { outline: 2px solid var(--pine, #101412); outline-offset: 3px; }
+
+:is(.contact__card address):where(.footer, .footer *) { font-style: normal; font-family: var(--font-display, "SUSE", "Golos Text", system-ui, sans-serif); font-size: var(--text-lg, clamp(1.25rem, 1.1rem + .6vw, 1.5rem)); line-height: 1.3; letter-spacing: -.015em; }
+
+:is(.contact__card a):where(.footer, .footer *) { text-decoration: underline; text-underline-offset: 3px; }
+</style>
+<!-- /hh:shared footer -->
+
+<div class="toast" role="status" aria-live="polite" hidden></div>
+<script src="assets/js/main.js?v=hwm8soge" defer></script>
+</body>
+</html>

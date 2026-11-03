@@ -1,0 +1,2806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071A17">
+  <meta name="description" content="A royal invitation to celebrate the wedding of Adam and Maria in the enchanted Emerald Kingdom.">
+  <title>The Emerald Kingdom | A Royal Wedding Invitation</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Great+Vibes&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script defer src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --forest: #071A17;
+      --emerald: #123C32;
+      --jade: #326B54;
+      --gold: #C6A45B;
+      --champagne: #E6D4A1;
+      --ivory: #F7F0E3;
+      --parchment: #D9C7A5;
+      --brown: #33271E;
+      --muted: #C3C6B8;
+      --serif: "Cormorant Garamond", Georgia, serif;
+      --script: "Great Vibes", cursive;
+      --sans: "Manrope", sans-serif;
+      --ease: cubic-bezier(.22, .68, 0, 1);
+      --content: 1180px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 24px;
+      background: var(--forest);
+    }
+
+    body {
+      margin: 0;
+      color: var(--ivory);
+      background: var(--forest);
+      font-family: var(--sans);
+      font-size: 14px;
+      line-height: 1.8;
+      overflow-x: clip;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body, button, input, select, textarea { font-family: var(--sans); }
+
+    button, input, select, textarea { font-size: inherit; }
+
+    button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+
+    button { color: inherit; }
+
+    button:focus-visible, a:focus-visible, input:focus-visible,
+    select:focus-visible, textarea:focus-visible {
+      outline: 2px solid var(--champagne);
+      outline-offset: 5px;
+    }
+
+    a { color: inherit; }
+
+    img { display: block; max-width: 100%; }
+
+    button:disabled { opacity: .55; cursor: not-allowed; }
+
+    ::selection { color: var(--forest); background: var(--champagne); }
+
+    .serif { font-family: var(--serif); font-weight: 400; }
+    .script { font-family: var(--script); font-weight: 400; }
+
+    .eyebrow {
+      margin: 0 0 20px;
+      color: var(--champagne);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .28em;
+      line-height: 1.8;
+      text-transform: uppercase;
+    }
+
+    .section-title {
+      margin: 0;
+      font: 400 clamp(42px, 7vw, 84px)/.98 var(--serif);
+      letter-spacing: -.035em;
+    }
+
+    .section-copy {
+      max-width: 530px;
+      margin: 24px auto 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 2.1;
+    }
+
+    .ornament {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 13px;
+      color: var(--gold);
+      margin: 28px auto;
+    }
+
+    .ornament::before, .ornament::after {
+      content: "";
+      display: block;
+      width: 55px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold));
+    }
+
+    .ornament::after { transform: rotate(180deg); }
+
+    .ornament span { font: 22px var(--serif); }
+
+    .wrap {
+      width: min(var(--content), calc(100% - 44px));
+      margin-inline: auto;
+    }
+
+    .button {
+      display: inline-flex;
+      min-height: 52px;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 14px 25px;
+      border: 1px solid var(--gold);
+      background: var(--gold);
+      color: var(--forest);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .17em;
+      text-decoration: none;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background .3s, color .3s, border-color .3s, transform .3s;
+    }
+
+    .button:hover {
+      background: var(--champagne);
+      border-color: var(--champagne);
+      transform: translateY(-2px);
+    }
+
+    .button-outline {
+      color: var(--champagne);
+      background: transparent;
+    }
+
+    .button-outline:hover { color: var(--forest); }
+
+    .icon-button {
+      display: inline-grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(230,212,161,.4);
+      border-radius: 50%;
+      background: rgba(7,26,23,.65);
+      color: var(--champagne);
+      cursor: pointer;
+      transition: background .25s, transform .25s;
+    }
+
+    .icon-button:hover { background: var(--emerald); transform: scale(1.04); }
+
+    .scene {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+    }
+
+    .scene::before {
+      position: absolute;
+      z-index: -2;
+      inset: 0;
+      content: "";
+      background-image: var(--scene-image);
+      background-size: cover;
+      background-position: center;
+      transform: scale(1.025);
+      transition: transform 1.5s var(--ease);
+    }
+
+    .scene::after {
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      content: "";
+      background: linear-gradient(180deg, rgba(7,26,23,.22), rgba(7,26,23,.64) 58%, rgba(7,26,23,.95));
+    }
+
+    .reveal {
+      opacity: 1;
+      transform: none;
+    }
+
+    .js-motion .reveal {
+      opacity: 0;
+      transform: translateY(25px);
+      transition: opacity .85s var(--ease), transform .85s var(--ease);
+    }
+
+    .js-motion .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .gold-rule {
+      width: 65px;
+      height: 1px;
+      margin: 28px auto;
+      background: var(--gold);
+    }
+
+    /* Opening */
+
+    .opening {
+      position: relative;
+      display: grid;
+      min-height: 100svh;
+      place-items: center;
+      isolation: isolate;
+      overflow: hidden;
+      background: #071A17;
+    }
+
+    .opening-background {
+      position: absolute;
+      z-index: -4;
+      inset: -2%;
+      background:
+        linear-gradient(180deg, rgba(4,17,14,.28), rgba(4,17,14,.2) 35%, rgba(4,17,14,.9)),
+        url("https://images.pexels.com/photos/5291702/pexels-photo-5291702.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940") center 46% / cover;
+      animation: openingDrift 24s ease-in-out infinite alternate;
+    }
+
+    .opening-shade {
+      position: absolute;
+      z-index: -3;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 45%, transparent 0, rgba(4,17,14,.28) 48%, #04110E 100%);
+    }
+
+    .opening-light {
+      position: absolute;
+      z-index: -2;
+      top: 12%;
+      left: 50%;
+      width: min(900px, 110vw);
+      height: 80%;
+      transform: translateX(-50%);
+      background: radial-gradient(ellipse, rgba(198,164,91,.09), transparent 66%);
+      pointer-events: none;
+    }
+
+    @keyframes openingDrift {
+      from { transform: scale(1.02) translateY(0); }
+      to { transform: scale(1.09) translateY(-1%); }
+    }
+
+    .opening-content {
+      display: flex;
+      width: 100%;
+      min-height: 100svh;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+      padding: max(38px, env(safe-area-inset-top)) 22px 35px;
+      text-align: center;
+    }
+
+    .opening-kicker {
+      margin: 0 0 10px;
+      color: var(--champagne);
+      font-size: 9px;
+      letter-spacing: .34em;
+      text-transform: uppercase;
+    }
+
+    .opening-title {
+      margin: 0;
+      font: 400 clamp(40px, 8vw, 76px)/1.05 var(--serif);
+      letter-spacing: -.025em;
+      text-shadow: 0 4px 25px #000;
+    }
+
+    .opening-subtitle {
+      margin: 14px 0 25px;
+      color: #e5ddc8;
+      font: 400 clamp(21px, 4vw, 29px) var(--script);
+    }
+
+    .envelope-stage {
+      position: relative;
+      width: min(390px, 86vw);
+      height: clamp(290px, 57vw, 370px);
+      margin: 3px auto 13px;
+      perspective: 1200px;
+      perspective-origin: 50% 42%;
+      isolation: isolate;
+    }
+
+    .envelope-aura {
+      position: absolute;
+      inset: 16% 4% 0;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(230,212,161,.22), rgba(198,164,91,.06) 43%, transparent 72%);
+      filter: blur(18px);
+      transition: opacity .6s, transform .8s;
+    }
+
+    .envelope-shadow {
+      position: absolute;
+      bottom: 7%;
+      left: 10%;
+      width: 80%;
+      height: 16%;
+      border-radius: 50%;
+      background: rgba(0,0,0,.68);
+      filter: blur(17px);
+      transition: transform 1s;
+    }
+
+    .envelope {
+      position: absolute;
+      inset: 14% 3% 9%;
+      transform-style: preserve-3d;
+      transition: transform 1s var(--ease);
+    }
+
+    .envelope-body {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border: 1px solid #b6a17c;
+      background:
+        repeating-linear-gradient(105deg, rgba(91,68,41,.025) 0 1px, transparent 1px 5px),
+        linear-gradient(130deg, #fffaf0 0%, #eadbc0 48%, #d4bf98 100%);
+      box-shadow: 0 22px 55px rgba(0,0,0,.35), inset 0 0 0 5px rgba(255,255,255,.22);
+    }
+
+    .envelope-body::before {
+      position: absolute;
+      inset: 10px;
+      content: "";
+      border: 1px solid rgba(150,115,59,.55);
+      pointer-events: none;
+    }
+
+    .envelope-pattern {
+      position: absolute;
+      inset: 13px;
+      opacity: .23;
+      background-image:
+        radial-gradient(ellipse at 0 0, transparent 60%, #8b6b35 61%, transparent 62%),
+        radial-gradient(ellipse at 100% 100%, transparent 60%, #8b6b35 61%, transparent 62%);
+      background-size: 31px 38px;
+      pointer-events: none;
+    }
+
+    .envelope-pocket {
+      position: absolute;
+      z-index: 4;
+      inset: 0;
+      background: linear-gradient(150deg, transparent 49.6%, rgba(134,103,58,.4) 49.8%, transparent 50.3%),
+                  linear-gradient(210deg, transparent 49.6%, rgba(134,103,58,.4) 49.8%, transparent 50.3%);
+      clip-path: polygon(0 0,100% 0,100% 100%,0 100%);
+      pointer-events: none;
+    }
+
+    .envelope-pocket::after {
+      position: absolute;
+      inset: 0;
+      content: "";
+      background: linear-gradient(155deg, #f6ead2, #ddc8a4 88%);
+      clip-path: polygon(0 100%, 0 0, 50% 60%, 100% 0, 100% 100%);
+      filter: drop-shadow(0 -4px 6px rgba(75,53,25,.22));
+    }
+
+    .envelope-lining {
+      position: absolute;
+      z-index: 2;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 66%;
+      clip-path: polygon(0 0,100% 0,50% 100%);
+      background:
+        repeating-linear-gradient(45deg, rgba(230,212,161,.13) 0 1px, transparent 1px 7px),
+        linear-gradient(145deg, #193f32, #071a17 72%);
+      box-shadow: inset 0 0 15px #000;
+    }
+
+    .envelope-flap {
+      position: absolute;
+      z-index: 8;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 68%;
+      transform-origin: 50% 0;
+      transform-style: preserve-3d;
+      clip-path: polygon(0 0,100% 0,50% 100%);
+      background: linear-gradient(135deg, #fff8eb 0%, #e9d8b7 54%, #c7ad7c 100%);
+      border-top: 1px solid rgba(255,255,255,.65);
+      filter: drop-shadow(0 6px 6px rgba(0,0,0,.13));
+      transition: transform 1.25s cubic-bezier(.68,-.02,.25,1), filter .6s;
+    }
+
+    .envelope-flap::before {
+      position: absolute;
+      inset: 7px 9px 0;
+      content: "";
+      border: 1px solid rgba(145,107,48,.48);
+      clip-path: polygon(0 0,100% 0,50% 94%);
+    }
+
+    .flap-back {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      transform: rotateX(180deg);
+      background: linear-gradient(145deg, #d9c7a5, #f7f0e3);
+    }
+
+    .invitation-card {
+      position: absolute;
+      z-index: 3;
+      top: 4%;
+      left: 8%;
+      width: 84%;
+      height: 90%;
+      padding: 15px 10px;
+      border: 1px solid rgba(198,164,91,.8);
+      background:
+        radial-gradient(ellipse at 50% 35%, #fffdf6, transparent 65%),
+        linear-gradient(120deg, #f7f0e3, #e8d9ba);
+      color: var(--brown);
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,.2), inset 0 0 0 5px rgba(255,255,255,.35);
+      transform: translateY(22%) scale(.9);
+      transform-origin: 50% 100%;
+      opacity: 0;
+      transition: transform 1.15s cubic-bezier(.2,.75,.18,1), opacity .45s;
+    }
+
+    .invitation-card::before {
+      position: absolute;
+      inset: 8px;
+      content: "";
+      border: 1px solid rgba(150,115,59,.6);
+      pointer-events: none;
+    }
+
+    .card-copy {
+      position: relative;
+      display: flex;
+      height: 100%;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.4;
+    }
+
+    .card-monogram {
+      margin: 2px 0 7px;
+      font: 400 25px var(--script);
+      color: #886a31;
+    }
+
+    .card-small {
+      font-size: 6px;
+      letter-spacing: .17em;
+      text-transform: uppercase;
+    }
+
+    .card-names {
+      margin: 8px 0;
+      font: 400 clamp(25px, 7vw, 39px)/1 var(--script);
+    }
+
+    .card-date {
+      margin-top: 10px;
+      font: 400 11px var(--serif);
+      letter-spacing: .12em;
+    }
+
+    .seal-button {
+      position: absolute;
+      z-index: 12;
+      top: 29%;
+      left: 50%;
+      display: grid;
+      width: clamp(72px, 18vw, 88px);
+      aspect-ratio: 1;
+      place-items: center;
+      border: 1px solid #f2dda0;
+      border-radius: 50%;
+      color: #f3e0a4;
+      background:
+        radial-gradient(circle at 29% 22%, rgba(255,255,255,.75), transparent 18%),
+        radial-gradient(circle at 66% 75%, #7c531c, transparent 50%),
+        linear-gradient(135deg, #ebd18a, #a87c32 35%, #d5b568 62%, #76511e);
+      box-shadow: 0 4px 10px rgba(0,0,0,.35), inset 0 0 0 4px rgba(255,241,190,.23), inset 0 0 0 6px rgba(84,53,13,.24);
+      transform: translateX(-50%);
+      cursor: pointer;
+      transition: transform .25s, box-shadow .25s, opacity .5s;
+      animation: sealShimmer 5s ease-in-out infinite;
+    }
+
+    .seal-button::before {
+      position: absolute;
+      inset: 8px;
+      content: "";
+      border: 1px solid rgba(255,236,170,.6);
+      border-radius: 50%;
+    }
+
+    .seal-button span {
+      font: 400 clamp(27px, 7vw, 36px) var(--script);
+      text-shadow: 0 1px 1px #6c471b;
+    }
+
+    .seal-button:hover {
+      transform: translateX(-50%) scale(1.06);
+      box-shadow: 0 0 35px rgba(230,212,161,.45), inset 0 0 0 4px rgba(255,241,190,.23);
+    }
+
+    @keyframes sealShimmer {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.14); }
+    }
+
+    .opening.is-opening .seal-button {
+      transform: translateX(-50%) scale(.65) rotate(-18deg);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .opening.is-opening .envelope-flap {
+      transform: rotateX(180deg);
+      filter: brightness(.8);
+    }
+
+    .opening.is-opening .invitation-card {
+      transform: translateY(-6%) scale(1);
+      opacity: 1;
+      transition-delay: .48s;
+    }
+
+    .opening.is-opening .envelope-shadow { transform: scale(.8); }
+    .opening.is-opening .envelope-aura { transform: scale(1.6); opacity: .8; }
+
+    .opening.is-revealed .envelope-stage {
+      animation: cardJourney 1.6s 1.3s var(--ease) forwards;
+    }
+
+    .opening.is-revealed .opening-copy,
+    .opening.is-revealed .opening-kicker,
+    .opening.is-revealed .opening-title,
+    .opening.is-revealed .opening-subtitle,
+    .opening.is-revealed .opening-instruction {
+      opacity: 0;
+      transition: opacity .65s;
+    }
+
+    .opening.is-revealed {
+      transition: min-height .5s;
+    }
+
+    @keyframes cardJourney {
+      0% { transform: translateY(0) scale(1); }
+      45% { transform: translateY(-15%) scale(1.07); }
+      100% { transform: translateY(-140%) scale(2.7); opacity: 0; }
+    }
+
+    .opening-instruction {
+      margin: 4px 0 0;
+      color: var(--champagne);
+      font-size: 9px;
+      letter-spacing: .19em;
+      text-transform: uppercase;
+      animation: instructionGlow 3s ease-in-out infinite;
+    }
+
+    .opening-instruction i {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes instructionGlow {
+      0%,100% { opacity: .6; }
+      50% { opacity: 1; }
+    }
+
+    .skip-opening {
+      position: absolute;
+      right: max(22px, env(safe-area-inset-right));
+      bottom: max(22px, env(safe-area-inset-bottom));
+      z-index: 20;
+      padding: 10px 12px;
+      border: 0;
+      background: transparent;
+      color: rgba(247,240,227,.72);
+      font-size: 9px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .skip-opening:hover { color: var(--champagne); }
+
+    /* Ambient particles */
+
+    .particles {
+      position: absolute;
+      z-index: 2;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      bottom: -20px;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: #e6d4a1;
+      box-shadow: 0 0 10px 2px rgba(230,212,161,.35);
+      opacity: 0;
+      animation: floatParticle var(--duration, 9s) var(--delay, 0s) linear infinite;
+    }
+
+    @keyframes floatParticle {
+      0% { transform: translate3d(0,0,0) scale(.4); opacity: 0; }
+      12% { opacity: .7; }
+      70% { opacity: .45; }
+      100% { transform: translate3d(var(--drift, 35px),-110vh,0) scale(1.2); opacity: 0; }
+    }
+
+    /* Invitation hero */
+
+    .royal-hero {
+      position: relative;
+      display: grid;
+      min-height: 100svh;
+      place-items: center;
+      padding: 110px 22px 90px;
+      isolation: isolate;
+      background: #102c24;
+    }
+
+    .royal-hero::before {
+      position: absolute;
+      z-index: -3;
+      inset: 0;
+      content: "";
+      background: url("https://images.pexels.com/photos/7781099/pexels-photo-7781099.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940") center 48% / cover;
+      transform: scale(1.04);
+      animation: heroDrift 30s ease-in-out infinite alternate;
+    }
+
+    .royal-hero::after {
+      position: absolute;
+      z-index: -2;
+      inset: 0;
+      content: "";
+      background: linear-gradient(180deg, rgba(5,19,15,.42), rgba(5,19,15,.35) 35%, rgba(5,19,15,.83) 77%, var(--forest));
+    }
+
+    @keyframes heroDrift {
+      to { transform: scale(1.12) translateY(-1%); }
+    }
+
+    .sound-toggle {
+      position: fixed;
+      z-index: 100;
+      right: max(18px, env(safe-area-inset-right));
+      top: max(18px, env(safe-area-inset-top));
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 13px;
+      border: 1px solid rgba(230,212,161,.38);
+      border-radius: 30px;
+      background: rgba(7,26,23,.8);
+      color: var(--champagne);
+      font-size: 9px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+    }
+
+    .sound-toggle svg { width: 15px; height: 15px; }
+
+    .hero-content {
+      max-width: 850px;
+      margin-inline: auto;
+      text-align: center;
+    }
+
+    .hero-emblem {
+      display: grid;
+      width: 66px;
+      height: 66px;
+      margin: 0 auto 30px;
+      place-items: center;
+      border: 1px solid rgba(230,212,161,.55);
+      border-radius: 50%;
+      color: var(--champagne);
+      font: 400 27px var(--script);
+      box-shadow: 0 0 0 7px rgba(230,212,161,.035), 0 0 30px rgba(230,212,161,.1);
+    }
+
+    .hero-title {
+      margin: 0;
+      font: 400 clamp(66px, 12vw, 142px)/.87 var(--script);
+      color: var(--ivory);
+      text-shadow: 0 5px 35px rgba(0,0,0,.3);
+    }
+
+    .hero-ampersand {
+      display: block;
+      margin: 8px 0 6px;
+      color: var(--champagne);
+      font: 400 clamp(30px, 5vw, 46px) var(--serif);
+    }
+
+    .hero-date {
+      margin: 28px 0 0;
+      color: var(--champagne);
+      font: 400 12px var(--serif);
+      letter-spacing: .26em;
+    }
+
+    .hero-location {
+      margin: 8px 0 31px;
+      color: #e0dfd1;
+      font-size: 9px;
+      letter-spacing: .21em;
+      text-transform: uppercase;
+    }
+
+    .hero-cta { margin-top: 30px; }
+
+    .scroll-cue {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      gap: 7px;
+      color: var(--champagne);
+      font-size: 8px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      transform: translateX(-50%);
+    }
+
+    .scroll-cue::after {
+      width: 1px;
+      height: 30px;
+      content: "";
+      background: linear-gradient(var(--gold), transparent);
+      animation: scrollLine 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollLine {
+      0%,100% { transform: scaleY(.6); transform-origin: top; }
+      50% { transform: scaleY(1); transform-origin: top; }
+    }
+
+    /* Story */
+
+    .story-section {
+      padding: 125px 0;
+      background:
+        radial-gradient(ellipse at 0 30%, rgba(50,107,84,.16), transparent 42%),
+        var(--forest);
+    }
+
+    .story-grid {
+      display: grid;
+      grid-template-columns: 1fr .85fr;
+      align-items: center;
+      gap: clamp(35px, 8vw, 115px);
+    }
+
+    .story-image {
+      position: relative;
+      min-height: 520px;
+      background: url("https://images.pexels.com/photos/34014701/pexels-photo-34014701.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940") center / cover;
+      box-shadow: 20px 20px 0 rgba(198,164,91,.1);
+    }
+
+    .story-image::before {
+      position: absolute;
+      inset: 12px;
+      content: "";
+      border: 1px solid rgba(230,212,161,.58);
+    }
+
+    .story-image-caption {
+      position: absolute;
+      right: 18px;
+      bottom: 18px;
+      left: 18px;
+      color: white;
+      font: 400 28px var(--script);
+      text-align: center;
+      text-shadow: 0 2px 12px #000;
+    }
+
+    .story-copy .section-title { max-width: 500px; }
+
+    .story-copy .section-copy {
+      margin-inline: 0;
+      max-width: 470px;
+    }
+
+    .story-signature {
+      margin-top: 24px;
+      color: var(--champagne);
+      font: 400 37px var(--script);
+    }
+
+    .chapter-label {
+      margin: 0 0 15px;
+      color: var(--gold);
+      font-size: 9px;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+    }
+
+    /* Love story */
+
+    .love-section {
+      padding: 110px 0 130px;
+      background: linear-gradient(180deg, #0a211b, #0d2a22);
+    }
+
+    .section-heading {
+      max-width: 720px;
+      margin: 0 auto 65px;
+      text-align: center;
+    }
+
+    .memory-row {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      align-items: center;
+      gap: clamp(28px, 7vw, 90px);
+      margin-bottom: 90px;
+    }
+
+    .memory-row.reverse { grid-template-columns: .9fr 1.1fr; }
+
+    .memory-row.reverse .memory-photo { order: 2; }
+    .memory-row.reverse .memory-copy { order: 1; }
+
+    .memory-photo {
+      position: relative;
+      height: clamp(300px, 45vw, 530px);
+      overflow: hidden;
+      background: #18372c;
+    }
+
+    .memory-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 1s var(--ease);
+    }
+
+    .memory-photo:hover img { transform: scale(1.045); }
+
+    .memory-copy { max-width: 420px; }
+
+    .memory-copy h3 {
+      margin: 0;
+      font: 400 clamp(38px, 5vw, 59px)/1.02 var(--serif);
+    }
+
+    .memory-copy p {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 300;
+      line-height: 2.15;
+    }
+
+    .memory-number {
+      display: block;
+      margin-bottom: 14px;
+      color: var(--gold);
+      font: 400 24px var(--script);
+    }
+
+    /* Countdown */
+
+    .countdown-section {
+      padding: 100px 0;
+      background:
+        linear-gradient(rgba(7,26,23,.86), rgba(7,26,23,.96)),
+        url("https://images.pexels.com/photos/33550482/pexels-photo-33550482.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940") center / cover;
+      text-align: center;
+    }
+
+    .countdown {
+      display: flex;
+      justify-content: center;
+      gap: clamp(16px, 5vw, 64px);
+      margin: 46px auto 0;
+    }
+
+    .countdown-item {
+      min-width: 58px;
+      padding: 0 8px;
+    }
+
+    .count-number {
+      display: block;
+      color: var(--champagne);
+      font: 400 clamp(43px, 8vw, 78px)/1 var(--serif);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .count-label {
+      display: block;
+      margin-top: 14px;
+      color: #c8c8b8;
+      font-size: 8px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+
+    .count-divider {
+      width: 1px;
+      height: 76px;
+      margin-top: 5px;
+      background: linear-gradient(transparent, var(--gold), transparent);
+    }
+
+    .countdown-note {
+      margin: 28px 0 0;
+      color: var(--muted);
+      font: italic 16px var(--serif);
+    }
+
+    /* Wedding details */
+
+    .details-section {
+      padding: 125px 0;
+      background: #f7f0e3;
+      color: var(--brown);
+    }
+
+    .details-section .eyebrow { color: #92733a; }
+    .details-section .section-title { color: #243c30; }
+    .details-section .section-copy { color: #645b4c; }
+
+    .event-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 62px;
+    }
+
+    .event-panel {
+      position: relative;
+      padding: clamp(25px, 5vw, 48px);
+      border: 1px solid rgba(150,115,59,.55);
+      background: rgba(255,255,255,.28);
+    }
+
+    .event-panel::before {
+      position: absolute;
+      inset: 8px;
+      content: "";
+      border: 1px solid rgba(150,115,59,.2);
+      pointer-events: none;
+    }
+
+    .event-panel h3 {
+      margin: 0 0 20px;
+      color: #284538;
+      font: 400 39px var(--serif);
+    }
+
+    .event-date {
+      color: #92733a;
+      font: 400 23px var(--serif);
+    }
+
+    .event-detail {
+      display: grid;
+      grid-template-columns: 20px 1fr;
+      gap: 12px;
+      align-items: start;
+      margin-top: 19px;
+      color: #51483c;
+      font-size: 11px;
+      line-height: 1.9;
+    }
+
+    .event-detail svg {
+      width: 17px;
+      height: 17px;
+      margin-top: 4px;
+      color: #92733a;
+    }
+
+    .event-detail strong {
+      display: block;
+      margin-bottom: 3px;
+      color: #2c3c30;
+      font-size: 10px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .event-panel .button {
+      position: relative;
+      margin-top: 27px;
+      background: #284538;
+      border-color: #284538;
+      color: var(--ivory);
+    }
+
+    .event-panel .button:hover { background: #3b654e; }
+
+    .details-note {
+      max-width: 650px;
+      margin: 38px auto 0;
+      color: #655a4b;
+      font-size: 11px;
+      text-align: center;
+    }
+
+    /* Gallery */
+
+    .gallery-section {
+      padding: 120px 0;
+      background: var(--forest);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr 1fr;
+      grid-template-rows: 230px 260px;
+      gap: 13px;
+    }
+
+    .gallery-item {
+      position: relative;
+      overflow: hidden;
+      padding: 0;
+      border: 0;
+      background: #102c24;
+      cursor: zoom-in;
+      text-align: left;
+    }
+
+    .gallery-item:nth-child(1) { grid-row: span 2; }
+    .gallery-item:nth-child(4) { grid-column: span 2; }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .8s var(--ease), filter .8s;
+    }
+
+    .gallery-item:hover img { transform: scale(1.06); filter: brightness(1.08); }
+
+    .gallery-item::after {
+      position: absolute;
+      inset: 0;
+      content: "";
+      background: linear-gradient(180deg, transparent 55%, rgba(7,26,23,.4));
+      pointer-events: none;
+    }
+
+    .gallery-item-label {
+      position: absolute;
+      z-index: 1;
+      bottom: 14px;
+      left: 16px;
+      color: #fff;
+      font: 400 23px var(--script);
+      text-shadow: 0 2px 8px #000;
+    }
+
+    .gallery-hint {
+      margin: 23px 0 0;
+      color: #aeb8a9;
+      font-size: 10px;
+      text-align: center;
+    }
+
+    /* Gallery lightbox */
+
+    .lightbox {
+      position: fixed;
+      z-index: 500;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 65px 18px 28px;
+      background: rgba(3,11,9,.96);
+      backdrop-filter: blur(12px);
+    }
+
+    .lightbox.is-open { display: flex; }
+
+    .lightbox img {
+      max-width: min(100%, 1100px);
+      max-height: 78svh;
+      object-fit: contain;
+      box-shadow: 0 12px 50px rgba(0,0,0,.45);
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: max(18px, env(safe-area-inset-top));
+      right: max(18px, env(safe-area-inset-right));
+    }
+
+    .lightbox-prev, .lightbox-next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .lightbox-prev { left: 14px; }
+    .lightbox-next { right: 14px; }
+
+    .lightbox-caption {
+      position: absolute;
+      bottom: 22px;
+      left: 0;
+      width: 100%;
+      color: var(--champagne);
+      font: 400 23px var(--script);
+      text-align: center;
+    }
+
+    /* RSVP */
+
+    .rsvp-section {
+      position: relative;
+      padding: 120px 0;
+      color: var(--brown);
+      background:
+        radial-gradient(ellipse at 50% 0, rgba(198,164,91,.12), transparent 60%),
+        #f7f0e3;
+    }
+
+    .rsvp-frame {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: clamp(25px, 6vw, 65px);
+      border: 1px solid rgba(150,115,59,.6);
+      outline: 1px solid rgba(150,115,59,.22);
+      outline-offset: -9px;
+    }
+
+    .rsvp-section .eyebrow { color: #92733a; }
+    .rsvp-section .section-title { color: #284538; }
+
+    .rsvp-intro {
+      max-width: 480px;
+      margin: 19px auto 35px;
+      color: #655a4b;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .rsvp-form { margin-top: 35px; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 21px;
+    }
+
+    .field { min-width: 0; }
+    .field-full { grid-column: 1 / -1; }
+
+    .field label, .field legend {
+      display: block;
+      margin-bottom: 8px;
+      color: #3a4939;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .04em;
+    }
+
+    .field input:not([type="radio"]):not([type="checkbox"]),
+    .field select, .field textarea {
+      display: block;
+      width: 100%;
+      min-height: 49px;
+      padding: 12px 14px;
+      border: 1px solid #c9bda6;
+      border-radius: 0;
+      background: #fffaf1;
+      color: #33271e;
+      appearance: none;
+      -webkit-appearance: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .field select {
+      padding-right: 40px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238c733f' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-position: right 13px center;
+      background-repeat: no-repeat;
+    }
+
+    @supports (appearance: base-select) {
+      .field select, .field select::picker(select) {
+        appearance: base-select;
+      }
+
+      .field select::picker(select) {
+        border: 1px solid #c9bda6;
+        border-radius: 0;
+        background: #fffaf1;
+        color: #33271e;
+      }
+
+      .field select option {
+        padding: 10px 13px;
+      }
+
+      .field select option:checked {
+        background: #dfe9dc;
+      }
+    }
+
+    .field textarea {
+      min-height: 105px;
+      resize: vertical;
+    }
+
+    .field input:focus, .field select:focus, .field textarea:focus {
+      outline: none;
+      border-color: #8e743e;
+      box-shadow: 0 0 0 3px rgba(198,164,91,.14);
+    }
+
+    .field input::placeholder, .field textarea::placeholder {
+      color: #988c78;
+      font-size: 11px;
+    }
+
+    .field fieldset {
+      min-width: 0;
+      padding: 0;
+      border: 0;
+      margin: 0;
+    }
+
+    .choice-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+    }
+
+    .choice {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: #51483c;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .choice input {
+      position: relative;
+      flex: 0 0 auto;
+      width: 17px;
+      height: 17px;
+      margin: 0;
+      appearance: none;
+      -webkit-appearance: none;
+      border: 1px solid #a99570;
+      background: #fffaf1;
+      cursor: pointer;
+    }
+
+    .choice input[type="radio"] { border-radius: 50%; }
+
+    .choice input:checked {
+      border-color: #284538;
+      background: #284538;
+      box-shadow: inset 0 0 0 4px #fffaf1;
+    }
+
+    .choice input[type="checkbox"]:checked {
+      box-shadow: none;
+      background: #284538;
+    }
+
+    .choice input[type="checkbox"]:checked::after {
+      position: absolute;
+      top: -2px;
+      left: 2px;
+      content: "✓";
+      color: #fffaf1;
+      font-size: 13px;
+    }
+
+    .form-help {
+      margin: 8px 0 0;
+      color: #776b57;
+      font-size: 10px;
+      line-height: 1.7;
+    }
+
+    .field-error {
+      display: none;
+      margin: 7px 0 0;
+      color: #8d332b;
+      font-size: 10px;
+    }
+
+    .field.has-error .field-error { display: block; }
+
+    .field.has-error input, .field.has-error select, .field.has-error textarea {
+      border-color: #a84235;
+    }
+
+    .form-status {
+      display: none;
+      margin-top: 22px;
+      padding: 16px;
+      border: 1px solid #c7b68c;
+      color: #284538;
+      background: #e7eadb;
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    .form-status.is-visible { display: block; }
+
+    .form-status.error {
+      color: #8d332b;
+      background: #f4e1dc;
+      border-color: #d9aaa1;
+    }
+
+    .rsvp-submit {
+      width: 100%;
+      margin-top: 28px;
+    }
+
+    .privacy-note {
+      margin: 14px 0 0;
+      color: #7d705d;
+      font-size: 9px;
+      text-align: center;
+    }
+
+    /* Closing */
+
+    .closing {
+      position: relative;
+      display: grid;
+      min-height: 90svh;
+      place-items: center;
+      padding: 90px 22px;
+      isolation: isolate;
+      text-align: center;
+    }
+
+    .closing::before {
+      position: absolute;
+      z-index: -3;
+      inset: 0;
+      content: "";
+      background: url("https://images.pexels.com/photos/11702456/pexels-photo-11702456.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940") center / cover;
+      animation: heroDrift 30s ease-in-out infinite alternate;
+    }
+
+    .closing::after {
+      position: absolute;
+      z-index: -2;
+      inset: 0;
+      content: "";
+      background: linear-gradient(180deg, rgba(7,26,23,.55), rgba(7,26,23,.54) 50%, #071A17);
+    }
+
+    .closing-monogram {
+      margin: 0 0 26px;
+      color: var(--champagne);
+      font: 400 clamp(42px, 8vw, 70px) var(--script);
+    }
+
+    .closing-title {
+      margin: 0;
+      font: 400 clamp(47px, 9vw, 100px)/.98 var(--serif);
+    }
+
+    .closing-copy {
+      margin: 22px 0;
+      color: #e0dfd1;
+      font: 400 24px var(--script);
+    }
+
+    .closing-date {
+      color: var(--champagne);
+      font-size: 10px;
+      letter-spacing: .25em;
+    }
+
+    .back-to-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 37px;
+      padding: 11px 15px;
+      border: 1px solid rgba(230,212,161,.5);
+      background: rgba(7,26,23,.38);
+      color: var(--champagne);
+      font-size: 9px;
+      letter-spacing: .14em;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: background .25s;
+    }
+
+    .back-to-top:hover { background: rgba(50,107,84,.6); }
+
+    footer {
+      padding: 24px;
+      background: #071A17;
+      color: #aab1a4;
+      font-size: 9px;
+      letter-spacing: .1em;
+      text-align: center;
+    }
+
+    /* Accordion */
+
+    .faq-section {
+      padding: 100px 0;
+      background: #0a211b;
+    }
+
+    .faq-list {
+      max-width: 760px;
+      margin: 45px auto 0;
+      border-top: 1px solid rgba(198,164,91,.35);
+    }
+
+    .faq-item { border-bottom: 1px solid rgba(198,164,91,.35); }
+
+    .faq-question {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 23px 0;
+      border: 0;
+      background: transparent;
+      color: var(--ivory);
+      font: 400 23px var(--serif);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .faq-question svg {
+      flex: 0 0 auto;
+      width: 17px;
+      height: 17px;
+      color: var(--champagne);
+      transition: transform .3s;
+    }
+
+    .faq-question[aria-expanded="true"] svg { transform: rotate(45deg); }
+
+    .faq-answer-grid {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows .35s var(--ease);
+    }
+
+    .faq-item.is-open .faq-answer-grid { grid-template-rows: 1fr; }
+
+    .faq-answer-inner { overflow: hidden; }
+
+    .faq-answer {
+      max-width: 650px;
+      padding: 0 30px 23px 0;
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 2;
+    }
+
+    /* Small-screen refinements */
+
+    @media (max-width: 760px) {
+      .wrap { width: min(100% - 36px, var(--content)); }
+
+      .opening-content { justify-content: center; padding-inline: 16px; }
+
+      .opening-title { font-size: clamp(38px, 10vw, 61px); }
+
+      .envelope-stage {
+        width: min(360px, 90vw);
+        height: clamp(270px, 80vw, 335px);
+      }
+
+      .royal-hero { min-height: 92svh; }
+
+      .story-section, .love-section, .details-section,
+      .gallery-section, .rsvp-section, .faq-section {
+        padding-block: 85px;
+      }
+
+      .story-grid { grid-template-columns: 1fr; gap: 45px; }
+
+      .story-image {
+        min-height: 390px;
+        width: min(100%, 480px);
+        margin-inline: auto;
+      }
+
+      .story-copy { text-align: center; }
+      .story-copy .section-title { margin-inline: auto; }
+      .story-copy .section-copy { margin-inline: auto; }
+
+      .memory-row, .memory-row.reverse {
+        grid-template-columns: 1fr;
+        gap: 28px;
+        margin-bottom: 65px;
+      }
+
+      .memory-row.reverse .memory-photo,
+      .memory-row.reverse .memory-copy { order: initial; }
+
+      .memory-photo { height: 420px; }
+      .memory-copy { max-width: 550px; }
+      .memory-copy h3 { font-size: 47px; }
+
+      .event-grid { grid-template-columns: 1fr; gap: 18px; }
+
+      .gallery-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 280px 190px 220px;
+        gap: 9px;
+      }
+
+      .gallery-item:nth-child(1) { grid-row: span 2; }
+      .gallery-item:nth-child(4) { grid-column: span 2; }
+
+      .gallery-item-label { font-size: 20px; }
+
+      .form-grid { grid-template-columns: 1fr; gap: 19px; }
+      .field-full { grid-column: auto; }
+
+      .rsvp-frame { padding: 28px 21px; }
+
+      .countdown { gap: 7px; }
+      .countdown-item { min-width: 0; flex: 1; padding: 0 3px; }
+      .count-number { font-size: clamp(34px, 9vw, 55px); }
+      .count-label { font-size: 7px; letter-spacing: .12em; }
+      .count-divider { height: 55px; margin-top: 3px; }
+
+      .sound-toggle { top: max(12px, env(safe-area-inset-top)); right: 12px; }
+
+      .closing { min-height: 80svh; }
+    }
+
+    @media (max-width: 380px) {
+      .envelope-stage { width: 94vw; height: 265px; }
+      .opening-title { font-size: 37px; }
+      .opening-subtitle { font-size: 21px; }
+      .seal-button { width: 70px; }
+      .story-image { min-height: 320px; }
+      .memory-photo { height: 340px; }
+      .gallery-grid { grid-template-rows: 230px 165px 190px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+
+      .js-motion .reveal {
+        opacity: 1;
+        transform: none;
+      }
+
+      .opening.is-revealed .envelope-stage { animation: none; }
+    }
+  </style>
+</head>
+
+<body id="top">
+
+  <button class="sound-toggle" id="soundToggle" type="button" aria-pressed="false" aria-label="Turn ambient sound on">
+    <i data-lucide="volume-x" aria-hidden="true"></i>
+    <span id="soundLabel">Sound off</span>
+  </button>
+
+  <!-- SCENE 01: THE SEALED ROYAL INVITATION -->
+  <section class="opening" id="opening" aria-labelledby="openingTitle">
+    <div class="opening-background"></div>
+    <div class="opening-shade"></div>
+    <div class="opening-light"></div>
+    <div class="particles" aria-hidden="true" data-particles="36"></div>
+
+    <div class="opening-content">
+      <div class="opening-copy">
+        <p class="opening-kicker">A tale of love · A royal celebration</p>
+        <h1 class="opening-title serif" id="openingTitle">A royal invitation awaits.</h1>
+        <p class="opening-subtitle">Sealed with love. Destined for forever.</p>
+      </div>
+
+      <div class="envelope-stage" id="envelopeStage" aria-label="An ornate ivory wedding envelope sealed in gold">
+        <div class="envelope-aura"></div>
+        <div class="envelope-shadow"></div>
+
+        <div class="envelope" id="envelope">
+          <div class="envelope-body">
+            <div class="envelope-pattern"></div>
+          </div>
+
+          <div class="envelope-lining"></div>
+
+          <article class="invitation-card" aria-label="Wedding invitation preview">
+            <div class="card-copy">
+              <div class="card-monogram" data-bind="initials">A & M</div>
+              <span class="card-small">Together with their families</span>
+              <h2 class="card-names" data-bind="names">Adam & Maria</h2>
+              <span class="card-small">Request the pleasure of your company</span>
+              <span class="card-date" data-bind="dateDisplay">22 NOVEMBER 2026</span>
+            </div>
+          </article>
+
+          <div class="envelope-pocket"></div>
+
+          <div class="envelope-flap">
+            <div class="flap-back"></div>
+          </div>
+
+          <button class="seal-button" id="openSeal" type="button" aria-label="Break the royal seal and open the invitation">
+            <span data-bind="initials">A&M</span>
+          </button>
+        </div>
+      </div>
+
+      <p class="opening-instruction" id="openingInstruction">
+        <i data-lucide="fingerprint" aria-hidden="true"></i>
+        Touch the seal to enter
+      </p>
+    </div>
+
+    <button class="skip-opening" id="skipOpening" type="button">Enter the kingdom <span aria-hidden="true">↗</span></button>
+  </section>
+
+  <!-- SCENE 02: THE KINGDOM REVEALED -->
+  <main id="experience" hidden>
+    <section class="royal-hero scene" id="invitation" aria-labelledby="heroNames">
+      <div class="particles" aria-hidden="true" data-particles="42"></div>
+
+      <div class="hero-content reveal">
+        <div class="hero-emblem" data-bind="initials">A & M</div>
+        <p class="eyebrow">Together with their families</p>
+        <h2 class="hero-title" id="heroNames">
+          <span data-bind="nameOne">Adam</span>
+          <span class="hero-ampersand">&</span>
+          <span data-bind="nameTwo">Maria</span>
+        </h2>
+        <div class="ornament"><span>✦</span></div>
+        <p class="eyebrow">Request the pleasure of your company</p>
+        <p class="hero-date" data-bind="dateLong">22 NOVEMBER 2026</p>
+        <p class="hero-location" data-bind="locationShort">The Emerald Kingdom</p>
+        <a class="button hero-cta" href="#details">Discover the celebration <i data-lucide="arrow-down" aria-hidden="true"></i></a>
+      </div>
+
+      <a class="scroll-cue" href="#story" aria-label="Scroll to the couple's story">The story begins</a>
+    </section>
+
+    <!-- CHAPTER ONE -->
+    <section class="story-section" id="story">
+      <div class="wrap story-grid">
+        <div class="story-image reveal" role="img" aria-label="A romantic garden surrounded by lush greenery">
+          <div class="story-image-caption">A love written in the stars</div>
+        </div>
+
+        <div class="story-copy reveal">
+          <p class="chapter-label">Chapter I · A beginning</p>
+          <h2 class="section-title">A Love Story Written in the Stars</h2>
+          <div class="ornament" style="justify-content:flex-start;margin-left:0"><span>✦</span></div>
+          <p class="section-copy">
+            Some stories begin with a chance encounter. Others unfold as though the stars have been quietly arranging every moment. Ours has become a journey of laughter, friendship, growing love and the promise of forever.
+          </p>
+          <p class="section-copy">
+            Now, as we begin our next chapter, we would be honoured to have the people we love most beside us. Your presence will make this celebration all the more meaningful.
+          </p>
+          <p class="story-signature" data-bind="names">Adam & Maria</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHAPTER TWO -->
+    <section class="love-section" id="our-story">
+      <div class="wrap">
+        <header class="section-heading reveal">
+          <p class="eyebrow">Chapter II · The journey</p>
+          <h2 class="section-title">Once Upon a Time</h2>
+          <p class="section-copy">Every great love story is made of little moments. These are the chapters that brought us here. Replace the sample memories and photographs with your own story.</p>
+          <div class="ornament"><span>✦</span></div>
+        </header>
+
+        <article class="memory-row">
+          <div class="memory-photo reveal">
+  <img src="https://images.pexels.com/photos/15878129/pexels-photo-15878129.jpeg?auto=compress&amp;cs=tinysrgb&amp;dpr=2&amp;h=650&amp;w=940" alt="A couple sharing a romantic moment among sunlit trees" loading="lazy">
+</div>
+          <div class="memory-copy reveal">
+            <span class="memory-number">Chapter 01</span>
+            <h3>The Day Our Paths Crossed</h3>
+            <div class="gold-rule" style="margin-left:0"></div>
+            <p data-story="meeting">It began with a conversation that neither of us knew would become so important. What felt like an ordinary day slowly became the beginning of something extraordinary. The laughter came easily, the conversations lasted longer, and the world seemed a little brighter.</p>
+          </div>
+        </article>
+
+        <article class="memory-row reverse">
+          <div class="memory-photo reveal">
+            <img src="https://images.pexels.com/photos/28459349/pexels-photo-28459349.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="A sunlit path through a romantic forest" loading="lazy">
+          </div>
+          <div class="memory-copy reveal">
+            <span class="memory-number">Chapter 02</span>
+            <h3>The Moments That Became Ours</h3>
+            <div class="gold-rule" style="margin-left:0"></div>
+            <p data-story="memories">From our favourite conversations to the smallest adventures, we discovered that home could be a person. We learned, we laughed, we grew, and we chose each other through every season.</p>
+          </div>
+        </article>
+
+        <article class="memory-row">
+          <div class="memory-photo reveal">
+            <img src="https://images.pexels.com/photos/5018978/pexels-photo-5018978.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="An elegant couple in a warm, candlelit setting" loading="lazy">
+          </div>
+          <div class="memory-copy reveal">
+            <span class="memory-number">Chapter 03</span>
+            <h3>And Then Came Forever</h3>
+            <div class="gold-rule" style="margin-left:0"></div>
+            <p data-story="future">Today, we stand at the beginning of a new adventure. With grateful hearts and a promise to keep choosing one another, we look forward to all the beautiful chapters still waiting to be written.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- CHAPTER THREE -->
+    <section class="countdown-section" id="countdown">
+      <div class="wrap reveal">
+        <p class="eyebrow">Chapter III · Until the royal day</p>
+        <h2 class="section-title">The Kingdom Awaits</h2>
+        <p class="section-copy">The stars are aligning. The celebration is drawing near.</p>
+
+        <div class="countdown" aria-label="Time remaining until the wedding">
+          <div class="countdown-item">
+            <span class="count-number" id="days">00</span>
+            <span class="count-label">Days</span>
+          </div>
+          <div class="count-divider"></div>
+          <div class="countdown-item">
+            <span class="count-number" id="hours">00</span>
+            <span class="count-label">Hours</span>
+          </div>
+          <div class="count-divider"></div>
+          <div class="countdown-item">
+            <span class="count-number" id="minutes">00</span>
+            <span class="count-label">Minutes</span>
+          </div>
+          <div class="count-divider"></div>
+          <div class="countdown-item">
+            <span class="count-number" id="seconds">00</span>
+            <span class="count-label">Seconds</span>
+          </div>
+        </div>
+        <p class="countdown-note" id="countdownNote">Until two hearts become one.</p>
+      </div>
+    </section>
+
+    <!-- CHAPTER FOUR -->
+    <section class="details-section" id="details">
+      <div class="wrap">
+        <header class="section-heading reveal">
+          <p class="eyebrow">Chapter IV · The royal gathering</p>
+          <h2 class="section-title">The Royal Wedding</h2>
+          <p class="section-copy">A day of love, celebration and beautiful memories. We look forward to welcoming you.</p>
+          <div class="ornament"><span>✦</span></div>
+        </header>
+
+        <div class="event-grid">
+          <article class="event-panel reveal">
+            <p class="eyebrow">The first gathering</p>
+            <h3>The Ceremony</h3>
+            <p class="event-date" data-bind="dateLong">22 November 2026</p>
+
+            <div class="event-detail">
+              <i data-lucide="clock" aria-hidden="true"></i>
+              <div>
+                <strong>Time</strong>
+                <span data-bind="ceremonyTime">Time to be confirmed</span>
+              </div>
+            </div>
+
+            <div class="event-detail">
+              <i data-lucide="map-pin" aria-hidden="true"></i>
+              <div>
+                <strong>Venue</strong>
+                <span data-bind="ceremonyVenue">Venue to be confirmed</span>
+              </div>
+            </div>
+
+            <div class="event-detail">
+              <i data-lucide="navigation" aria-hidden="true"></i>
+              <div>
+                <strong>Address</strong>
+                <span data-bind="ceremonyAddress">Full address to be confirmed</span>
+              </div>
+            </div>
+
+            <a class="button" href="#rsvp">Respond to your invitation <i data-lucide="arrow-right" aria-hidden="true"></i></a>
+          </article>
+
+          <article class="event-panel reveal">
+            <p class="eyebrow">The celebration continues</p>
+            <h3>The Reception</h3>
+            <p class="event-date" data-bind="dateLong">22 November 2026</p>
+
+            <div class="event-detail">
+              <i data-lucide="clock" aria-hidden="true"></i>
+              <div>
+                <strong>Time</strong>
+                <span data-bind="receptionTime">Time to be confirmed</span>
+              </div>
+            </div>
+
+            <div class="event-detail">
+              <i data-lucide="map-pin" aria-hidden="true"></i>
+              <div>
+                <strong>Venue</strong>
+                <span data-bind="receptionVenue">Venue to be confirmed</span>
+              </div>
+            </div>
+
+            <div class="event-detail">
+              <i data-lucide="shirt" aria-hidden="true"></i>
+              <div>
+                <strong>Dress code</strong>
+                <span data-bind="dressCode">Formal attire</span>
+              </div>
+            </div>
+
+            <a class="button" href="#rsvp">Confirm your attendance <i data-lucide="arrow-right" aria-hidden="true"></i></a>
+          </article>
+        </div>
+
+        <p class="details-note">Please check this section for the confirmed venue, ceremony time and reception arrangements before travelling. The current details are editable demonstration placeholders.</p>
+      </div>
+    </section>
+
+    <!-- CHAPTER FIVE -->
+    <section class="gallery-section" id="gallery">
+      <div class="wrap">
+        <header class="section-heading reveal">
+          <p class="eyebrow">Chapter V · Our royal gallery</p>
+          <h2 class="section-title">Moments in Time</h2>
+          <p class="section-copy">A little glimpse into our world. Open any photograph to view it in full.</p>
+          <div class="ornament"><span>✦</span></div>
+        </header>
+
+        <div class="gallery-grid" id="galleryGrid">
+          <button class="gallery-item" type="button" data-gallery="0" aria-label="Open photograph one">
+            <img src="https://images.pexels.com/photos/28398213/pexels-photo-28398213.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="A romantic embrace in a rose garden" loading="lazy">
+            <span class="gallery-item-label">In bloom</span>
+          </button>
+          <button class="gallery-item" type="button" data-gallery="1" aria-label="Open photograph two">
+            <img src="https://images.pexels.com/photos/37911047/pexels-photo-37911047.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="A couple in an elegant stone courtyard" loading="lazy">
+            <span class="gallery-item-label">Our chapter</span>
+          </button>
+          <button class="gallery-item" type="button" data-gallery="2" aria-label="Open photograph three">
+            <img src="https://images.pexels.com/photos/15878129/pexels-photo-15878129.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="A couple walking in forest sunlight" loading="lazy">
+            <span class="gallery-item-label">Into the light</span>
+          </button>
+          <button class="gallery-item" type="button" data-gallery="3" aria-label="Open photograph four">
+            <img src="https://images.unsplash.com/photo-1783444435084-12e4afd4463d?ixid=M3wxMDQwMjQxfDB8MXxzZWFyY2h8M3x8cm9tYW50aWMlMjBwYWxhY2UlMjBnYXJkZW4lMjBhdCUyMGdvbGRlbiUyMGhvdXJ8ZW58MXwwfHx8MTc5MjAxODk5M3ww&ixlib=rb-4.1.0&w=1920&q=80&fm=jpg&fit=max" alt="A romantic palace garden in golden-hour light" loading="lazy">
+            <span class="gallery-item-label">A world of our own</span>
+          </button>
+        </div>
+
+        <p class="gallery-hint">These are replaceable sample image assets, not photographs of the actual couple.</p>
+      </div>
+    </section>
+
+    <!-- CHAPTER SIX -->
+    <section class="rsvp-section" id="rsvp">
+      <div class="wrap">
+        <div class="rsvp-frame reveal">
+          <header class="section-heading" style="margin-bottom:0">
+            <p class="eyebrow">Chapter VI · Your royal response</p>
+            <h2 class="section-title">Will You Join Us?</h2>
+            <p class="rsvp-intro">Your presence would mean the world to us. Kindly let us know whether you can join our celebration.</p>
+            <div class="ornament"><span>✦</span></div>
+          </header>
+
+          <form class="rsvp-form" id="rsvpForm" action="/__hh/form" method="post">
+            <input type="hidden" name="_form" value="Contact">
+
+            <div class="form-grid">
+              <div class="field field-full" id="nameField">
+                <label for="guestName">Your full name *</label>
+                <input id="guestName" name="guest_name" autocomplete="name" required maxlength="120" placeholder="Enter your full name">
+                <p class="field-error" id="nameError">Please enter your full name.</p>
+              </div>
+
+              <div class="field field-full" id="emailField">
+                <label for="guestEmail">Email address</label>
+                <input id="guestEmail" name="email" type="email" autocomplete="email" maxlength="180" placeholder="you@example.com">
+                <p class="field-error" id="emailError">Please enter a valid email address.</p>
+              </div>
+
+              <div class="field field-full" id="attendanceField">
+                <fieldset>
+                  <legend>Will you attend? *</legend>
+                  <div class="choice-row">
+                    <label class="choice">
+                      <input type="radio" name="attendance" value="Joyfully accepts" required>
+                      Joyfully accepts
+                    </label>
+                    <label class="choice">
+                      <input type="radio" name="attendance" value="Regretfully declines" required>
+                      Regretfully declines
+                    </label>
+                  </div>
+                </fieldset>
+                <p class="field-error" id="attendanceError">Please select your response.</p>
+              </div>
+
+              <div class="field" id="guestCountField">
+                <label for="guestCount">Number of guests, including you</label>
+                <div style="position:relative">
+                  <select id="guestCount" name="guest_count">
+                    <option value="1">1 guest</option>
+                    <option value="2">2 guests</option>
+                    <option value="3">3 guests</option>
+                    <option value="4">4 guests</option>
+                  </select>
+                </div>
+                <p class="form-help">Please follow the number of seats allocated to your invitation.</p>
+              </div>
+
+              <div class="field" id="mealField">
+                <label for="mealPreference">Meal preference</label>
+                <select id="mealPreference" name="meal_preference">
+                  <option value="">Select a preference</option>
+                  <option value="Standard">Standard</option>
+                  <option value="Vegetarian">Vegetarian</option>
+                  <option value="Vegan">Vegan</option>
+                  <option value="Other">Other / please contact me</option>
+                </select>
+              </div>
+
+              <div class="field field-full" id="dietField">
+                <label for="dietaryRequirements">Dietary requirements</label>
+                <input id="dietaryRequirements" name="dietary_requirements" maxlength="400" placeholder="Allergies or dietary requirements, if any">
+              </div>
+
+              <div class="field field-full">
+                <label for="guestMessage">A message for the couple</label>
+                <textarea id="guestMessage" name="message" maxlength="1500" placeholder="Share a few kind words, if you wish..."></textarea>
+              </div>
+
+              <div class="field field-full">
+                <label class="choice">
+                  <input id="updatesConsent" type="checkbox" name="updates_consent" value="yes">
+                  I would like to receive wedding updates by email.
+                </label>
+              </div>
+            </div>
+
+            <button class="button rsvp-submit" id="rsvpSubmit" type="submit">
+              Send your royal response
+              <i data-lucide="arrow-right" aria-hidden="true"></i>
+            </button>
+
+            <p class="privacy-note">Your response is intended for the couple's wedding arrangements. Please do not include sensitive personal information.</p>
+
+            <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- OPTIONAL GUEST INFORMATION -->
+    <section class="faq-section" id="guest-information">
+      <div class="wrap">
+        <header class="section-heading reveal">
+          <p class="eyebrow">A note for our guests</p>
+          <h2 class="section-title">Before the Royal Day</h2>
+          <p class="section-copy">A few helpful details for planning your visit. The couple can customise these answers before sharing the invitation.</p>
+        </header>
+
+        <div class="faq-list">
+          <article class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false" aria-controls="faqAnswer1">
+              What should I wear?
+              <i data-lucide="plus" aria-hidden="true"></i>
+            </button>
+            <div class="faq-answer-grid" id="faqAnswer1">
+              <div class="faq-answer-inner">
+                <p class="faq-answer">Our suggested dress code is formal attire. Please refer to the confirmed dress code and any colour guidance provided by the couple before choosing your outfit.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false" aria-controls="faqAnswer2">
+              May I bring a guest?
+              <i data-lucide="plus" aria-hidden="true"></i>
+            </button>
+            <div class="faq-answer-grid" id="faqAnswer2">
+              <div class="faq-answer-inner">
+                <p class="faq-answer">Please follow the guest allocation on your invitation. If you need clarification about your allocated seats, contact the couple or the person who shared this invitation with you.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false" aria-controls="faqAnswer3">
+              Where will the celebration take place?
+              <i data-lucide="plus" aria-hidden="true"></i>
+            </button>
+            <div class="faq-answer-grid" id="faqAnswer3">
+              <div class="faq-answer-inner">
+                <p class="faq-answer">The ceremony and reception locations are still editable placeholders. Please confirm both venues and their addresses with the couple before making travel arrangements.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false" aria-controls="faqAnswer4">
+              When should I RSVP?
+              <i data-lucide="plus" aria-hidden="true"></i>
+            </button>
+            <div class="faq-answer-grid" id="faqAnswer4">
+              <div class="faq-answer-inner">
+                <p class="faq-answer">Please respond as soon as you can. Add the couple's actual RSVP deadline here before publishing this invitation so guests know when to confirm their attendance.</p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHAPTER SEVEN -->
+    <section class="closing" id="closing">
+  <style>
+    #closing::before {
+      animation: none !important;
+      transform: none !important;
+    }
+  </style>
+  <div class="particles" aria-hidden="true" data-particles="35"></div>
+  <div class="reveal">
+    <p class="closing-monogram" data-bind="initials">A &amp; M</p>
+    <p class="eyebrow">Our next chapter begins with you</p>
+    <h2 class="closing-title serif">Until We Meet<br>in the Kingdom</h2>
+    <p class="closing-copy">Thank you for being part of our story.</p>
+    <p class="closing-date" data-bind="dateLong">22 NOVEMBER 2026</p>
+    <div class="ornament"><span>✦</span></div>
+    <p class="script" style="font-size:38px;color:var(--champagne)" data-bind="names">Adam &amp; Maria</p>
+    <a class="back-to-top" href="#top"><i data-lucide="arrow-up" aria-hidden="true"></i> Return to the beginning</a>
+  </div>
+</section>
+
+    <footer>
+      <span data-bind="names">Adam & Maria</span> · A celebration of love · The Emerald Kingdom
+    </footer>
+  </main>
+
+  <!-- GALLERY VIEWER -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Wedding photo viewer" aria-hidden="true">
+    <button class="icon-button lightbox-close" id="lightboxClose" type="button" aria-label="Close photo viewer">
+      <i data-lucide="x" aria-hidden="true"></i>
+    </button>
+    <button class="icon-button lightbox-prev" id="lightboxPrev" type="button" aria-label="Previous photograph">
+      <i data-lucide="chevron-left" aria-hidden="true"></i>
+    </button>
+    <img id="lightboxImage" src="" alt="">
+    <button class="icon-button lightbox-next" id="lightboxNext" type="button" aria-label="Next photograph">
+      <i data-lucide="chevron-right" aria-hidden="true"></i>
+    </button>
+    <p class="lightbox-caption" id="lightboxCaption"></p>
+  </div>
+
+  <script>
+    "use strict";
+
+    /*
+      ============================================================
+      THE EMERALD KINGDOM — WEDDING CONFIGURATION
+
+      Update the values below to customise the invitation.
+
+      Replace the sample image URLs with approved couple photos
+      and verified fantasy artwork before publishing.
+
+      RSVP NOTE:
+      The form points to /__hh/form as requested. A working
+      endpoint or compatible hosting form integration is required
+      for real submissions. The browser never pretends to save
+      responses when the service has not confirmed receipt.
+      ============================================================
+    */
+
+    const WEDDING = {
+      couple: {
+        nameOne: "Adam",
+        nameTwo: "Maria",
+        initials: "A & M"
+      },
+
+      date: {
+        // Local wedding time, in 24-hour HH:MM format.
+        // Change this value if the ceremony starts at another time.
+        isoLocal: "2026-11-22T14:00:00",
+        display: "22 NOVEMBER 2026",
+        long: "22 November 2026",
+        timezoneNote: "Local time on the wedding date."
+      },
+
+      ceremony: {
+        time: "Time to be confirmed",
+        venue: "Venue to be confirmed",
+        address: "Full address to be confirmed",
+        mapQuery: ""
+      },
+
+      reception: {
+        time: "Time to be confirmed",
+        venue: "Venue to be confirmed",
+        address: "Full address to be confirmed",
+        mapQuery: ""
+      },
+
+      dressCode: "Formal attire",
+
+      story: {
+        meeting: "It began with a conversation that neither of us knew would become so important. What felt like an ordinary day slowly became the beginning of something extraordinary. The laughter came easily, the conversations lasted longer, and the world seemed a little brighter.",
+        memories: "From our favourite conversations to the smallest adventures, we discovered that home could be a person. We learned, we laughed, we grew, and we chose each other through every season.",
+        future: "Today, we stand at the beginning of a new adventure. With grateful hearts and a promise to keep choosing one another, we look forward to all the beautiful chapters still waiting to be written."
+      },
+
+      gallery: [
+        {
+          src: "https://images.pexels.com/photos/28398213/pexels-photo-28398213.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          alt: "A romantic embrace in a rose garden",
+          caption: "In bloom"
+        },
+        {
+          src: "https://images.pexels.com/photos/37911047/pexels-photo-37911047.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          alt: "A couple in an elegant stone courtyard",
+          caption: "Our chapter"
+        },
+        {
+          src: "https://images.pexels.com/photos/15878129/pexels-photo-15878129.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          alt: "A couple walking in forest sunlight",
+          caption: "Into the light"
+        },
+        {
+          src: "https://images.unsplash.com/photo-1783444435084-12e4afd4463d?ixid=M3wxMDQwMjQxfDB8MXxzZWFyY2h8M3x8cm9tYW50aWMlMjBwYWxhY2UlMjBnYXJkZW4lMjBhdCUyMGdvbGRlbiUyMGhvdXJ8ZW58MXwwfHx8MTc5MjAxODk5M3ww&ixlib=rb-4.1.0&w=1920&q=80&fm=jpg&fit=max",
+          alt: "A romantic palace garden in golden-hour light",
+          caption: "A world of our own"
+        }
+      ],
+
+      rsvp: {
+        endpoint: "/__hh/form",
+        maxGuests: 4
+      }
+    };
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /*
+      Content configuration
+    */
+
+    function applyConfiguration() {
+      const fullNames = `${WEDDING.couple.nameOne} & ${WEDDING.couple.nameTwo}`;
+
+      document.querySelectorAll('[data-bind="names"]').forEach(el => {
+        el.textContent = fullNames;
+      });
+
+      document.querySelectorAll('[data-bind="initials"]').forEach(el => {
+        el.textContent = WEDDING.couple.initials;
+      });
+
+      document.querySelectorAll('[data-bind="nameOne"]').forEach(el => {
+        el.textContent = WEDDING.couple.nameOne;
+      });
+
+      document.querySelectorAll('[data-bind="nameTwo"]').forEach(el => {
+        el.textContent = WEDDING.couple.nameTwo;
+      });
+
+      document.querySelectorAll('[data-bind="dateDisplay"]').forEach(el => {
+        el.textContent = WEDDING.date.display;
+      });
+
+      document.querySelectorAll('[data-bind="dateLong"]').forEach(el => {
+        el.textContent = WEDDING.date.long;
+      });
+
+      document.querySelectorAll('[data-bind="ceremonyTime"]').forEach(el => {
+        el.textContent = WEDDING.ceremony.time;
+      });
+
+      document.querySelectorAll('[data-bind="ceremonyVenue"]').forEach(el => {
+        el.textContent = WEDDING.ceremony.venue;
+      });
+
+      document.querySelectorAll('[data-bind="ceremonyAddress"]').forEach(el => {
+        el.textContent = WEDDING.ceremony.address;
+      });
+
+      document.querySelectorAll('[data-bind="receptionTime"]').forEach(el => {
+        el.textContent = WEDDING.reception.time;
+      });
+
+      document.querySelectorAll('[data-bind="receptionVenue"]').forEach(el => {
+        el.textContent = WEDDING.reception.venue;
+      });
+
+      document.querySelectorAll('[data-bind="dressCode"]').forEach(el => {
+        el.textContent = WEDDING.dressCode;
+      });
+
+      document.querySelectorAll("[data-story]").forEach(el => {
+        const key = el.getAttribute("data-story");
+        if (Object.prototype.hasOwnProperty.call(WEDDING.story, key)) {
+          el.textContent = WEDDING.story[key];
+        }
+      });
+
+      const title = `${fullNames} | The Emerald Kingdom`;
+      document.title = title;
+
+      const maxGuestSelect = document.getElementById("guestCount");
+      if (maxGuestSelect) {
+        [...maxGuestSelect.options].forEach(option => {
+          option.disabled = Number(option.value) > WEDDING.rsvp.maxGuests;
+        });
+      }
+    }
+
+    /*
+      Motion and reveal effects
+    */
+
+    function setupReveals() {
+      if (reducedMotion || !("IntersectionObserver" in window)) {
+        document.querySelectorAll(".reveal").forEach(el => {
+          el.classList.add("is-visible");
+        });
+        return;
+      }
+
+      document.documentElement.classList.add("js-motion");
+
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.12,
+        rootMargin: "0px 0px -35px 0px"
+      });
+
+      document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+    }
+
+    /*
+      Atmospheric particles
+
+      Generated with a bounded count to keep mobile rendering light.
+    */
+
+    function setupParticles() {
+      document.querySelectorAll("[data-particles]").forEach(container => {
+        const count = Math.min(45, Number(container.dataset.particles) || 20);
+        const fragment = document.createDocumentFragment();
+
+        for (let i = 0; i < count; i++) {
+          const particle = document.createElement("span");
+          particle.className = "particle";
+          particle.style.left = `${Math.random() * 100}%`;
+          particle.style.setProperty("--duration", `${7 + Math.random() * 11}s`);
+          particle.style.setProperty("--delay", `${-Math.random() * 18}s`);
+          particle.style.setProperty("--drift", `${Math.round(Math.random() * 80 - 40)}px`);
+          particle.style.opacity = String(.2 + Math.random() * .5);
+
+          const size = 1 + Math.random() * 2.3;
+          particle.style.width = `${size}px`;
+          particle.style.height = `${size}px`;
+
+          fragment.appendChild(particle);
+        }
+
+        container.appendChild(fragment);
+      });
+    }
+
+    /*
+      Envelope sequence
+
+      The seal activates the 3D flap. The card rises from the
+      envelope, then the scene transitions into the kingdom.
+
+      Reduced-motion users can enter directly without waiting.
+    */
+
+    const opening = document.getElementById("opening");
+    const experience = document.getElementById("experience");
+    const seal = document.getElementById("openSeal");
+    const skipOpening = document.getElementById("skipOpening");
+
+    let openingStarted = false;
+    let kingdomEntered = false;
+
+    function enterKingdom() {
+      if (kingdomEntered) return;
+      kingdomEntered = true;
+
+      experience.hidden = false;
+      opening.style.display = "none";
+
+      window.scrollTo({
+        top: 0,
+        behavior: reducedMotion ? "auto" : "smooth"
+      });
+
+      if (typeof window.lucide !== "undefined") {
+        window.lucide.createIcons();
+      }
+
+      setupReveals();
+      startCountdown();
+    }
+
+    function openInvitation() {
+      if (openingStarted || kingdomEntered) return;
+      openingStarted = true;
+
+      seal.disabled = true;
+      opening.classList.add("is-opening");
+
+      const instruction = document.getElementById("openingInstruction");
+      if (instruction) instruction.textContent = "The kingdom is awakening…";
+
+      if (reducedMotion) {
+        opening.classList.add("is-revealed");
+        enterKingdom();
+        return;
+      }
+
+      window.setTimeout(() => {
+        opening.classList.add("is-revealed");
+      }, 1250);
+
+      window.setTimeout(() => {
+        enterKingdom();
+      }, 2950);
+    }
+
+    seal.addEventListener("click", openInvitation);
+    skipOpening.addEventListener("click", enterKingdom);
+
+    /*
+      Countdown
+
+      Uses the configured local wedding time. Once the date passes,
+      it stops at zero and reports that the day has arrived or passed.
+    */
+
+    let countdownInterval = null;
+
+    function startCountdown() {
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+      }
+
+      const target = new Date(WEDDING.date.isoLocal).getTime();
+
+      const daysEl = document.getElementById("days");
+      const hoursEl = document.getElementById("hours");
+      const minutesEl = document.getElementById("minutes");
+      const secondsEl = document.getElementById("seconds");
+      const note = document.getElementById("countdownNote");
+
+      if (!Number.isFinite(target)) {
+        note.textContent = "The wedding date needs to be configured.";
+        return;
+      }
+
+      function updateCountdown() {
+        const difference = Math.max(0, target - Date.now());
+
+        const days = Math.floor(difference / 86400000);
+        const hours = Math.floor((difference % 86400000) / 3600000);
+        const minutes = Math.floor((difference % 3600000) / 60000);
+        const seconds = Math.floor((difference % 60000) / 1000);
+
+        daysEl.textContent = String(days).padStart(2, "0");
+        hoursEl.textContent = String(hours).padStart(2, "0");
+        minutesEl.textContent = String(minutes).padStart(2, "0");
+        secondsEl.textContent = String(seconds).padStart(2, "0");
+
+        if (difference <= 0) {
+          note.textContent = "The royal day has arrived. Let the celebration begin.";
+          if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+          }
+        }
+      }
+
+      updateCountdown();
+      countdownInterval = window.setInterval(updateCountdown, 1000);
+    }
+
+    /*
+      Optional ambient audio
+
+      No external audio is played without an explicit interaction.
+      A soft oscillator-based soundscape is used as a lightweight
+      fallback; it is not a substitute for a real orchestral track.
+    */
+
+    let audioContext = null;
+    let audioNodes = [];
+    let soundEnabled = false;
+
+    const soundToggle = document.getElementById("soundToggle");
+    const soundLabel = document.getElementById("soundLabel");
+
+    function stopAmbientSound() {
+      soundEnabled = false;
+
+      audioNodes.forEach(node => {
+        try {
+          if (node.stop) node.stop();
+          if (node.disconnect) node.disconnect();
+        } catch (_) {}
+      });
+
+      audioNodes = [];
+
+      if (audioContext) {
+        audioContext.close().catch(() => {});
+        audioContext = null;
+      }
+
+      soundToggle.setAttribute("aria-pressed", "false");
+      soundToggle.setAttribute("aria-label", "Turn ambient sound on");
+      soundLabel.textContent = "Sound off";
+
+      soundToggle.innerHTML = '<i data-lucide="volume-x" aria-hidden="true"></i><span id="soundLabel">Sound off</span>';
+
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    async function startAmbientSound() {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+
+      if (!AudioContextClass) {
+        soundLabel.textContent = "Audio unavailable";
+        return;
+      }
+
+      try {
+        audioContext = new AudioContextClass();
+        await audioContext.resume();
+
+        const master = audioContext.createGain();
+        master.gain.setValueAtTime(0, audioContext.currentTime);
+        master.gain.linearRampToValueAtTime(.018, audioContext.currentTime + 2);
+        master.connect(audioContext.destination);
+
+        // Quiet sustained tones create a simple ambient bed.
+        // For a final wedding site, replace with licensed instrumental audio.
+        [110, 164.81, 220].forEach((frequency, index) => {
+          const oscillator = audioContext.createOscillator();
+          const gain = audioContext.createGain();
+
+          oscillator.type = "sine";
+          oscillator.frequency.value = frequency;
+          gain.gain.value = index === 0 ? .25 : .12;
+
+          oscillator.connect(gain);
+          gain.connect(master);
+          oscillator.start();
+
+          audioNodes.push(oscillator, gain);
+        });
+
+        audioNodes.push(master);
+        soundEnabled = true;
+
+        soundToggle.setAttribute("aria-pressed", "true");
+        soundToggle.setAttribute("aria-label", "Turn ambient sound off");
+        soundToggle.innerHTML = '<i data-lucide="volume-2" aria-hidden="true"></i><span id="soundLabel">Sound on</span>';
+
+        if (window.lucide) window.lucide.createIcons();
+      } catch (error) {
+        stopAmbientSound();
+        soundLabel.textContent = "Audio unavailable";
+      }
+    }
+
+    soundToggle.addEventListener("click", async () => {
+      if (soundEnabled) {
+        stopAmbientSound();
+      } else {
+        await startAmbientSound();
+      }
+    });
+
+    /*
+      Gallery lightbox
+    */
+
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImage = document.getElementById("lightboxImage");
+    const lightboxCaption = document.getElementById("lightboxCaption");
+    const lightboxClose = document.getElementById("lightboxClose");
+    const lightboxPrev = document.getElementById("lightboxPrev");
+    const lightboxNext = document.getElementById("lightboxNext");
+
+    let currentGalleryIndex = 0;
+    let previousFocus = null;
+
+    function renderGalleryItem(index) {
+      const item = WEDDING.gallery[index];
+      if (!item) return;
+
+      currentGalleryIndex = index;
+      lightboxImage.src = item.src;
+      lightboxImage.alt = item.alt;
+      lightboxCaption.textContent = item.caption;
+    }
+
+    function openGallery(index) {
+      previousFocus = document.activeElement;
+      renderGalleryItem(index);
+
+      lightbox.classList.add("is-open");
+      lightbox.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      lightboxClose.focus();
+    }
+
+    function closeGallery() {
+      lightbox.classList.remove("is-open");
+      lightbox.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+
+      if (previousFocus && typeof previousFocus.focus === "function") {
+        previousFocus.focus();
+      }
+    }
+
+    function previousGalleryItem() {
+      const index = (currentGalleryIndex - 1 + WEDDING.gallery.length) % WEDDING.gallery.length;
+      renderGalleryItem(index);
+    }
+
+    function nextGalleryItem() {
+      const index = (currentGalleryIndex + 1) % WEDDING.gallery.length;
+      renderGalleryItem(index);
+    }
+
+    document.querySelectorAll("[data-gallery]").forEach(button => {
+      button.addEventListener("click", () => {
+        openGallery(Number(button.dataset.gallery));
+      });
+    });
+
+    lightboxClose.addEventListener("click", closeGallery);
+    lightboxPrev.addEventListener("click", previousGalleryItem);
+    lightboxNext.addEventListener("click", nextGalleryItem);
+
+    lightbox.addEventListener("click", event => {
+      if (event.target === lightbox) closeGallery();
+    });
+
+    document.addEventListener("keydown", event => {
+      if (!lightbox.classList.contains("is-open")) return;
+
+      if (event.key === "Escape") closeGallery();
+      if (event.key === "ArrowLeft") previousGalleryItem();
+      if (event.key === "ArrowRight") nextGalleryItem();
+    });
+
+    /*
+      Accordion
+    */
+
+    document.querySelectorAll(".faq-question").forEach(button => {
+      button.addEventListener("click", () => {
+        const item = button.closest(".faq-item");
+        const willOpen = !item.classList.contains("is-open");
+
+        item.classList.toggle("is-open", willOpen);
+        button.setAttribute("aria-expanded", String(willOpen));
+      });
+    });
+
+    /*
+      RSVP validation and submission
+
+      The page does not claim a response has been saved unless
+      the configured endpoint returns a successful HTTP response.
+
+      A hosting environment must provide the requested endpoint.
+      When no compatible endpoint is present, the guest receives
+      an explicit integration message instead of a false success.
+    */
+
+    const rsvpForm = document.getElementById("rsvpForm");
+    const rsvpSubmit = document.getElementById("rsvpSubmit");
+    const formStatus = document.getElementById("formStatus");
+
+    function setFieldError(fieldId, message, hasError) {
+      const field = document.getElementById(fieldId);
+      if (!field) return;
+
+      field.classList.toggle("has-error", hasError);
+
+      const error = field.querySelector(".field-error");
+      if (error && message) error.textContent = message;
+    }
+
+    function validateRSVP() {
+      let valid = true;
+
+      const name = document.getElementById("guestName");
+      const email = document.getElementById("guestEmail");
+      const attendance = rsvpForm.querySelector('input[name="attendance"]:checked');
+
+      const nameValid = name.value.trim().length > 0;
+
+      setFieldError("nameField", "", !nameValid);
+      if (!nameValid) {
+        document.getElementById("nameError").textContent = "Please enter your full name.";
+        valid = false;
+      }
+
+      const emailValue = email.value.trim();
+      const emailValid = !emailValue || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue);
+
+      setFieldError("emailField", "", !emailValid);
+      if (!emailValid) {
+        document.getElementById("emailError").textContent = "Please enter a valid email address.";
+        valid = false;
+      }
+
+      const attendanceValid = Boolean(attendance);
+      setFieldError("attendanceField", "", !attendanceValid);
+      if (!attendanceValid) valid = false;
+
+      if (!valid) {
+        const firstError = rsvpForm.querySelector(".has-error input, .has-error select, .has-error textarea");
+        if (firstError) firstError.focus();
+      }
+
+      return valid;
+    }
+
+    function showFormStatus(message, isError = false) {
+      formStatus.textContent = message;
+      formStatus.classList.add("is-visible");
+      formStatus.classList.toggle("error", isError);
+    }
+
+    rsvpForm.addEventListener("submit", async event => {
+      event.preventDefault();
+
+      formStatus.classList.remove("is-visible", "error");
+
+      if (!validateRSVP()) {
+        showFormStatus("Please review the highlighted fields and complete your response.", true);
+        return;
+      }
+
+      if (rsvpSubmit.disabled) return;
+
+      rsvpSubmit.disabled = true;
+      rsvpSubmit.setAttribute("aria-busy", "true");
+      rsvpSubmit.innerHTML = '<i data-lucide="loader-circle" aria-hidden="true"></i> Sending response…';
+
+      if (window.lucide) window.lucide.createIcons();
+
+      try {
+        const endpoint = WEDDING.rsvp.endpoint;
+
+        const response = await fetch(endpoint, {
+          method: "POST",
+          body: new FormData(rsvpForm),
+          headers: {
+            "Accept": "application/json"
+          },
+          credentials: "same-origin"
+        });
+
+        if (!response.ok) {
+          throw new Error(`RSVP service returned HTTP ${response.status}`);
+        }
+
+        showFormStatus(
+          "Thank you. Your RSVP service has confirmed receipt of your response."
+        );
+
+        rsvpForm.reset();
+
+        rsvpForm.querySelectorAll(".has-error").forEach(field => {
+          field.classList.remove("has-error");
+        });
+
+      } catch (error) {
+        console.error("RSVP submission was not confirmed:", error);
+
+        showFormStatus(
+          "Your response has not been confirmed as received. The wedding website needs a working RSVP endpoint at " +
+          WEDDING.rsvp.endpoint +
+          ". Please contact the couple directly until the form service is connected.",
+          true
+        );
+      } finally {
+        rsvpSubmit.disabled = false;
+        rsvpSubmit.removeAttribute("aria-busy");
+        rsvpSubmit.innerHTML = 'Send your royal response <i data-lucide="arrow-right" aria-hidden="true"></i>';
+
+        if (window.lucide) window.lucide.createIcons();
+      }
+    });
+
+    /*
+      Initialisation
+    */
+
+    function initialise() {
+      applyConfiguration();
+      setupParticles();
+
+      if (window.lucide) window.lucide.createIcons();
+
+      // Start immediately if JavaScript is running, while keeping
+      // the sealed envelope available for the guest's first action.
+      document.documentElement.classList.add("experience-ready");
+
+      // Touch and keyboard activation both use the same button.
+      // The skip control provides a direct, accessible alternative.
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initialise, { once: true });
+    } else {
+      initialise();
+    }
+  </script>
+</body>
+</html>
