@@ -40,11 +40,25 @@
                  data-tags="<?= htmlspecialchars(strtolower(implode(' ', $t['tags']))) ?>"
                  data-slug="<?= htmlspecialchars($t['slug']) ?>">
                 
-                <div class="template-preview-box">
-                    <iframe src="<?= url('templates/' . $t['slug'] . '/preview') ?>" class="template-mini-frame" loading="lazy" scrolling="no"></iframe>
-                    <div class="preview-overlay" data-preview-slug="<?= htmlspecialchars($t['slug']) ?>" data-title="<?= htmlspecialchars($t['title']) ?>">
-                        <span class="btn-preview-trigger">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                <div class="template-preview-box preview-trigger-area" 
+                     data-slug="<?= htmlspecialchars($t['slug']) ?>" 
+                     data-title="<?= htmlspecialchars($t['title']) ?>"
+                     role="button"
+                     tabindex="0"
+                     aria-label="Preview <?= htmlspecialchars($t['title']) ?>">
+                    <div class="card-browser-mockup">
+                        <div class="mockup-dots">
+                            <span class="m-dot dot-red"></span>
+                            <span class="m-dot dot-yellow"></span>
+                            <span class="m-dot dot-green"></span>
+                        </div>
+                        <span class="mockup-domain">pagedock.site/<?= htmlspecialchars($t['slug']) ?></span>
+                    </div>
+                    <div class="card-visual-hero">
+                        <span class="visual-category-icon"><?= strtoupper(substr($t['category'], 0, 2)) ?></span>
+                        <span class="visual-template-title"><?= htmlspecialchars($t['title']) ?></span>
+                        <span class="btn-preview-pill">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                             Live Preview
                         </span>
                     </div>

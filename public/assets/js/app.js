@@ -324,30 +324,53 @@ document.addEventListener('DOMContentLoaded', () => {
         modalIframe.src = `/templates/${slug}/preview`;
         if (modalUseBtn) modalUseBtn.setAttribute('data-slug', slug);
         templateModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
     }
 
     function closePreviewModal() {
         if (!templateModal) return;
         templateModal.classList.add('hidden');
         if (modalIframe) modalIframe.src = 'about:blank';
+        document.body.style.overflow = '';
     }
 
-    document.querySelectorAll('.preview-overlay').forEach(el => {
-        el.addEventListener('click', () => {
-            const slug = el.getAttribute('data-preview-slug');
-            const title = el.getAttribute('data-title');
-            openPreviewModal(slug, title);
-        });
-    });
+    // Event delegation on #templates-grid for preview & use clicks
+    const templatesGrid = document.getElementById('templates-grid');
+    if (templatesGrid) {
+        templatesGrid.addEventListener('click', (e) => {
+            // 1. Check if Use Template button was clicked
+            const useBtn = e.target.closest('.use-template-btn');
+            if (useBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                const slug = useBtn.getAttribute('data-slug');
+                useTemplate(slug, useBtn);
+                return;
+            }
 
-    document.querySelectorAll('.preview-modal-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const slug = btn.getAttribute('data-slug');
-            const title = btn.getAttribute('data-title');
-            openPreviewModal(slug, title);
+            // 2. Check if preview button or card preview box was clicked
+            const previewTrigger = e.target.closest('.preview-modal-btn, .preview-trigger-area');
+            if (previewTrigger) {
+                e.preventDefault();
+                const slug = previewTrigger.getAttribute('data-slug');
+                const title = previewTrigger.getAttribute('data-title');
+                if (slug) openPreviewModal(slug, title);
+                return;
+            }
         });
-    });
 
+        templatesGrid.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                const trigger = e.target.closest('.preview-trigger-area');
+                if (trigger) {
+                    e.preventDefault();
+                    openPreviewModal(trigger.getAttribute('data-slug'), trigger.getAttribute('data-title'));
+                }
+            }
+        });
+    }
+
+    // Modal close controls
     if (closeTemplateModalBtn) {
         closeTemplateModalBtn.addEventListener('click', closePreviewModal);
     }
@@ -357,6 +380,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target === templateModal) closePreviewModal();
         });
     }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && templateModal && !templateModal.classList.contains('hidden')) {
+            closePreviewModal();
+        }
+    });
 
     // Viewport switchers in preview modal
     modalViewportBtns.forEach(btn => {
@@ -372,7 +401,10 @@ document.addEventListener('DOMContentLoaded', () => {
     async function useTemplate(slug, btnElement) {
         if (!slug) return;
         const origText = btnElement ? btnElement.innerHTML : '';
-        if (btnElement) btnElement.textContent = 'Cloning...';
+        if (btnElement) {
+            btnElement.textContent = 'Cloning...';
+            btnElement.disabled = true;
+        }
 
         try {
             const res = await fetch(`/api/templates/${slug}/use`, {
@@ -383,20 +415,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.location.href = data.editor_url;
             } else {
                 alert(data.error || 'Failed to initialize template.');
-                if (btnElement) btnElement.innerHTML = origText;
+                if (btnElement) {
+                    btnElement.innerHTML = origText;
+                    btnElement.disabled = false;
+                }
             }
         } catch (err) {
             alert('Network error initializing template.');
-            if (btnElement) btnElement.innerHTML = origText;
+            if (btnElement) {
+                btnElement.innerHTML = origText;
+                btnElement.disabled = false;
+            }
         }
     }
-
-    document.querySelectorAll('.use-template-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const slug = btn.getAttribute('data-slug');
-            useTemplate(slug, btn);
-        });
-    });
 
     if (modalUseBtn) {
         modalUseBtn.addEventListener('click', () => {
