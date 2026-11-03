@@ -1,6 +1,15 @@
 // PageDock Core Client Logic
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 0. Mobile Navbar Drawer Toggle
+    const menuToggle = document.getElementById('mobile-menu-toggle');
+    const navDrawer = document.getElementById('mobile-nav-drawer');
+    if (menuToggle && navDrawer) {
+        menuToggle.addEventListener('click', () => {
+            navDrawer.classList.toggle('hidden');
+        });
+    }
+
     // 1. Tab Switching
     const tabBtns = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');

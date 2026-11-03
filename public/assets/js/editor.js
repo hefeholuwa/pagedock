@@ -1,4 +1,4 @@
-// PageDock In-Browser Split Editor Logic
+// PageDock In-Browser Split Editor Logic (Mobile-Optimized)
 
 document.addEventListener('DOMContentLoaded', () => {
     const config = window.PAGEDOCK_CONFIG || {};
@@ -10,15 +10,47 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewportBtns = document.querySelectorAll('.viewport-btn');
     const toast = document.getElementById('toast');
 
+    const codePane = document.getElementById('editor-code-pane');
+    const previewPane = document.getElementById('editor-preview-pane');
+    const mobileTabs = document.querySelectorAll('.mobile-pane-tab');
+    const mobileFormsBtn = document.getElementById('mobile-forms-btn');
+
     let isDirty = false;
 
-    // 1. Mark dirty on code edit
+    // 1. Mobile Pane Switcher (Code vs Preview)
+    mobileTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            mobileTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            const pane = tab.getAttribute('data-pane');
+            if (pane === 'code') {
+                if (codePane) codePane.classList.remove('mobile-hidden');
+                if (previewPane) previewPane.classList.add('mobile-hidden');
+            } else if (pane === 'preview') {
+                if (codePane) codePane.classList.add('mobile-hidden');
+                if (previewPane) {
+                    previewPane.classList.remove('mobile-hidden');
+                    reloadPreview();
+                }
+            }
+        });
+    });
+
+    if (mobileFormsBtn) {
+        mobileFormsBtn.addEventListener('click', () => {
+            const formsModal = document.getElementById('forms-modal');
+            if (formsModal) formsModal.classList.remove('hidden');
+        });
+    }
+
+    // 2. Mark dirty on code edit
     if (codeEditor) {
         codeEditor.addEventListener('input', () => {
             if (!isDirty) {
                 isDirty = true;
                 if (saveStatus) {
-                    saveStatus.textContent = 'Unsaved changes';
+                    saveStatus.textContent = 'Unsaved';
                     saveStatus.className = 'save-status unsaved';
                 }
             }
@@ -42,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 2. Save Code function
+    // 3. Save Code function
     async function saveCode() {
         if (!config.canManage) {
             showToast('Read-only view. You do not have permission to edit this site.');
@@ -50,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const html = codeEditor.value;
+        const origText = saveBtn ? saveBtn.innerHTML : '';
         if (saveBtn) saveBtn.textContent = 'Saving...';
 
         try {
@@ -74,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (err) {
             showToast('Network error while saving.');
         } finally {
-            if (saveBtn) saveBtn.textContent = 'Save & Publish (Ctrl+S)';
+            if (saveBtn) saveBtn.innerHTML = origText;
         }
     }
 
@@ -82,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
         saveBtn.addEventListener('click', saveCode);
     }
 
-    // 3. Reload preview iframe
+    // 4. Reload preview iframe
     function reloadPreview() {
         if (previewIframe) {
             const currentSrc = previewIframe.src.split('?')[0];
@@ -94,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         refreshBtn.addEventListener('click', reloadPreview);
     }
 
-    // 4. Viewport Switcher (Desktop, Tablet, Mobile)
+    // 5. Viewport Switcher (Desktop only)
     viewportBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             viewportBtns.forEach(b => b.classList.remove('active'));
@@ -106,11 +139,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 5. Draggable Pane Resizer
+    // 6. Draggable Pane Resizer (Desktop only)
     const resizer = document.getElementById('pane-resizer');
-    const codePane = document.querySelector('.code-pane');
-    const previewPane = document.querySelector('.preview-pane');
-
     if (resizer && codePane && previewPane) {
         let isResizing = false;
 
@@ -142,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 6. Forms Modal
+    // 7. Forms Modal
     const formsBtn = document.getElementById('forms-modal-btn');
     const formsModal = document.getElementById('forms-modal');
     const closeModalBtn = document.getElementById('close-modal-btn');
@@ -157,11 +187,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 7. Toast helper
+    // 8. Toast helper
     function showToast(msg) {
         if (!toast) return;
         toast.textContent = msg;
         toast.classList.remove('hidden');
-        setTimeout(() => toast.classList.add('hidden'), 3000);
+        setTimeout(() => toast.classList.add('hidden'), 2800);
     }
 });
