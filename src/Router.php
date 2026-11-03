@@ -83,6 +83,49 @@ class Router {
             return;
         }
 
+        // 6b. API Clone Template to New Site: POST /api/templates/{slug}/use
+        if (!empty($parts) && $parts[0] === 'api' && ($parts[1] ?? '') === 'templates' && ($parts[3] ?? '') === 'use' && $method === 'POST') {
+            $templateSlug = $parts[2] ?? '';
+            $template = Templates::get($templateSlug);
+            if (!$template) {
+                json_response(['success' => false, 'error' => 'Template not found'], 404);
+            }
+
+            $preferredSlug = $_POST['slug'] ?? null;
+            $res = SiteManager::createFromHtml($template['html'], $template['title'], $preferredSlug);
+            if ($res['success']) {
+                $res['editor_url'] = url('editor/' . $res['slug']);
+            }
+            json_response($res, $res['success'] ? 200 : 400);
+            return;
+        }
+
+        // 6c. Template Live Preview: GET /templates/{slug}/preview
+        if (!empty($parts) && $parts[0] === 'templates' && ($parts[2] ?? '') === 'preview') {
+            $templateSlug = $parts[1] ?? '';
+            $template = Templates::get($templateSlug);
+            if (!$template) {
+                http_response_code(404);
+                echo "Template not found";
+                return;
+            }
+            header('Content-Type: text/html; charset=utf-8');
+            echo $template['html'];
+            return;
+        }
+
+        // 6d. Templates Gallery Page: GET /templates
+        if ($path === 'templates') {
+            $allTemplates = Templates::getAll();
+            $categories = Templates::getCategories();
+            render_view('templates', [
+                'templates' => $allTemplates,
+                'categories' => $categories,
+                'title' => 'HTML Website Templates — PageDock'
+            ]);
+            return;
+        }
+
         // 7. Editor view: /editor/{slug}
         if (!empty($parts) && $parts[0] === 'editor') {
             $slug = $parts[1] ?? null;
