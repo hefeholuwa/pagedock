@@ -319,9 +319,9 @@ class Router {
             // Inject subtle PageDock floating badge before </body>
             $badge = '
             <!-- PageDock Badge -->
-            <div id="pagedock-badge" style="position:fixed;bottom:12px;right:12px;z-index:999999;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;font-size:12px;box-shadow:0 4px 14px rgba(0,0,0,0.25);">
-                <a href="' . url() . '" target="_blank" style="display:flex;align-items:center;gap:6px;background:#141416;color:#ededed;padding:5px 10px;border-radius:6px;border:1px solid #2a2a2e;text-decoration:none;font-weight:500;transition:all 0.15s ease;">
-                    <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#C7F547;"></span>
+            <div id="pagedock-badge" style="position:fixed;bottom:max(12px,env(safe-area-inset-bottom,12px));right:max(12px,env(safe-area-inset-right,12px));z-index:999999;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;font-size:11px;box-shadow:0 4px 14px rgba(0,0,0,0.3);touch-action:manipulation;">
+                <a href="' . url() . '" target="_blank" style="display:flex;align-items:center;gap:6px;background:rgba(20,20,22,0.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#ededed;padding:5px 9px;border-radius:6px;border:1px solid #2a2a2e;text-decoration:none;font-weight:500;">
+                    <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#C7F547;"></span>
                     <span>Hosted on <strong>PageDock</strong></span>
                 </a>
             </div>

@@ -411,6 +411,16 @@
 
 /* Mobile Screen Layout Rules (<= 768px) */
 @media (max-width: 768px) {
+    .editor-topbar {
+        padding: 0 8px;
+        height: 48px;
+    }
+
+    .editor-site-title {
+        max-width: 100px;
+        font-size: 13px;
+    }
+
     .editor-workspace {
         flex-direction: column;
     }
@@ -425,7 +435,8 @@
     }
 
     .code-textarea {
-        font-size: 15px; /* Comfortable mobile typing */
+        font-size: 16px !important; /* Prevents auto-zoom on mobile keyboards */
+        padding: 12px 10px;
     }
 
     .preview-container {
@@ -434,5 +445,33 @@
 
     .preview-frame {
         border-radius: 0;
+    }
+
+    .modal-overlay {
+        padding: 8px;
+    }
+
+    .modal-card {
+        max-height: 90vh;
+        max-height: 90dvh;
+        border-radius: 10px;
+    }
+
+    .modal-header {
+        padding: 10px 14px;
+    }
+
+    .modal-body {
+        padding: 12px;
+    }
+
+    .form-endpoint-hint code {
+        word-break: break-all;
+    }
+}
+
+@media (max-width: 480px) {
+    .editor-site-title {
+        max-width: 80px;
     }
 }

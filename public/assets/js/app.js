@@ -5,8 +5,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuToggle = document.getElementById('mobile-menu-toggle');
     const navDrawer = document.getElementById('mobile-nav-drawer');
     if (menuToggle && navDrawer) {
-        menuToggle.addEventListener('click', () => {
-            navDrawer.classList.toggle('hidden');
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = !navDrawer.classList.contains('hidden');
+            if (isOpen) {
+                navDrawer.classList.add('hidden');
+                menuToggle.classList.remove('active');
+                menuToggle.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`;
+            } else {
+                navDrawer.classList.remove('hidden');
+                menuToggle.classList.add('active');
+                menuToggle.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+            }
+        });
+
+        // Close on tap outside
+        document.addEventListener('click', (e) => {
+            if (!navDrawer.contains(e.target) && !menuToggle.contains(e.target)) {
+                navDrawer.classList.add('hidden');
+                menuToggle.classList.remove('active');
+                menuToggle.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`;
+            }
+        });
+
+        // Close on link click inside drawer
+        navDrawer.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navDrawer.classList.add('hidden');
+                menuToggle.classList.remove('active');
+                menuToggle.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`;
+            });
         });
     }
 
