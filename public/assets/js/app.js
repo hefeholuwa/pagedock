@@ -256,4 +256,152 @@ document.addEventListener('DOMContentLoaded', () => {
         div.textContent = str;
         return div.innerHTML;
     }
+
+    // 7. Template Gallery Interactivity
+    const templateCards = document.querySelectorAll('.template-card');
+    const catPills = document.querySelectorAll('.cat-pill');
+    const searchInput = document.getElementById('template-search');
+    const countIndicator = document.getElementById('template-visible-count');
+    const templateModal = document.getElementById('template-modal');
+    const modalIframe = document.getElementById('modal-preview-iframe');
+    const modalTitle = document.getElementById('modal-template-title');
+    const modalUseBtn = document.getElementById('modal-use-btn');
+    const closeTemplateModalBtn = document.getElementById('close-template-modal');
+    const modalViewportBtns = document.querySelectorAll('.m-viewport-btn');
+
+    let currentCat = 'all';
+    let currentQuery = '';
+
+    function filterTemplates() {
+        let visibleCount = 0;
+
+        templateCards.forEach(card => {
+            const cardCat = card.getAttribute('data-category') || '';
+            const cardTitle = card.getAttribute('data-title') || '';
+            const cardTags = card.getAttribute('data-tags') || '';
+
+            const matchesCat = (currentCat === 'all' || cardCat === currentCat);
+            const matchesQuery = (currentQuery === '' || 
+                                  cardTitle.includes(currentQuery) || 
+                                  cardCat.includes(currentQuery) || 
+                                  cardTags.includes(currentQuery));
+
+            if (matchesCat && matchesQuery) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        if (countIndicator) {
+            countIndicator.textContent = visibleCount;
+        }
+    }
+
+    // Category pills
+    catPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            catPills.forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            currentCat = pill.getAttribute('data-cat') || 'all';
+            filterTemplates();
+        });
+    });
+
+    // Real-time search
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            currentQuery = e.target.value.trim().toLowerCase();
+            filterTemplates();
+        });
+    }
+
+    // Live Preview Modal
+    function openPreviewModal(slug, title) {
+        if (!templateModal || !modalIframe) return;
+        modalTitle.textContent = title || 'Template Preview';
+        modalIframe.src = `/templates/${slug}/preview`;
+        if (modalUseBtn) modalUseBtn.setAttribute('data-slug', slug);
+        templateModal.classList.remove('hidden');
+    }
+
+    function closePreviewModal() {
+        if (!templateModal) return;
+        templateModal.classList.add('hidden');
+        if (modalIframe) modalIframe.src = 'about:blank';
+    }
+
+    document.querySelectorAll('.preview-overlay').forEach(el => {
+        el.addEventListener('click', () => {
+            const slug = el.getAttribute('data-preview-slug');
+            const title = el.getAttribute('data-title');
+            openPreviewModal(slug, title);
+        });
+    });
+
+    document.querySelectorAll('.preview-modal-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const slug = btn.getAttribute('data-slug');
+            const title = btn.getAttribute('data-title');
+            openPreviewModal(slug, title);
+        });
+    });
+
+    if (closeTemplateModalBtn) {
+        closeTemplateModalBtn.addEventListener('click', closePreviewModal);
+    }
+
+    if (templateModal) {
+        templateModal.addEventListener('click', (e) => {
+            if (e.target === templateModal) closePreviewModal();
+        });
+    }
+
+    // Viewport switchers in preview modal
+    modalViewportBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            modalViewportBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const width = btn.getAttribute('data-width');
+            if (modalIframe) modalIframe.style.width = width;
+        });
+    });
+
+    // "Use Template" clone handler
+    async function useTemplate(slug, btnElement) {
+        if (!slug) return;
+        const origText = btnElement ? btnElement.innerHTML : '';
+        if (btnElement) btnElement.textContent = 'Cloning...';
+
+        try {
+            const res = await fetch(`/api/templates/${slug}/use`, {
+                method: 'POST'
+            });
+            const data = await res.json();
+            if (data.success && data.editor_url) {
+                window.location.href = data.editor_url;
+            } else {
+                alert(data.error || 'Failed to initialize template.');
+                if (btnElement) btnElement.innerHTML = origText;
+            }
+        } catch (err) {
+            alert('Network error initializing template.');
+            if (btnElement) btnElement.innerHTML = origText;
+        }
+    }
+
+    document.querySelectorAll('.use-template-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const slug = btn.getAttribute('data-slug');
+            useTemplate(slug, btn);
+        });
+    });
+
+    if (modalUseBtn) {
+        modalUseBtn.addEventListener('click', () => {
+            const slug = modalUseBtn.getAttribute('data-slug');
+            useTemplate(slug, modalUseBtn);
+        });
+    }
 });

@@ -18,6 +18,7 @@
             <!-- Desktop Links -->
             <nav class="nav-links desktop-only">
                 <a href="<?= url() ?>" class="nav-item">Product</a>
+                <a href="<?= url('templates') ?>" class="nav-item">Templates</a>
                 <a href="<?= url('docs') ?>" class="nav-item">Docs</a>
                 <?php if (Auth::check()): ?>
                     <a href="<?= url('dashboard') ?>" class="nav-item">Dashboard</a>
@@ -41,6 +42,7 @@
         <!-- Mobile Drawer -->
         <div class="mobile-nav-drawer hidden" id="mobile-nav-drawer">
             <a href="<?= url() ?>" class="mobile-nav-link">Product</a>
+            <a href="<?= url('templates') ?>" class="mobile-nav-link">HTML Templates</a>
             <a href="<?= url('docs') ?>" class="mobile-nav-link">Docs</a>
             <?php if (Auth::check()): ?>
                 <a href="<?= url('dashboard') ?>" class="mobile-nav-link">Dashboard</a>
