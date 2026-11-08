@@ -606,7 +606,7 @@
 
     <!-- Add Page Modal -->
     <div id="hh-add-page-modal" class="hh-modal-overlay hidden" data-modal="add-page">
-        <div class="hh-modal-box">
+        <div class="hh-modal-card hh-modal-card-md">
             <div class="hh-modal-header">
                 <h3>Add New Page</h3>
                 <button type="button" class="hh-modal-close" data-close-modal="add-page">&times;</button>

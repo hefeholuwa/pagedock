@@ -2420,5 +2420,121 @@ body.hh-editor-body {
     margin-top: 4px;
 }
 
+/* Add Page Modal — Form Elements */
+.hh-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
 
+.hh-form-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--fg-3);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.hh-input {
+    width: 100%;
+    padding: 9px 12px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    color: #f1f5f9;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s ease;
+    box-sizing: border-box;
+}
+
+.hh-input:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15);
+}
+
+.hh-input::placeholder {
+    color: #475569;
+}
+
+.hh-select {
+    width: 100%;
+    padding: 9px 12px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    color: #f1f5f9;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+    box-sizing: border-box;
+}
+
+.hh-select:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15);
+}
+
+.hh-select option {
+    background: #1e293b;
+    color: #f1f5f9;
+}
+
+.hh-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 8px;
+}
+
+.hh-btn-primary {
+    padding: 9px 20px;
+    background: #0ea5e9;
+    border: 1px solid #0ea5e9;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.hh-btn-primary:hover {
+    background: #38bdf8;
+    border-color: #38bdf8;
+}
+
+.hh-btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.hh-btn-secondary {
+    padding: 9px 20px;
+    background: transparent;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.hh-btn-secondary:hover {
+    background: rgba(148, 163, 184, 0.08);
+    border-color: #64748b;
+    color: #e2e8f0;
+}
 
