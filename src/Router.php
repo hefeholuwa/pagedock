@@ -620,6 +620,142 @@ class Router {
             return;
         }
 
+        // 6c-9. Site Pages List: GET /api/sites/{slug}/pages
+        if (!empty($parts) && $parts[0] === 'api' && ($parts[1] ?? '') === 'sites' && ($parts[3] ?? '') === 'pages' && count($parts) === 4 && $method === 'GET') {
+            $slug = $parts[2] ?? '';
+            $site = SiteManager::getSite($slug);
+            if (!$site) {
+                json_response(['success' => false, 'error' => 'Site not found'], 404);
+                return;
+            }
+            if (!SiteManager::canManage($site)) {
+                json_response(['success' => false, 'error' => 'Unauthorized'], 403);
+                return;
+            }
+
+            $siteDir = realpath(SITES_DIR . '/' . $slug);
+            if (!$siteDir || !is_dir($siteDir)) {
+                json_response(['success' => false, 'error' => 'Site directory not found'], 404);
+                return;
+            }
+
+            $allFiles = SharedLayoutManager::findAllHtmlFiles($slug);
+            $entryFile = $site['entry_file'] ?: 'index.html';
+            $pages = [];
+
+            foreach ($allFiles as $f) {
+                $fullPath = $siteDir . '/' . $f;
+                $size = file_exists($fullPath) ? filesize($fullPath) : 0;
+                $formattedSize = $size >= 1048576 
+                    ? round($size / 1048576, 1) . ' MB' 
+                    : ($size >= 1024 ? round($size / 1024, 1) . ' KB' : $size . ' B');
+
+                $pageTitle = ucfirst(preg_replace('/\.html?$/i', '', basename($f)));
+                if (file_exists($fullPath)) {
+                    $content = @file_get_contents($fullPath);
+                    if ($content && preg_match('/<title\b[^>]*>(.*?)<\/title>/is', $content, $tMatch)) {
+                        $rawT = trim(strip_tags($tMatch[1]));
+                        if ($rawT) $pageTitle = $rawT;
+                    }
+                }
+
+                $cleanRoute = preg_replace('/\.html?$/i', '', $f);
+                $cleanRoute = ($cleanRoute === 'index') ? '' : $cleanRoute;
+
+                $pages[] = [
+                    'file' => $f,
+                    'relPath' => $f,
+                    'title' => $pageTitle,
+                    'url' => url('s/' . $slug . ($cleanRoute ? '/' . $cleanRoute : '')),
+                    'editorUrl' => url('editor/' . $slug . ($f !== 'index.html' ? '?file=' . urlencode($f) : '')),
+                    'size' => $size,
+                    'formattedSize' => $formattedSize,
+                    'isEntry' => ($f === $entryFile || ($f === 'index.html' && !$site['entry_file']))
+                ];
+            }
+
+            json_response(['success' => true, 'pages' => $pages]);
+            return;
+        }
+
+        // 6c-10. Site Page Create: POST /api/sites/{slug}/pages
+        if (!empty($parts) && $parts[0] === 'api' && ($parts[1] ?? '') === 'sites' && ($parts[3] ?? '') === 'pages' && count($parts) === 4 && $method === 'POST') {
+            $slug = $parts[2] ?? '';
+            $site = SiteManager::getSite($slug);
+            if (!$site) {
+                json_response(['success' => false, 'error' => 'Site not found'], 404);
+                return;
+            }
+            if (!SiteManager::canManage($site)) {
+                json_response(['success' => false, 'error' => 'Unauthorized'], 403);
+                return;
+            }
+
+            $raw = file_get_contents('php://input');
+            $data = json_decode($raw, true) ?: $_POST;
+
+            $title = trim($data['title'] ?? '');
+            $filename = trim($data['filename'] ?? $data['file'] ?? '');
+            $layout = trim($data['layout'] ?? 'inherit');
+            $sourceFile = trim($data['sourceFile'] ?? $data['source_file'] ?? 'index.html');
+
+            if (empty($filename) && !empty($title)) {
+                $filename = preg_replace('/[^a-zA-Z0-9_-]/', '-', strtolower($title)) . '.html';
+            }
+
+            if (empty($filename)) {
+                json_response(['success' => false, 'error' => 'Filename or title required.'], 400);
+                return;
+            }
+
+            $res = SiteManager::createPage($slug, $filename, $title, $layout, $sourceFile);
+            if ($res['success']) {
+                $res['editorUrl'] = url('editor/' . $slug . '?file=' . urlencode($res['file']));
+            }
+            json_response($res, $res['success'] ? 200 : 400);
+            return;
+        }
+
+        // 6c-11. Site Page Delete: POST /api/sites/{slug}/pages/delete
+        if (!empty($parts) && $parts[0] === 'api' && ($parts[1] ?? '') === 'sites' && ($parts[3] ?? '') === 'pages' && ($parts[4] ?? '') === 'delete' && $method === 'POST') {
+            $slug = $parts[2] ?? '';
+            $site = SiteManager::getSite($slug);
+            if (!$site) {
+                json_response(['success' => false, 'error' => 'Site not found'], 404);
+                return;
+            }
+            if (!SiteManager::canManage($site)) {
+                json_response(['success' => false, 'error' => 'Unauthorized'], 403);
+                return;
+            }
+
+            $siteDir = realpath(SITES_DIR . '/' . $slug);
+            $raw = file_get_contents('php://input');
+            $data = json_decode($raw, true) ?: $_POST;
+            $relPath = ltrim($data['file'] ?? $data['relPath'] ?? '', '/\\');
+
+            if (empty($relPath)) {
+                json_response(['success' => false, 'error' => 'File path required'], 400);
+                return;
+            }
+
+            $entryFile = $site['entry_file'] ?: 'index.html';
+            if ($relPath === $entryFile || $relPath === 'index.html') {
+                json_response(['success' => false, 'error' => 'Cannot delete the entry page of the site.'], 400);
+                return;
+            }
+
+            $targetPath = realpath($siteDir . '/' . $relPath);
+            if (!$targetPath || !str_starts_with($targetPath, $siteDir) || !is_file($targetPath)) {
+                json_response(['success' => false, 'error' => 'File not found or invalid path'], 404);
+                return;
+            }
+
+            @unlink($targetPath);
+            json_response(['success' => true, 'message' => 'Page deleted']);
+            return;
+        }
+
         // 6b. API Clone Template to New Site: POST /api/templates/{slug}/use
         if (!empty($parts) && $parts[0] === 'api' && ($parts[1] ?? '') === 'templates' && ($parts[3] ?? '') === 'use' && $method === 'POST') {
             $templateSlug = $parts[2] ?? '';
