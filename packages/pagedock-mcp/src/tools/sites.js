@@ -26,12 +26,12 @@ export function registerSiteTools(server, client) {
             site.editor_url ||
             (client.baseUrl ? `${client.baseUrl}/editor/${slug}` : `/editor/${slug}`);
           return {
+            ...site,
             slug,
             title: site.title || slug,
             views: site.views ?? site.total_views ?? 0,
             liveUrl,
             editorUrl,
-            ...site,
           };
         });
 
@@ -87,6 +87,7 @@ export function registerSiteTools(server, client) {
           (client.baseUrl ? `${client.baseUrl}/editor/${siteSlug}` : `/editor/${siteSlug}`);
 
         const site = {
+          ...rawSite,
           slug: siteSlug,
           title: rawSite.title || siteSlug,
           entry_file: rawSite.entry_file || rawSite.entryFile || 'index.html',
@@ -95,7 +96,6 @@ export function registerSiteTools(server, client) {
           views: rawSite.views ?? rawSite.total_views ?? 0,
           liveUrl,
           editorUrl,
-          ...rawSite,
         };
 
         return {

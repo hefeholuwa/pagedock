@@ -2,6 +2,8 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { PageDockClient } from './client.js';
 import { registerDeployTools } from './tools/deploy.js';
 import { registerSiteTools } from './tools/sites.js';
+import { registerPatchTools } from './tools/patch.js';
+import { registerVersionTools } from './tools/versions.js';
 
 /**
  * Creates and initializes a PageDock McpServer instance
@@ -29,9 +31,21 @@ export function createMcpServer(options = {}) {
   // Register site management tools (list_sites, get_site, pull_site, delete_site)
   registerSiteTools(server, client);
 
+  // Register patching tools (update_site_file)
+  registerPatchTools(server, client);
+
+  // Register version and rollback tools (list_versions, rollback_site)
+  registerVersionTools(server, client);
+
   return server;
 }
 
 export const server = createMcpServer();
 export default server;
-export { registerDeployTools, registerSiteTools };
+export {
+  registerDeployTools,
+  registerSiteTools,
+  registerPatchTools,
+  registerVersionTools,
+};
+
