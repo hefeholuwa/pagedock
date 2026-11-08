@@ -1401,6 +1401,9 @@
                 let updatedCode = '';
                 if (position === 'before') {
                     updatedCode = currentCode.slice(0, tgtRange.start) + snippet + '\n\n' + currentCode.slice(tgtRange.start);
+                } else if (position === 'inside') {
+                    const insertPoint = tgtRange.closeTagStart !== undefined ? tgtRange.closeTagStart : tgtRange.end;
+                    updatedCode = currentCode.slice(0, insertPoint) + '\n  ' + snippet + '\n' + currentCode.slice(insertPoint);
                 } else {
                     updatedCode = currentCode.slice(0, tgtRange.end) + '\n\n' + snippet + currentCode.slice(tgtRange.end);
                 }

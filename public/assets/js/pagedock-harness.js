@@ -140,12 +140,74 @@
   var dropIndicator = null;
   var justFinishedDrag = false;
 
+  var VOID_TAGS = ['AREA', 'BASE', 'BR', 'COL', 'EMBED', 'HR', 'IMG', 'INPUT', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR'];
+
+  function isVoidTag(el) {
+    if (!el || !el.tagName) return false;
+    return VOID_TAGS.indexOf(el.tagName.toUpperCase()) !== -1;
+  }
+
+  function isContainerElement(el) {
+    if (!el || el.nodeType !== 1) return false;
+    var tag = el.tagName.toUpperCase();
+    if (['SECTION', 'ARTICLE', 'MAIN', 'HEADER', 'FOOTER', 'NAV', 'ASIDE', 'FORM'].indexOf(tag) !== -1) return true;
+    if (tag === 'DIV') {
+      var cls = el.className || '';
+      if (/container|grid|flex|col|row|card|wrap|box/i.test(cls)) return true;
+      if (el.children.length >= 1) return true;
+    }
+    return false;
+  }
+
+  function detectDropPosition(el, clientX, clientY) {
+    if (!el || el === document.body || el === document.documentElement) return { position: 'append', target: el };
+    
+    // Auto-scroll near edges
+    if (clientY < 50) {
+      window.scrollBy(0, -12);
+    } else if (clientY > window.innerHeight - 50) {
+      window.scrollBy(0, 12);
+    }
+
+    var target = el;
+    // Guard against dropping inside void tags
+    if (isVoidTag(target)) {
+      var rect = target.getBoundingClientRect();
+      var pos = clientY < (rect.top + rect.height / 2) ? 'before' : 'after';
+      return { position: pos, target: target };
+    }
+
+    var cs = window.getComputedStyle(target);
+    var isFlexRow = (cs.display === 'flex' || cs.display === 'inline-flex') && (!cs.flexDirection || cs.flexDirection.indexOf('row') !== -1);
+    var targetRect = target.getBoundingClientRect();
+
+    // Check if target is a container and cursor is well inside its bounds (not just near edges)
+    if (isContainerElement(target)) {
+      var innerX = targetRect.left + targetRect.width * 0.15;
+      var innerW = targetRect.width * 0.7;
+      var innerY = targetRect.top + targetRect.height * 0.15;
+      var innerH = targetRect.height * 0.7;
+      if (clientX >= innerX && clientX <= innerX + innerW && clientY >= innerY && clientY <= innerY + innerH) {
+        if (target.children.length === 0 || target.querySelectorAll('.pd-element-overlay').length === target.children.length) {
+          return { position: 'inside', target: target };
+        }
+      }
+    }
+
+    if (isFlexRow) {
+      var midX = targetRect.left + targetRect.width / 2;
+      return { position: clientX < midX ? 'before' : 'after', target: target };
+    } else {
+      var midY = targetRect.top + targetRect.height / 2;
+      return { position: clientY < midY ? 'before' : 'after', target: target };
+    }
+  }
+
   function ensureDropIndicator() {
     if (!dropIndicator || !dropIndicator.parentNode) {
       dropIndicator = document.createElement('div');
       dropIndicator.setAttribute('data-pagedock-ui', 'drop-indicator');
-      dropIndicator.className = 'pagedock-drop-indicator';
-      dropIndicator.style.cssText = 'position: absolute; height: 3px; background: linear-gradient(90deg, #38bdf8, #818cf8); pointer-events: none; z-index: 999999; display: none; box-shadow: 0 0 8px rgba(56, 189, 248, 0.8); border-radius: 2px;';
+      dropIndicator.className = 'pd-drop-slot pagedock-drop-indicator';
       document.body.appendChild(dropIndicator);
     }
     return dropIndicator;
@@ -157,12 +219,31 @@
     }
   }
 
-  function showDropIndicator(rect, position) {
+  function showDropIndicator(rect, position, target) {
     var ind = ensureDropIndicator();
-    var top = position === 'before' ? (rect.top + window.scrollY) : (rect.bottom + window.scrollY - 3);
-    ind.style.top = top + 'px';
-    ind.style.left = (rect.left + window.scrollX) + 'px';
-    ind.style.width = rect.width + 'px';
+    if (position === 'inside') {
+      ind.style.top = (rect.top + window.scrollY + 4) + 'px';
+      ind.style.left = (rect.left + window.scrollX + 4) + 'px';
+      ind.style.width = Math.max(rect.width - 8, 40) + 'px';
+      ind.style.height = Math.max(rect.height - 8, 36) + 'px';
+    } else {
+      var cs = target ? window.getComputedStyle(target.parentElement || target) : null;
+      var isFlexRow = cs && (cs.display === 'flex' || cs.display === 'inline-flex') && (!cs.flexDirection || cs.flexDirection.indexOf('row') !== -1);
+      
+      if (isFlexRow) {
+        var left = position === 'before' ? (rect.left + window.scrollX) : (rect.right + window.scrollX - 4);
+        ind.style.top = (rect.top + window.scrollY) + 'px';
+        ind.style.left = left + 'px';
+        ind.style.width = '6px';
+        ind.style.height = rect.height + 'px';
+      } else {
+        var top = position === 'before' ? (rect.top + window.scrollY) : (rect.bottom + window.scrollY - 4);
+        ind.style.top = top + 'px';
+        ind.style.left = (rect.left + window.scrollX) + 'px';
+        ind.style.width = rect.width + 'px';
+        ind.style.height = '6px';
+      }
+    }
     ind.style.display = 'block';
   }
 
@@ -837,16 +918,16 @@
     }
     var under = document.elementFromPoint(e.clientX, e.clientY);
     if (under && !isInert(under)) {
-      var sec = findSection(under);
-      if (sec && sec !== document.body) {
-        var rect = sec.getBoundingClientRect();
-        var midY = rect.top + rect.height / 2;
-        var pos = e.clientY < midY ? 'before' : 'after';
-        showDropIndicator(rect, pos);
+      var dropPlan = detectDropPosition(under, e.clientX, e.clientY);
+      var tgt = dropPlan.target;
+      if (tgt && tgt !== document.body && tgt !== document.documentElement) {
+        var rect = tgt.getBoundingClientRect();
+        showDropIndicator(rect, dropPlan.position, tgt);
         libraryDragTarget = {
-          targetTag: sec.tagName,
-          targetIndex: tagIndex(sec),
-          position: pos
+          targetTag: tgt.tagName,
+          targetIndex: tagIndex(tgt),
+          targetId: tgt.getAttribute ? tgt.getAttribute('data-pd-id') : null,
+          position: dropPlan.position
         };
         return;
       }
@@ -1249,16 +1330,16 @@
     if (d.type === 'library-drag-hover') {
       var under = document.elementFromPoint(d.x, d.y);
       if (under && !isInert(under)) {
-        var sec = findSection(under);
-        if (sec && sec !== document.body) {
-          var rect = sec.getBoundingClientRect();
-          var midY = rect.top + rect.height / 2;
-          var pos = d.y < midY ? 'before' : 'after';
-          showDropIndicator(rect, pos);
+        var dropPlan = detectDropPosition(under, d.x, d.y);
+        var tgt = dropPlan.target;
+        if (tgt && tgt !== document.body && tgt !== document.documentElement) {
+          var rect = tgt.getBoundingClientRect();
+          showDropIndicator(rect, dropPlan.position, tgt);
           libraryDragTarget = {
-            targetTag: sec.tagName,
-            targetIndex: tagIndex(sec),
-            position: pos,
+            targetTag: tgt.tagName,
+            targetIndex: tagIndex(tgt),
+            targetId: tgt.getAttribute ? tgt.getAttribute('data-pd-id') : null,
+            position: dropPlan.position,
             snippet: d.snippet,
             name: d.name
           };
