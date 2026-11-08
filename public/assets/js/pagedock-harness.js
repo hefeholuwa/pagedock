@@ -1217,8 +1217,16 @@
     }
     if (!snippet) {
       try {
-        snippet = e.dataTransfer.getData('text/plain') || '';
+        var plain = (e.dataTransfer.getData('text/plain') || '').trim();
+        if (plain.startsWith('<') && plain.endsWith('>')) {
+          snippet = plain;
+        }
       } catch (err) {}
+    }
+
+    if (!snippet || !snippet.trim()) {
+      libraryDragTarget = null;
+      return;
     }
 
     window.parent.postMessage({
@@ -1227,6 +1235,7 @@
       snippet: snippet,
       targetTag: libraryDragTarget ? libraryDragTarget.targetTag : null,
       targetIndex: libraryDragTarget ? libraryDragTarget.targetIndex : null,
+      targetId: libraryDragTarget ? libraryDragTarget.targetId : null,
       position: libraryDragTarget ? libraryDragTarget.position : 'append'
     }, '*');
     libraryDragTarget = null;

@@ -1413,6 +1413,7 @@
                     updatedCode = currentCode.slice(0, tgtRange.end) + '\n\n' + snippet + currentCode.slice(tgtRange.end);
                 }
                 updateCodeEditor(updatedCode, false);
+                state.draggedLibrarySnippet = null;
                 showToast(`[STATUS] Inserted ${name || 'component'}`);
                 return;
             }
@@ -1420,6 +1421,7 @@
 
         // Fallback: append before </body>
         insertSnippetIntoPage(snippet, name || 'component');
+        state.draggedLibrarySnippet = null;
     }
 
     function bootstrapEmptyPage(snippet) {
