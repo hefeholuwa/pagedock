@@ -126,11 +126,113 @@
         cmEditor.on('change', (cm, changeObj) => {
             if (isInternalUpdate) return;
             setDirty(true);
+            clearTimeout(draftSaveTimer);
             clearTimeout(changeTimer);
             changeTimer = setTimeout(() => {
                 syncCodeToPreview();
+                scheduleDraftAutoSave(700);
             }, 300);
         });
+    }
+
+    // =========================================================================
+    // 1.1 LOCAL STORAGE DRAFT AUTO-SAVE & RECOVERY
+    // =========================================================================
+
+    let draftSaveTimer = null;
+
+    function getStorage() {
+        try {
+            if (typeof window !== 'undefined' && window.localStorage) return window.localStorage;
+            if (typeof localStorage !== 'undefined') return localStorage;
+        } catch (e) {}
+        return null;
+    }
+
+    function getDraftStorageKey() {
+        const slug = state.slug || 'default';
+        const file = state.activeFile || 'index.html';
+        return `pagedock_draft_${slug}_${file}`;
+    }
+
+    function saveDraftToLocalStorage() {
+        if (!cmEditor) return;
+        const storage = getStorage();
+        if (!storage) return;
+
+        try {
+            const key = getDraftStorageKey();
+            const code = cmEditor.getValue();
+            const payload = {
+                code: code,
+                timestamp: Date.now(),
+                slug: state.slug,
+                file: state.activeFile
+            };
+            storage.setItem(key, JSON.stringify(payload));
+        } catch (e) {
+            // LocalStorage quota exceeded or disabled
+        }
+    }
+
+    function scheduleDraftAutoSave(delay = 1000) {
+        clearTimeout(draftSaveTimer);
+        draftSaveTimer = setTimeout(() => {
+            saveDraftToLocalStorage();
+        }, delay);
+    }
+
+    function clearLocalDraft() {
+        clearTimeout(draftSaveTimer);
+        const storage = getStorage();
+        if (!storage) return;
+
+        try {
+            const key = getDraftStorageKey();
+            storage.removeItem(key);
+        } catch (e) {}
+    }
+
+    function checkAndRestoreDraft() {
+        if (!cmEditor) return;
+        const storage = getStorage();
+        if (!storage) return;
+
+        try {
+            const key = getDraftStorageKey();
+            const raw = storage.getItem(key);
+            if (!raw) return;
+
+            const draft = JSON.parse(raw);
+            if (!draft || typeof draft !== 'object' || typeof draft.code !== 'string') return;
+            if (draft.clean || draft.isClean) return;
+
+            const initialCode = cmEditor.getValue();
+            const initialLoadTime = Number(
+                window.PAGEDOCK_CONFIG?.initialTimestamp ||
+                window.PAGEDOCK_CONFIG?.siteUpdatedAt ||
+                window.PAGEDOCK_CONFIG?.loadedAt ||
+                0
+            );
+            const draftTime = Number(draft.timestamp || 0);
+
+            const isNewer = initialLoadTime === 0 ? draftTime > 0 : draftTime > initialLoadTime;
+            const isDifferent = draft.code !== initialCode;
+
+            if (isNewer && isDifferent) {
+                isInternalUpdate = true;
+                cmEditor.setValue(draft.code);
+                isInternalUpdate = false;
+                setDirty(true);
+
+                state.historyStack.push(draft.code);
+                updateHistoryButtons();
+                postToIframe({ type: 'live-patch', html: draft.code });
+                showToast('Restored unsaved draft from local storage');
+            }
+        } catch (e) {
+            console.error('Failed to restore draft from local storage:', e);
+        }
     }
 
     function syncCodeToPreview() {
@@ -165,6 +267,8 @@
         if (updateIframe) {
             postToIframe({ type: 'live-patch', html: newHtml });
         }
+
+        scheduleDraftAutoSave(1000);
     }
 
     function setDirty(dirty) {
@@ -221,6 +325,9 @@
                 // Request live structure on frame ready
                 postToIframe({ type: 'request-structure' });
                 postToIframe({ type: 'ai-mode', enabled: state.editMode });
+                if (state.isDirty && cmEditor) {
+                    postToIframe({ type: 'live-patch', html: cmEditor.getValue() });
+                }
                 break;
         }
     });
@@ -1122,6 +1229,7 @@
             const data = await res.json();
             if (data.success) {
                 setDirty(false);
+                clearLocalDraft();
                 showToast('[STATUS] Draft saved successfully');
             } else {
                 showToast(`[ERROR] Save failed: ${data.error || 'Server error'}`);
@@ -1136,6 +1244,7 @@
 
     async function publishSite() {
         await saveDraft();
+        clearLocalDraft();
         showToast('[STATUS] Site published live! Changes deployed to CDN.');
     }
 
@@ -1372,6 +1481,7 @@
 
     function init() {
         initCodeMirror();
+        checkAndRestoreDraft();
         initEventListeners();
         renderLibrary();
         updateHistoryButtons();
