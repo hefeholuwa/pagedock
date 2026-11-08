@@ -1417,12 +1417,29 @@
         insertSnippetIntoPage(snippet, name || 'component');
     }
 
+    function bootstrapEmptyPage(snippet) {
+        return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PageDock Site</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  ${snippet}
+</body>
+</html>`;
+    }
+
     function insertSnippetIntoPage(snippet, name) {
         if (!cmEditor) return;
         const currentCode = getHtmlCode();
         
         let updatedCode = currentCode;
-        if (currentCode.includes('</body>')) {
+        if (!currentCode || !currentCode.trim()) {
+            updatedCode = bootstrapEmptyPage(snippet);
+        } else if (currentCode.includes('</body>')) {
             updatedCode = currentCode.replace('</body>', `\n  ${snippet}\n</body>`);
         } else {
             updatedCode = currentCode + '\n' + snippet;

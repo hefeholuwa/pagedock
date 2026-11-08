@@ -66,8 +66,32 @@
     holdNode(e.target);
   }, true);
 
+  function checkEmptyCanvas() {
+    if (!document.body) return;
+    var meaningfulChildren = [];
+    for (var i = 0; i < document.body.children.length; i++) {
+      var ch = document.body.children[i];
+      if (!ch.hasAttribute('data-pagedock-ui') && ['SCRIPT', 'STYLE'].indexOf(ch.tagName) === -1) {
+        meaningfulChildren.push(ch);
+      }
+    }
+    var existing = document.querySelector('.pd-empty-canvas');
+    if (meaningfulChildren.length === 0) {
+      if (!existing) {
+        var emptyBox = document.createElement('div');
+        emptyBox.className = 'pd-empty-canvas';
+        emptyBox.setAttribute('data-pagedock-ui', 'empty-canvas');
+        emptyBox.innerHTML = '<div class="pd-empty-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div><div class="pd-empty-title">Start Building Your Page</div><div class="pd-empty-desc">Drag any section or element from the library into this space</div>';
+        document.body.appendChild(emptyBox);
+      }
+    } else if (existing) {
+      existing.remove();
+    }
+  }
+
   function signalDomReady() {
     initBlockOverlays();
+    checkEmptyCanvas();
     window.parent.postMessage({ type: 'buffer-dom-ready' }, '*');
   }
 

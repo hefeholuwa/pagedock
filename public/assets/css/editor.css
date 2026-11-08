@@ -2300,3 +2300,48 @@ body.hh-editor-body {
     }
 }
 
+/* Empty Canvas Drop Zone (Build from Scratch) */
+.pd-empty-canvas {
+    margin: 40px auto;
+    max-width: 600px;
+    padding: 60px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border: 2px dashed rgba(56, 189, 248, 0.45);
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(8px);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pd-empty-canvas:hover,
+.pd-empty-canvas.dragover {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+    box-shadow: 0 0 24px rgba(56, 189, 248, 0.25);
+}
+
+.pd-empty-icon {
+    color: #38bdf8;
+    margin-bottom: 12px;
+}
+
+.pd-empty-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #f1f5f9;
+    margin-bottom: 6px;
+}
+
+.pd-empty-desc {
+    font-size: 13px;
+    color: #94a3b8;
+    max-width: 320px;
+}
+
+
