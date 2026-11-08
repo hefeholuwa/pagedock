@@ -551,7 +551,32 @@
     }
   });
 
-  // --- 8. Inbound Messages from Parent Window ---
+  // --- 8. Structure Tree Serialization & Dispatch ---
+  function sendStructureTree() {
+    function serializeNode(node) {
+      if (!node || node.nodeType !== 1) return null;
+      if (node.hasAttribute && node.hasAttribute('data-pagedock-ui')) return null;
+      var tag = node.tagName.toLowerCase();
+      if (/^(script|style|meta|link|head)$/i.test(tag)) return null;
+      var children = [];
+      for (var i = 0; i < node.children.length; i++) {
+        var sc = serializeNode(node.children[i]);
+        if (sc) children.push(sc);
+      }
+      return {
+        tag: node.tagName,
+        tagIndex: tagIndex(node),
+        id: node.id || '',
+        className: (node.className && typeof node.className === 'string') ? node.className.trim() : '',
+        text: visibleText(node),
+        children: children
+      };
+    }
+    var tree = serializeNode(document.body);
+    window.parent.postMessage({ type: 'page-structure', tree: tree }, '*');
+  }
+
+  // --- 9. Inbound Messages from Parent Window ---
   window.addEventListener('message', function (e) {
     if (!e.data || typeof e.data !== 'object') return;
     var d = e.data;
@@ -595,11 +620,106 @@
       }
     }
 
-    // Live Streaming Patch
+    // Live Streaming / Full-Document Patch
     if (d.type === 'live-patch') {
-      var target = document.getElementsByTagName(d.tag)[d.tagIndex];
-      if (target && d.html) {
-        target.outerHTML = d.html;
+      if (d.tag !== undefined && d.tag !== null && d.tag !== '') {
+        // Surgical element replacement
+        var target = document.getElementsByTagName(d.tag)[d.tagIndex];
+        if (target && d.html) {
+          target.outerHTML = d.html;
+        }
+      } else if (d.html) {
+        // Full document synchronization
+        try {
+          var parser = new DOMParser();
+          var doc = parser.parseFromString(d.html, 'text/html');
+
+          // 1. Update Document Title
+          if (doc.title) {
+            document.title = doc.title;
+          }
+
+          // 2. Update Head Styles and Links (preserving injected harness assets)
+          if (doc.head && document.head) {
+            // Remove previous user styles
+            var oldStyles = document.head.querySelectorAll('style:not([data-pagedock-ui]):not([data-htmlhost-ui])');
+            for (var sIdx = 0; sIdx < oldStyles.length; sIdx++) {
+              if (oldStyles[sIdx].parentNode) oldStyles[sIdx].parentNode.removeChild(oldStyles[sIdx]);
+            }
+            // Append new user styles
+            var newStyles = doc.head.querySelectorAll('style:not([data-pagedock-ui]):not([data-htmlhost-ui])');
+            for (var nsIdx = 0; nsIdx < newStyles.length; nsIdx++) {
+              var newStyleEl = document.createElement('style');
+              for (var sa = 0; sa < newStyles[nsIdx].attributes.length; sa++) {
+                var sattr = newStyles[nsIdx].attributes[sa];
+                newStyleEl.setAttribute(sattr.name, sattr.value);
+              }
+              newStyleEl.textContent = newStyles[nsIdx].textContent || newStyles[nsIdx].innerHTML;
+              document.head.appendChild(newStyleEl);
+            }
+
+            // Update user stylesheet / external links
+            var oldLinks = document.head.querySelectorAll('link:not([data-pagedock-ui]):not([data-htmlhost-ui])');
+            for (var lIdx = 0; lIdx < oldLinks.length; lIdx++) {
+              if (oldLinks[lIdx].parentNode) oldLinks[lIdx].parentNode.removeChild(oldLinks[lIdx]);
+            }
+            var newLinks = doc.head.querySelectorAll('link:not([data-pagedock-ui]):not([data-htmlhost-ui])');
+            for (var nlIdx = 0; nlIdx < newLinks.length; nlIdx++) {
+              var newLinkEl = document.createElement('link');
+              for (var la = 0; la < newLinks[nlIdx].attributes.length; la++) {
+                var lattr = newLinks[nlIdx].attributes[la];
+                newLinkEl.setAttribute(lattr.name, lattr.value);
+              }
+              document.head.appendChild(newLinkEl);
+            }
+          }
+
+          // 3. Update Body Content & Attributes (preserving injected harness scripts/elements)
+          if (doc.body && document.body) {
+            var preservedUiNodes = [];
+            var uiNodes = document.body.querySelectorAll('[data-pagedock-ui], [data-htmlhost-ui], script[src*="pagedock-harness"]');
+            for (var pIdx = 0; pIdx < uiNodes.length; pIdx++) {
+              preservedUiNodes.push(uiNodes[pIdx]);
+            }
+
+            // Sync body attributes (like classes for styling frameworks)
+            if (doc.body.className) {
+              document.body.className = doc.body.className;
+            }
+            for (var ba = 0; ba < doc.body.attributes.length; ba++) {
+              var bAttr = doc.body.attributes[ba];
+              document.body.setAttribute(bAttr.name, bAttr.value);
+            }
+
+            // Apply new body HTML
+            document.body.innerHTML = doc.body.innerHTML;
+
+            // Re-append preserved harness elements
+            for (var rIdx = 0; rIdx < preservedUiNodes.length; rIdx++) {
+              if (!document.body.contains(preservedUiNodes[rIdx])) {
+                document.body.appendChild(preservedUiNodes[rIdx]);
+              }
+            }
+
+            // Reset inspector selection & editing state
+            if (selectedEl) {
+              selectedEl.style.outline = '';
+              selectedEl.style.outlineOffset = '';
+              selectedEl = null;
+            }
+            hoveredEl = null;
+            editingEl = null;
+            clearSectionHighlight();
+
+            // Mute & silence any new media elements
+            scanMedia(document.body);
+          }
+
+          // 4. Dispatch refreshed structure tree back to parent
+          sendStructureTree();
+        } catch (err) {
+          console.error('[PageDock Harness] Live patch error:', err);
+        }
       }
     }
 
@@ -636,27 +756,7 @@
 
     // Request Structure Tree
     if (d.type === 'request-structure') {
-      function serializeNode(node) {
-        if (!node || node.nodeType !== 1) return null;
-        if (node.hasAttribute && node.hasAttribute('data-pagedock-ui')) return null;
-        var tag = node.tagName.toLowerCase();
-        if (/^(script|style|meta|link|head)$/i.test(tag)) return null;
-        var children = [];
-        for (var i = 0; i < node.children.length; i++) {
-          var sc = serializeNode(node.children[i]);
-          if (sc) children.push(sc);
-        }
-        return {
-          tag: node.tagName,
-          tagIndex: tagIndex(node),
-          id: node.id || '',
-          className: (node.className && typeof node.className === 'string') ? node.className.trim() : '',
-          text: visibleText(node),
-          children: children
-        };
-      }
-      var tree = serializeNode(document.body);
-      window.parent.postMessage({ type: 'page-structure', tree: tree }, '*');
+      sendStructureTree();
     }
   });
 

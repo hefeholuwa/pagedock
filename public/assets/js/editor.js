@@ -149,6 +149,9 @@
             type: 'live-patch',
             html: code
         });
+        postToIframe({
+            type: 'request-structure'
+        });
     }
 
     function updateCodeEditor(newHtml, updateIframe = true) {
@@ -698,11 +701,20 @@
     // 6. DOM STRUCTURE TREE RENDERER (Tab 3)
     // =========================================================================
 
-    function renderStructureTree(nodes) {
+    function renderStructureTree(treeData) {
         if (!dom.treeContainer) return;
         dom.treeContainer.innerHTML = '';
 
-        if (!nodes || nodes.length === 0) {
+        if (!treeData) {
+            dom.treeContainer.innerHTML = '<div class="hh-tree-empty">No semantic nodes detected.</div>';
+            return;
+        }
+
+        const nodes = Array.isArray(treeData)
+            ? treeData
+            : (treeData.children && treeData.children.length ? treeData.children : [treeData]);
+
+        if (nodes.length === 0) {
             dom.treeContainer.innerHTML = '<div class="hh-tree-empty">No semantic nodes detected.</div>';
             return;
         }

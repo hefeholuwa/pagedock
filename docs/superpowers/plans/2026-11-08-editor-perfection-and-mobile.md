@@ -54,24 +54,24 @@ git commit -m "feat(editor): implement mobile-first responsive layout and view s
 - Modify: `public/assets/js/editor.js`
 - Create: `tests/test_editor_live_sync.js`
 
-- [ ] **Step 1: Write the failing live sync test**
+- [x] **Step 1: Write the failing live sync test**
 Create `tests/test_editor_live_sync.js` asserting that:
 1. `pagedock-harness.js` accepts `{ type: 'live-patch', html: '...' }` without requiring `d.tag`.
 2. Full document sync updates title, styles, and body DOM cleanly without destroying the harness.
 3. Debounced typing in CodeMirror dispatches live-patch to iframe.
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 Run: `node tests/test_editor_live_sync.js`  
 Expected: FAIL (harness requires d.tag on live-patch)
 
-- [ ] **Step 3: Implement full-document live patch in `pagedock-harness.js`**
+- [x] **Step 3: Implement full-document live patch in `pagedock-harness.js`**
 Update `live-patch` handler in `public/assets/js/pagedock-harness.js` to parse full document and update body/head DOM when `d.tag` is not specified.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 Run: `node tests/test_editor_live_sync.js`  
 Expected: PASS
 
-- [ ] **Step 5: Git commit**
+- [x] **Step 5: Git commit**
 ```bash
 git add public/assets/js/pagedock-harness.js public/assets/js/editor.js tests/test_editor_live_sync.js
 git commit -m "fix(editor): support full-document live sync in preview harness"
