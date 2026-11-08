@@ -52,6 +52,7 @@
     // DOM Elements Cache
     const dom = {
         topbar: document.getElementById('hh-topbar'),
+        pageSelect: document.getElementById('hh-page-select'),
         undoBtn: document.getElementById('hh-undo-btn'),
         redoBtn: document.getElementById('hh-redo-btn'),
         editModeToggle: document.getElementById('hh-editmode-toggle'),
@@ -508,6 +509,12 @@
 
             case 'page-structure':
                 renderStructureTree(data.tree || []);
+                break;
+
+            case 'navigate-page':
+                if (data.path) {
+                    switchPage(data.path);
+                }
                 break;
 
             case 'iframe-key':
@@ -1003,6 +1010,24 @@
             updateCodeEditor(updatedCode, false);
             showToast('[STATUS] Reordered sections');
         }
+    }
+
+    function switchPage(targetPage) {
+        if (!targetPage) return;
+        const cleanTarget = targetPage.replace(/^\//, '');
+
+        const currentActive = window.PAGEDOCK_CONFIG?.activeFile || 'index.html';
+        if (cleanTarget === currentActive) return;
+
+        if (state.isDirty) {
+            saveDraftToLocalStorage();
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('file', cleanTarget);
+
+        showToast(`[STATUS] Loading page ${cleanTarget}...`);
+        window.location.search = urlParams.toString();
     }
 
     function jumpToElementInCode() {
@@ -2135,6 +2160,16 @@
                         switchFile(fileType);
                     }
                 });
+            });
+        }
+
+        // Multi-page dropdown switcher
+        if (dom.pageSelect) {
+            dom.pageSelect.addEventListener('change', (e) => {
+                const selectedFile = e.target.value;
+                if (selectedFile) {
+                    switchPage(selectedFile);
+                }
             });
         }
 

@@ -472,6 +472,19 @@
         }
       } else {
         e.preventDefault();
+        // Check if internal HTML link (e.g. "about.html", "/about", "contact.html", etc.)
+        var cleanHref = href.split('?')[0].split('#')[0];
+        if (cleanHref && (cleanHref.endsWith('.html') || cleanHref.endsWith('.htm') || (!cleanHref.includes('.') && !cleanHref.startsWith('http') && !cleanHref.startsWith('//') && !cleanHref.startsWith('mailto:') && !cleanHref.startsWith('tel:')))) {
+          var targetPath = cleanHref.replace(/^\//, '');
+          if (!targetPath.endsWith('.html') && !targetPath.endsWith('.htm')) {
+            targetPath = targetPath ? targetPath + '.html' : 'index.html';
+          }
+          window.parent.postMessage({
+            type: 'navigate-page',
+            path: targetPath,
+            href: href
+          }, '*');
+        }
       }
     }
 
