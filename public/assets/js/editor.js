@@ -1794,8 +1794,21 @@
 
         showToast(`[STATUS] Uploading ${fileList.length} file(s)...`);
         let uploaded = 0;
+        const allowedExts = ['png', 'jpg', 'jpeg', 'webp', 'svg', 'gif', 'ico', 'mp4', 'webm', 'pdf'];
+        const maxBytes = 25 * 1024 * 1024; // 25MB
 
         for (const file of fileList) {
+            const ext = (file.name.split('.').pop() || '').toLowerCase();
+            if (!allowedExts.includes(ext)) {
+                showToast(`[ERROR] ${file.name}: unsupported file type. Allowed: ${allowedExts.join(', ')}`);
+                continue;
+            }
+
+            if (file.size > maxBytes) {
+                showToast(`[ERROR] ${file.name} is too large (max 25MB).`);
+                continue;
+            }
+
             const formData = new FormData();
             formData.append('file', file);
 
@@ -1808,7 +1821,7 @@
                 if (data.success) {
                     uploaded++;
                 } else {
-                    showToast(`[ERROR] Failed to upload ${file.name}: ${data.error || 'Server error'}`);
+                    showToast(`[ERROR] ${file.name}: ${data.error || 'Server error'}`);
                 }
             } catch (err) {
                 showToast(`[ERROR] Network error uploading ${file.name}`);

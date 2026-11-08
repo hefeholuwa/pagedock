@@ -516,7 +516,24 @@ class Router {
 
             $uploadedFile = $_FILES['file'] ?? null;
             if (!$uploadedFile || $uploadedFile['error'] !== UPLOAD_ERR_OK) {
-                json_response(['success' => false, 'error' => 'No file uploaded or upload error occurred.'], 400);
+                $errCode = $uploadedFile['error'] ?? null;
+                $iniUploadMax = ini_get('upload_max_filesize') ?: '2M';
+                $iniPostMax = ini_get('post_max_size') ?: '8M';
+
+                if ($errCode === UPLOAD_ERR_INI_SIZE || $errCode === UPLOAD_ERR_FORM_SIZE) {
+                    $errorMsg = "File size exceeds server upload limit (max {$iniUploadMax}).";
+                } elseif ($errCode === UPLOAD_ERR_PARTIAL) {
+                    $errorMsg = "File upload was only partially received.";
+                } elseif ($errCode === UPLOAD_ERR_NO_FILE || empty($_FILES)) {
+                    $errorMsg = "No file received. If the file is large, it may exceed server post_max_size ({$iniPostMax}).";
+                } elseif ($errCode === UPLOAD_ERR_NO_TMP_DIR) {
+                    $errorMsg = "Server temporary upload folder is missing.";
+                } elseif ($errCode === UPLOAD_ERR_CANT_WRITE) {
+                    $errorMsg = "Failed to write uploaded file to disk.";
+                } else {
+                    $errorMsg = "Upload error occurred (code {$errCode}).";
+                }
+                json_response(['success' => false, 'error' => $errorMsg], 400);
                 return;
             }
 
