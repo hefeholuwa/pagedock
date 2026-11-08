@@ -149,9 +149,6 @@
             type: 'live-patch',
             html: code
         });
-        postToIframe({
-            type: 'request-structure'
-        });
     }
 
     function updateCodeEditor(newHtml, updateIframe = true) {
@@ -204,7 +201,7 @@
                 break;
 
             case 'text-edit-start':
-                hidePopovers();
+                hidePopovers(true);
                 break;
 
             case 'page-structure':
@@ -304,7 +301,7 @@
         }
     }
 
-    function hidePopovers() {
+    function hidePopovers(keepSelection = false) {
         if (dom.popoverAnchor) {
             dom.popoverAnchor.classList.add('hidden');
             dom.popoverAnchor.style.display = 'none';
@@ -317,8 +314,10 @@
             dom.directPopover.classList.add('hidden');
             dom.directPopover.style.display = 'none';
         }
-        postToIframe({ type: 'clear-selection' });
-        state.selectedElement = null;
+        if (!keepSelection) {
+            postToIframe({ type: 'clear-selection' });
+            state.selectedElement = null;
+        }
     }
 
     function renderContextualChips(tag) {
@@ -421,40 +420,232 @@
         }
     }
 
-    function handleElementTextEdit(payload) {
-        if (!state.selectedElement || !cmEditor) return;
-        const oldText = state.selectedElement.text;
-        const newText = payload.text;
+    function findTagRangeInHtml(html, targetTag, targetIndex) {
+        if (!html || !targetTag) return null;
+        const tagUpper = targetTag.toUpperCase();
+        const isVoid = /^(AREA|BASE|BR|COL|EMBED|HR|IMG|INPUT|LINK|META|PARAM|SOURCE|TRACK|WBR)$/i.test(tagUpper);
 
-        if (oldText && newText && oldText !== newText) {
-            const currentCode = cmEditor.getValue();
-            const updatedCode = currentCode.replace(oldText, newText);
-            if (updatedCode !== currentCode) {
-                updateCodeEditor(updatedCode, false);
+        const tagPattern = new RegExp(`<(/?)${tagUpper}(?=[\\s>/])`, 'gi');
+        let match;
+        let currentMatchIndex = -1;
+        let foundOpenStart = -1;
+
+        while ((match = tagPattern.exec(html)) !== null) {
+            const isClosing = match[1] === '/';
+            if (!isClosing) {
+                currentMatchIndex++;
+                if (currentMatchIndex === targetIndex) {
+                    foundOpenStart = match.index;
+                    break;
+                }
+            }
+        }
+
+        if (foundOpenStart === -1) return null;
+
+        // Find the matching '>' of this opening tag
+        let openTagEnd = -1;
+        let inQuote = null;
+        for (let i = foundOpenStart; i < html.length; i++) {
+            const ch = html[i];
+            if (inQuote) {
+                if (ch === inQuote) inQuote = null;
+            } else if (ch === '"' || ch === "'") {
+                inQuote = ch;
+            } else if (ch === '>') {
+                openTagEnd = i + 1;
+                break;
+            }
+        }
+
+        if (openTagEnd === -1) return null;
+
+        const openTagContent = html.slice(foundOpenStart, openTagEnd);
+        if (isVoid || /\/\s*>$/.test(openTagContent)) {
+            return {
+                start: foundOpenStart,
+                end: openTagEnd,
+                openTagEnd: openTagEnd,
+                closeTagStart: openTagEnd,
+                outerHTML: openTagContent,
+                innerHTML: ''
+            };
+        }
+
+        // Search matching closing tag taking nested elements of same tag into account
+        let depth = 1;
+        tagPattern.lastIndex = openTagEnd;
+        let elementEnd = -1;
+
+        while ((match = tagPattern.exec(html)) !== null) {
+            const isClosing = match[1] === '/';
+            const tagPos = match.index;
+
+            let thisTagEnd = -1;
+            let q = null;
+            for (let j = tagPos; j < html.length; j++) {
+                const c = html[j];
+                if (q) {
+                    if (c === q) q = null;
+                } else if (c === '"' || c === "'") {
+                    q = c;
+                } else if (c === '>') {
+                    thisTagEnd = j + 1;
+                    break;
+                }
+            }
+            if (thisTagEnd === -1) break;
+
+            const thisTagStr = html.slice(tagPos, thisTagEnd);
+            const thisSelfClosing = /\/\s*>$/.test(thisTagStr);
+
+            if (isClosing) {
+                depth--;
+                if (depth === 0) {
+                    elementEnd = thisTagEnd;
+                    break;
+                }
+            } else if (!thisSelfClosing) {
+                depth++;
+            }
+
+            tagPattern.lastIndex = thisTagEnd;
+        }
+
+        if (elementEnd === -1) {
+            elementEnd = openTagEnd;
+        }
+
+        const outerHTML = html.slice(foundOpenStart, elementEnd);
+        const closeTagMatch = outerHTML.match(new RegExp(`</${tagUpper}\\s*>$`, 'i'));
+        const closeTagStart = closeTagMatch ? elementEnd - closeTagMatch[0].length : elementEnd;
+
+        return {
+            start: foundOpenStart,
+            end: elementEnd,
+            openTagEnd: openTagEnd,
+            closeTagStart: closeTagStart,
+            outerHTML: outerHTML,
+            innerHTML: html.slice(openTagEnd, closeTagStart)
+        };
+    }
+
+    function handleElementTextEdit(payload) {
+        if (!cmEditor || !payload) return;
+        const tag = payload.tag || (state.selectedElement && state.selectedElement.tag);
+        const tagIndex = payload.tagIndex !== undefined ? payload.tagIndex : (state.selectedElement && state.selectedElement.tagIndex);
+        const newText = payload.text !== undefined ? payload.text : '';
+        const currentCode = cmEditor.getValue();
+
+        let updatedCode = null;
+        if (tag !== undefined && tagIndex !== undefined) {
+            const range = findTagRangeInHtml(currentCode, tag, tagIndex);
+            if (range && range.openTagEnd !== undefined && range.closeTagStart !== undefined) {
+                const before = currentCode.slice(0, range.openTagEnd);
+                const after = currentCode.slice(range.closeTagStart);
+                updatedCode = before + newText + after;
+            }
+        }
+
+        if (!updatedCode && state.selectedElement && state.selectedElement.text) {
+            const oldText = state.selectedElement.text;
+            if (oldText !== newText) {
+                updatedCode = currentCode.replace(oldText, newText);
+            }
+        }
+
+        if (updatedCode && updatedCode !== currentCode) {
+            updateCodeEditor(updatedCode, false);
+            if (state.selectedElement) {
+                state.selectedElement.text = newText;
             }
         }
     }
 
     function duplicateSelectedElement() {
         if (!state.selectedElement || !cmEditor) return;
-        const html = state.selectedElement.html;
-        if (!html) return;
-
+        const tag = state.selectedElement.tag;
+        const tagIndex = state.selectedElement.tagIndex;
         const currentCode = cmEditor.getValue();
-        const updatedCode = currentCode.replace(html, html + '\n' + html);
-        updateCodeEditor(updatedCode, true);
+
+        // 1. Dispatch DOM clone operation to preview iframe
+        postToIframe({
+            type: 'duplicate-element',
+            tag: tag,
+            tagIndex: tagIndex
+        });
+
+        // 2. Synchronize CodeMirror accurately by tagIndex
+        let updatedCode = null;
+        if (tag !== undefined && tagIndex !== undefined) {
+            const range = findTagRangeInHtml(currentCode, tag, tagIndex);
+            if (range) {
+                const lineStart = currentCode.lastIndexOf('\n', range.start) + 1;
+                const indentMatch = currentCode.slice(lineStart, range.start).match(/^\s*/);
+                const indent = indentMatch ? indentMatch[0] : '';
+
+                const before = currentCode.slice(0, range.end);
+                const after = currentCode.slice(range.end);
+                updatedCode = before + '\n' + indent + range.outerHTML + after;
+            }
+        }
+
+        if (!updatedCode && state.selectedElement.html) {
+            const html = state.selectedElement.html;
+            updatedCode = currentCode.replace(html, html + '\n' + html);
+        }
+
+        if (updatedCode && updatedCode !== currentCode) {
+            updateCodeEditor(updatedCode, false);
+        }
+
         showToast(`[STATUS] Duplicated <${state.selectedElement.tag.toLowerCase()}>`);
         hidePopovers();
     }
 
     function deleteSelectedElement() {
         if (!state.selectedElement || !cmEditor) return;
-        const html = state.selectedElement.html;
-        if (!html) return;
-
+        const tag = state.selectedElement.tag;
+        const tagIndex = state.selectedElement.tagIndex;
         const currentCode = cmEditor.getValue();
-        const updatedCode = currentCode.replace(html, '');
-        updateCodeEditor(updatedCode, true);
+
+        // 1. Dispatch delete operation to preview iframe
+        postToIframe({
+            type: 'delete-element',
+            tag: tag,
+            tagIndex: tagIndex
+        });
+
+        // 2. Synchronize CodeMirror accurately by tagIndex
+        let updatedCode = null;
+        if (tag !== undefined && tagIndex !== undefined) {
+            const range = findTagRangeInHtml(currentCode, tag, tagIndex);
+            if (range) {
+                let startPos = range.start;
+                let endPos = range.end;
+
+                const lineStart = currentCode.lastIndexOf('\n', startPos) + 1;
+                const lineEnd = currentCode.indexOf('\n', endPos);
+                const prefix = currentCode.slice(lineStart, startPos);
+                const suffix = lineEnd !== -1 ? currentCode.slice(endPos, lineEnd) : currentCode.slice(endPos);
+
+                if (/^\s*$/.test(prefix) && /^\s*$/.test(suffix)) {
+                    startPos = lineStart;
+                    endPos = lineEnd !== -1 ? lineEnd + 1 : currentCode.length;
+                }
+
+                updatedCode = currentCode.slice(0, startPos) + currentCode.slice(endPos);
+            }
+        }
+
+        if (!updatedCode && state.selectedElement.html) {
+            updatedCode = currentCode.replace(state.selectedElement.html, '');
+        }
+
+        if (updatedCode !== null && updatedCode !== currentCode) {
+            updateCodeEditor(updatedCode, false);
+        }
+
         showToast(`[STATUS] Deleted <${state.selectedElement.tag.toLowerCase()}>`);
         hidePopovers();
     }
@@ -463,13 +654,24 @@
         if (!state.selectedElement || !cmEditor) return;
         switchTab('code');
 
-        const html = state.selectedElement.html;
-        if (!html) return;
-
+        const tag = state.selectedElement.tag;
+        const tagIndex = state.selectedElement.tagIndex;
         const text = cmEditor.getValue();
-        const idx = text.indexOf(html.slice(0, 40));
-        if (idx !== -1) {
-            const pos = cmEditor.posFromIndex(idx);
+
+        let targetIndex = -1;
+        if (tag !== undefined && tagIndex !== undefined) {
+            const range = findTagRangeInHtml(text, tag, tagIndex);
+            if (range) {
+                targetIndex = range.start;
+            }
+        }
+
+        if (targetIndex === -1 && state.selectedElement.html) {
+            targetIndex = text.indexOf(state.selectedElement.html.slice(0, 40));
+        }
+
+        if (targetIndex !== -1) {
+            const pos = cmEditor.posFromIndex(targetIndex);
             cmEditor.setCursor(pos);
             cmEditor.scrollIntoView({ from: pos, to: pos }, 100);
             cmEditor.focus();

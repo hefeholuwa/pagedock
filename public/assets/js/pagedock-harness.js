@@ -484,6 +484,17 @@
         e.stopPropagation();
         endTextEdit(false);
       }
+      if (selectedEl) {
+        selectedEl.style.outline = '';
+        selectedEl.style.outlineOffset = '';
+        selectedEl = null;
+      }
+      if (hoveredEl) {
+        hoveredEl.style.outline = '';
+        hoveredEl.style.outlineOffset = '';
+        hoveredEl = null;
+      }
+      clearSectionHighlight();
       window.parent.postMessage({ type: 'dismiss-popovers' }, '*');
       return;
     }
@@ -531,6 +542,17 @@
     var k = (e.key || '').toLowerCase();
     var m = e.metaKey || e.ctrlKey;
     if (k === 'escape') {
+      if (selectedEl) {
+        selectedEl.style.outline = '';
+        selectedEl.style.outlineOffset = '';
+        selectedEl = null;
+      }
+      if (hoveredEl) {
+        hoveredEl.style.outline = '';
+        hoveredEl.style.outlineOffset = '';
+        hoveredEl = null;
+      }
+      clearSectionHighlight();
       window.parent.postMessage({ type: 'iframe-escape' }, '*');
       return;
     }
@@ -609,14 +631,19 @@
     // Direct Patch Element
     if (d.type === 'patch-element') {
       var els = document.getElementsByTagName(d.tag);
-      if (els && els[d.tagIndex]) {
-        els[d.tagIndex].outerHTML = d.html;
-        if (selectedEl) {
+      var target = els && els[d.tagIndex];
+      if (target) {
+        if (d.html !== undefined) {
+          target.outerHTML = d.html;
+        } else if (d.text !== undefined) {
+          target.textContent = d.text;
+        }
+        if (selectedEl && d.html !== undefined) {
           selectedEl.style.outline = '';
           selectedEl.style.outlineOffset = '';
           selectedEl = null;
+          clearSectionHighlight();
         }
-        clearSectionHighlight();
       }
     }
 
@@ -633,6 +660,19 @@
         try {
           var parser = new DOMParser();
           var doc = parser.parseFromString(d.html, 'text/html');
+
+          // 0. Synchronize documentElement attributes (class, data-theme, lang, dir)
+          if (doc.documentElement && document.documentElement) {
+            var rootAttrs = ['class', 'data-theme', 'lang', 'dir'];
+            for (var raIdx = 0; raIdx < rootAttrs.length; raIdx++) {
+              var attrName = rootAttrs[raIdx];
+              if (doc.documentElement.hasAttribute(attrName)) {
+                document.documentElement.setAttribute(attrName, doc.documentElement.getAttribute(attrName));
+              } else {
+                document.documentElement.removeAttribute(attrName);
+              }
+            }
+          }
 
           // 1. Update Document Title
           if (doc.title) {
@@ -682,13 +722,13 @@
               preservedUiNodes.push(uiNodes[pIdx]);
             }
 
-            // Sync body attributes (like classes for styling frameworks)
-            if (doc.body.className) {
-              document.body.className = doc.body.className;
-            }
+            // Sync body className properly when empty
+            document.body.className = doc.body.className || '';
             for (var ba = 0; ba < doc.body.attributes.length; ba++) {
               var bAttr = doc.body.attributes[ba];
-              document.body.setAttribute(bAttr.name, bAttr.value);
+              if (bAttr.name !== 'class') {
+                document.body.setAttribute(bAttr.name, bAttr.value);
+              }
             }
 
             // Apply new body HTML
@@ -739,7 +779,51 @@
         selectedEl.style.outlineOffset = '';
         selectedEl = null;
       }
+      if (hoveredEl) {
+        hoveredEl.style.outline = '';
+        hoveredEl.style.outlineOffset = '';
+        hoveredEl = null;
+      }
       clearSectionHighlight();
+    }
+
+    // Duplicate Element
+    if (d.type === 'duplicate-element') {
+      var els = document.getElementsByTagName(d.tag);
+      var target = els && els[d.tagIndex];
+      if (target && target.parentNode) {
+        var clone = target.cloneNode(true);
+        clone.style.outline = '';
+        clone.style.outlineOffset = '';
+        clone.removeAttribute('contenteditable');
+        if (target.nextSibling) {
+          target.parentNode.insertBefore(clone, target.nextSibling);
+        } else {
+          target.parentNode.appendChild(clone);
+        }
+        scanMedia(clone);
+        if (selectedEl) {
+          selectedEl.style.outline = '';
+          selectedEl.style.outlineOffset = '';
+          selectedEl = null;
+        }
+        clearSectionHighlight();
+        sendStructureTree();
+      }
+    }
+
+    // Delete Element
+    if (d.type === 'delete-element') {
+      var els = document.getElementsByTagName(d.tag);
+      var target = els && els[d.tagIndex];
+      if (target && target.parentNode) {
+        target.parentNode.removeChild(target);
+        if (selectedEl === target) {
+          selectedEl = null;
+        }
+        clearSectionHighlight();
+        sendStructureTree();
+      }
     }
 
     // Begin Text Edit
