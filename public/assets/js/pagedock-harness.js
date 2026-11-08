@@ -1156,6 +1156,13 @@
   document.addEventListener('touchend', onPointerUp, true);
   document.addEventListener('touchcancel', onPointerUp, true);
 
+  // Suppress native browser link/image drag ghost showing URL pill inside preview canvas
+  document.addEventListener('dragstart', function (e) {
+    if (!e.target.closest || !e.target.closest('.pd-tool-drag')) {
+      e.preventDefault();
+    }
+  }, false);
+
   // --- 5c. Library Component Drag & Drop to Canvas ---
   var libraryDragTarget = null;
 
