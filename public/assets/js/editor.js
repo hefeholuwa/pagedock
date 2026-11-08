@@ -7,11 +7,25 @@
     'use strict';
 
     // Global Editor State
+    const savedAiEdit = (() => {
+        try {
+            const v = localStorage.getItem('pagedock_ai_edit');
+            return v !== null ? v === '1' : false;
+        } catch (_) { return false; }
+    })();
+
+    const savedEditMode = (() => {
+        try {
+            const v = localStorage.getItem('pagedock_edit_mode');
+            return v !== null ? v === '1' : true;
+        } catch (_) { return true; }
+    })();
+
     const state = {
         slug: window.PAGEDOCK_CONFIG?.slug || '',
         activeFile: window.PAGEDOCK_CONFIG?.activeFile || 'index.html',
-        editMode: true,           // Visual selection mode on/off
-        aiEdit: true,             // Popover mode: true = AI prompt, false = Direct element edit
+        editMode: savedEditMode,  // Visual selection mode on/off
+        aiEdit: savedAiEdit,      // Popover mode: true = AI prompt, false = Direct element edit
         activeTab: 'code',        // 'code' | 'library' | 'structure' | 'shared'
         activeLibView: 'sections',// 'sections' | 'elements'
         currentDevice: 'desktop', // 'desktop' | 'tablet' | 'mobile'
@@ -531,6 +545,7 @@
                 break;
 
             case 'navigate-page':
+                hidePopovers();
                 if (data.path) {
                     const cleanPath = data.path.replace(/^\//, '');
                     const knownFiles = window.PAGEDOCK_CONFIG?.htmlFiles || ['index.html'];
@@ -575,6 +590,9 @@
 
     function handleElementSelected(payload) {
         if (!state.editMode) return;
+        // Never open popovers while any modal overlay is visible
+        const activeModal = document.querySelector('.hh-modal-overlay:not(.hidden)');
+        if (activeModal) return;
         state.selectedElement = payload;
 
         const tag = (payload.tag || 'DIV').toUpperCase();
@@ -1661,6 +1679,9 @@
 
     function toggleEditMode() {
         state.editMode = !state.editMode;
+        try {
+            localStorage.setItem('pagedock_edit_mode', state.editMode ? '1' : '0');
+        } catch (_) {}
         if (dom.editModeToggle) {
             dom.editModeToggle.classList.toggle('active', state.editMode);
         }
@@ -1673,6 +1694,9 @@
 
     function toggleAiEditMode() {
         state.aiEdit = !state.aiEdit;
+        try {
+            localStorage.setItem('pagedock_ai_edit', state.aiEdit ? '1' : '0');
+        } catch (_) {}
         if (dom.aiEditToggle) {
             dom.aiEditToggle.classList.toggle('active', state.aiEdit);
             dom.aiEditToggle.setAttribute('aria-checked', state.aiEdit ? 'true' : 'false');
@@ -2310,6 +2334,7 @@
 
     function openAddPageModal(prefillTitle = '', prefillFilename = '', prefillLayout = 'inherit') {
         if (!dom.addPageModal) return;
+        hidePopovers();
         closeAllModals();
 
         userEditedFilename = !!prefillFilename;
@@ -2395,6 +2420,7 @@
 
     function closeAllModals() {
         document.querySelectorAll('.hh-modal-overlay').forEach(m => m.classList.add('hidden'));
+        hidePopovers();
     }
 
     // =========================================================================
@@ -2817,6 +2843,19 @@
         initCodeMirror();
         checkAndRestoreDraft();
         initEventListeners();
+
+        // Sync initial state with topbar controls
+        if (dom.aiEditToggle) {
+            dom.aiEditToggle.classList.toggle('active', state.aiEdit);
+            dom.aiEditToggle.setAttribute('aria-checked', state.aiEdit ? 'true' : 'false');
+        }
+        if (dom.editModeToggle) {
+            dom.editModeToggle.classList.toggle('active', state.editMode);
+        }
+        if (dom.editModeLabel) {
+            dom.editModeLabel.textContent = state.editMode ? 'Edit Mode On' : 'Edit Mode Off';
+        }
+
         renderLibrary();
         updateHistoryButtons();
         updateQuotaDisplay();

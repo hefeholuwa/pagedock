@@ -266,3 +266,4 @@ git commit -m "feat(editor): intercept canvas links to non-existent pages with a
 - [ ] **Step 2: Test creating `about.html` and `contact.html` on `everyday-imports-storefront`**
 - [ ] **Step 3: Verify clean URL serving `http://localhost:8080/s/everyday-imports-storefront/about`**
 - [ ] **Step 4: Final verification and commit**
+

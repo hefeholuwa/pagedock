@@ -917,6 +917,7 @@
         if (targetNode) {
           e.preventDefault();
           targetNode.scrollIntoView({ behavior: 'smooth' });
+          return;
         }
       } else {
         e.preventDefault();
@@ -932,6 +933,7 @@
             path: targetPath,
             href: href
           }, '*');
+          return;
         }
       }
     }
