@@ -135,6 +135,34 @@
   window.__aiEnabled = true;
   var currentModel = { provider: '', model: '', label: '' };
   var dragState = null;
+  var dragPotential = null;
+  var dropIndicator = null;
+
+  function ensureDropIndicator() {
+    if (!dropIndicator || !dropIndicator.parentNode) {
+      dropIndicator = document.createElement('div');
+      dropIndicator.setAttribute('data-pagedock-ui', 'drop-indicator');
+      dropIndicator.className = 'pagedock-drop-indicator';
+      dropIndicator.style.cssText = 'position: absolute; height: 3px; background: linear-gradient(90deg, #38bdf8, #818cf8); pointer-events: none; z-index: 999999; display: none; box-shadow: 0 0 8px rgba(56, 189, 248, 0.8); border-radius: 2px;';
+      document.body.appendChild(dropIndicator);
+    }
+    return dropIndicator;
+  }
+
+  function hideDropIndicator() {
+    if (dropIndicator) {
+      dropIndicator.style.display = 'none';
+    }
+  }
+
+  function showDropIndicator(rect, position) {
+    var ind = ensureDropIndicator();
+    var top = position === 'before' ? (rect.top + window.scrollY) : (rect.bottom + window.scrollY - 3);
+    ind.style.top = top + 'px';
+    ind.style.left = (rect.left + window.scrollX) + 'px';
+    ind.style.width = rect.width + 'px';
+    ind.style.display = 'block';
+  }
 
   function isInert(el) {
     if (!el || el.nodeType !== 1) return true;
@@ -538,6 +566,98 @@
     if (editingEl && e.target === editingEl) {
       endTextEdit(true);
     }
+  }, true);
+
+  // --- 5b. Section Drag-and-Drop Reordering ---
+  document.addEventListener('mousedown', function (e) {
+    if (!aiEnabled || isInert(e.target) || e.button !== 0) return;
+    if (editingEl) return;
+    var sec = findSection(e.target);
+    if (sec && sec !== document.body) {
+      dragPotential = {
+        startX: e.clientX,
+        startY: e.clientY,
+        sourceSec: sec,
+        startTime: Date.now()
+      };
+    }
+  }, true);
+
+  document.addEventListener('mousemove', function (e) {
+    if (dragPotential && !dragState) {
+      var dx = Math.abs(e.clientX - dragPotential.startX);
+      var dy = Math.abs(e.clientY - dragPotential.startY);
+      if (dx > 8 || dy > 8) {
+        dragState = {
+          active: true,
+          sourceSec: dragPotential.sourceSec
+        };
+        dragState.sourceSec.style.opacity = '0.5';
+      }
+    }
+
+    if (dragState && dragState.active) {
+      e.preventDefault();
+      var under = document.elementFromPoint(e.clientX, e.clientY);
+      if (under && !isInert(under)) {
+        var targetSec = findSection(under);
+        if (targetSec && targetSec !== dragState.sourceSec && targetSec.parentNode === dragState.sourceSec.parentNode) {
+          var rect = targetSec.getBoundingClientRect();
+          var midY = rect.top + rect.height / 2;
+          var pos = e.clientY < midY ? 'before' : 'after';
+          dragState.targetSec = targetSec;
+          dragState.position = pos;
+          showDropIndicator(rect, pos);
+          return;
+        }
+      }
+      hideDropIndicator();
+      dragState.targetSec = null;
+    }
+  }, true);
+
+  document.addEventListener('mouseup', function (e) {
+    if (dragState && dragState.active) {
+      e.preventDefault();
+      e.stopPropagation();
+      dragState.sourceSec.style.opacity = '';
+      hideDropIndicator();
+
+      if (dragState.targetSec && dragState.sourceSec) {
+        var src = dragState.sourceSec;
+        var tgt = dragState.targetSec;
+        var pos = dragState.position;
+
+        var sourceTag = src.tagName;
+        var sourceIndex = tagIndex(src);
+        var targetTag = tgt.tagName;
+        var targetIndex = tagIndex(tgt);
+
+        // Perform DOM reorder in preview
+        if (pos === 'before') {
+          tgt.parentNode.insertBefore(src, tgt);
+        } else {
+          tgt.parentNode.insertBefore(src, tgt.nextSibling);
+        }
+
+        // Notify parent editor to reorder in CodeMirror
+        window.parent.postMessage({
+          type: 'element-reorder',
+          sourceTag: sourceTag,
+          sourceIndex: sourceIndex,
+          targetTag: targetTag,
+          targetIndex: targetIndex,
+          position: pos
+        }, '*');
+
+        sendStructureTree();
+      }
+
+      dragState = null;
+      dragPotential = null;
+      return;
+    }
+    dragPotential = null;
   }, true);
 
   // --- 6. Form Preview Interception ---

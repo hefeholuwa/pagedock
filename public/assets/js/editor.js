@@ -498,6 +498,10 @@
                 handleElementTextEdit(data);
                 break;
 
+            case 'element-reorder':
+                handleElementReorder(data);
+                break;
+
             case 'text-edit-start':
                 hidePopovers(true);
                 break;
@@ -963,6 +967,42 @@
 
         showToast(`[STATUS] Deleted <${state.selectedElement.tag.toLowerCase()}>`);
         hidePopovers();
+    }
+
+    function handleElementReorder(payload) {
+        if (!cmEditor || !payload) return;
+        const { sourceTag, sourceIndex, targetTag, targetIndex, position } = payload;
+        const currentCode = getHtmlCode();
+
+        const srcRange = findTagRangeInHtml(currentCode, sourceTag, sourceIndex);
+        const tgtRange = findTagRangeInHtml(currentCode, targetTag, targetIndex);
+
+        if (!srcRange || !tgtRange) return;
+
+        const srcOuter = srcRange.outerHTML;
+
+        // Remove source block from currentCode
+        let codeWithoutSrc = currentCode.slice(0, srcRange.start) + currentCode.slice(srcRange.end);
+
+        // Adjust targetIndex if target is same tag and after source
+        const adjustedTgtIndex = (sourceTag === targetTag && sourceIndex < targetIndex)
+            ? targetIndex - 1
+            : targetIndex;
+
+        const reTgtRange = findTagRangeInHtml(codeWithoutSrc, targetTag, adjustedTgtIndex);
+        if (!reTgtRange) return;
+
+        let updatedCode = '';
+        if (position === 'before') {
+            updatedCode = codeWithoutSrc.slice(0, reTgtRange.start) + srcOuter + '\n\n' + codeWithoutSrc.slice(reTgtRange.start);
+        } else {
+            updatedCode = codeWithoutSrc.slice(0, reTgtRange.end) + '\n\n' + srcOuter + codeWithoutSrc.slice(reTgtRange.end);
+        }
+
+        if (updatedCode && updatedCode !== currentCode) {
+            updateCodeEditor(updatedCode, false);
+            showToast('[STATUS] Reordered sections');
+        }
     }
 
     function jumpToElementInCode() {
