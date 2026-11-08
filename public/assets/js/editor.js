@@ -130,6 +130,13 @@
         formsModal: document.getElementById('hh-forms-modal'),
         formsCountBadge: document.getElementById('hh-forms-count-badge'),
         formsContainer: document.getElementById('hh-forms-container'),
+        addPageBtn: document.getElementById('hh-add-page-btn'),
+        addPageModal: document.getElementById('hh-add-page-modal'),
+        addPageForm: document.getElementById('hh-add-page-form'),
+        newPageTitle: document.getElementById('hh-new-page-title'),
+        newPageFilename: document.getElementById('hh-new-page-filename'),
+        newPageLayout: document.getElementById('hh-new-page-layout'),
+        createPageSubmit: document.getElementById('hh-create-page-submit'),
         toolFormatCode: document.getElementById('tool-format-code'),
         toolCleanHtml: document.getElementById('tool-clean-html'),
         toolRevisions: document.getElementById('tool-revisions'),
@@ -2283,6 +2290,100 @@
         dom.formsContainer.innerHTML = html;
     }
 
+    function slugifyPageTitle(title) {
+        let clean = (title || '').toLowerCase().trim();
+        clean = clean.replace(/[^a-z0-9_-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+        if (!clean) clean = 'page-' + Date.now().toString().slice(-4);
+        return clean.endsWith('.html') ? clean : clean + '.html';
+    }
+
+    let userEditedFilename = false;
+
+    function openAddPageModal(prefillTitle = '', prefillFilename = '', prefillLayout = 'inherit') {
+        if (!dom.addPageModal) return;
+        closeAllModals();
+
+        userEditedFilename = !!prefillFilename;
+
+        let filename = prefillFilename;
+        if (!filename && prefillTitle) {
+            filename = slugifyPageTitle(prefillTitle);
+        }
+
+        if (dom.newPageTitle) dom.newPageTitle.value = prefillTitle || '';
+        if (dom.newPageFilename) dom.newPageFilename.value = filename || '';
+        if (dom.newPageLayout) dom.newPageLayout.value = prefillLayout || 'inherit';
+
+        dom.addPageModal.classList.remove('hidden');
+        setTimeout(() => {
+            if (dom.newPageTitle) dom.newPageTitle.focus();
+        }, 50);
+    }
+
+    async function handleAddPageSubmit(e) {
+        if (e) e.preventDefault();
+        if (!window.PAGEDOCK_CONFIG?.pagesUrl) {
+            showToast('[ERROR] Pages API not configured.');
+            return;
+        }
+
+        const title = (dom.newPageTitle?.value || '').trim();
+        let filename = (dom.newPageFilename?.value || '').trim();
+        const layout = dom.newPageLayout?.value || 'inherit';
+
+        if (!title && !filename) {
+            showToast('[ERROR] Please enter a page title or filename.');
+            return;
+        }
+
+        if (!filename) {
+            filename = slugifyPageTitle(title);
+        }
+        if (!filename.endsWith('.html') && !filename.endsWith('.htm')) {
+            filename += '.html';
+        }
+
+        const submitBtn = dom.createPageSubmit;
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating...';
+        }
+
+        try {
+            const res = await fetch(window.PAGEDOCK_CONFIG.pagesUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: title || filename.replace(/\.html?$/i, ''),
+                    filename: filename,
+                    layout: layout,
+                    sourceFile: window.PAGEDOCK_CONFIG?.activeFile || 'index.html'
+                })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                showToast(`[STATUS] Page ${data.file} created successfully!`);
+                closeAllModals();
+
+                if (window.PAGEDOCK_CONFIG?.htmlFiles && !window.PAGEDOCK_CONFIG.htmlFiles.includes(data.file)) {
+                    window.PAGEDOCK_CONFIG.htmlFiles.push(data.file);
+                }
+
+                switchPage(data.file);
+            } else {
+                showToast(`[ERROR] ${data.error || 'Failed to create page.'}`);
+            }
+        } catch (err) {
+            showToast(`[ERROR] Network error creating page: ${err.message}`);
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Page';
+            }
+        }
+    }
+
     function closeAllModals() {
         document.querySelectorAll('.hh-modal-overlay').forEach(m => m.classList.add('hidden'));
     }
@@ -2361,10 +2462,44 @@
         if (dom.pageSelect) {
             dom.pageSelect.addEventListener('change', (e) => {
                 const selectedFile = e.target.value;
+                if (selectedFile === '__new__') {
+                    dom.pageSelect.value = window.PAGEDOCK_CONFIG?.activeFile || 'index.html';
+                    openAddPageModal();
+                    return;
+                }
                 if (selectedFile) {
                     switchPage(selectedFile);
                 }
             });
+        }
+
+        // Add page button & modal controls
+        if (dom.addPageBtn) {
+            dom.addPageBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                openAddPageModal();
+            });
+        }
+
+        if (dom.newPageTitle) {
+            dom.newPageTitle.addEventListener('input', (e) => {
+                if (!userEditedFilename && dom.newPageFilename) {
+                    dom.newPageFilename.value = slugifyPageTitle(e.target.value);
+                }
+            });
+        }
+
+        if (dom.newPageFilename) {
+            dom.newPageFilename.addEventListener('input', () => {
+                userEditedFilename = dom.newPageFilename.value.trim().length > 0;
+            });
+        }
+
+        if (dom.addPageForm) {
+            dom.addPageForm.addEventListener('submit', handleAddPageSubmit);
+        }
+        if (dom.createPageSubmit) {
+            dom.createPageSubmit.addEventListener('click', handleAddPageSubmit);
         }
 
         // Library Subtabs
