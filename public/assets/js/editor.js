@@ -517,6 +517,10 @@
                 }
                 break;
 
+            case 'library-drop':
+                handleLibraryDrop(data);
+                break;
+
             case 'iframe-key':
                 handleIframeKeyboard(data);
                 break;
@@ -1224,6 +1228,7 @@
                 cat.items.forEach(item => {
                     const card = document.createElement('div');
                     card.className = 'hh-lib-item-card';
+                    card.draggable = true;
                     card.innerHTML = `
                         <div class="hh-lib-item-icon">§</div>
                         <div class="hh-lib-item-info">
@@ -1231,6 +1236,14 @@
                             <div class="hh-lib-item-desc">${item.desc}</div>
                         </div>
                     `;
+                    card.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('text/plain', item.snippet);
+                        e.dataTransfer.setData('application/json', JSON.stringify({
+                            name: item.name,
+                            snippet: item.snippet
+                        }));
+                        e.dataTransfer.effectAllowed = 'copy';
+                    });
                     card.addEventListener('click', () => insertSnippetIntoPage(item.snippet, item.name));
                     grid.appendChild(card);
                 });
@@ -1254,12 +1267,21 @@
                 cat.items.forEach(item => {
                     const card = document.createElement('div');
                     card.className = 'hh-lib-item-card';
+                    card.draggable = true;
                     card.innerHTML = `
                         <div class="hh-lib-item-icon">&lt;&gt;</div>
                         <div class="hh-lib-item-info">
                             <div class="hh-lib-item-title">${item.name}</div>
                         </div>
                     `;
+                    card.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('text/plain', item.snippet);
+                        e.dataTransfer.setData('application/json', JSON.stringify({
+                            name: item.name,
+                            snippet: item.snippet
+                        }));
+                        e.dataTransfer.effectAllowed = 'copy';
+                    });
                     card.addEventListener('click', () => insertSnippetIntoPage(item.snippet, item.name));
                     grid.appendChild(card);
                 });
@@ -1268,6 +1290,30 @@
                 dom.libElementsContainer.appendChild(group);
             });
         }
+    }
+
+    function handleLibraryDrop(data) {
+        if (!cmEditor || !data || !data.snippet) return;
+        const { snippet, name, targetTag, targetIndex, position } = data;
+        const currentCode = getHtmlCode();
+
+        if (targetTag && targetIndex !== null && targetIndex !== undefined) {
+            const tgtRange = findTagRangeInHtml(currentCode, targetTag, targetIndex);
+            if (tgtRange) {
+                let updatedCode = '';
+                if (position === 'before') {
+                    updatedCode = currentCode.slice(0, tgtRange.start) + snippet + '\n\n' + currentCode.slice(tgtRange.start);
+                } else {
+                    updatedCode = currentCode.slice(0, tgtRange.end) + '\n\n' + snippet + currentCode.slice(tgtRange.end);
+                }
+                updateCodeEditor(updatedCode, false);
+                showToast(`[STATUS] Inserted ${name || 'component'}`);
+                return;
+            }
+        }
+
+        // Fallback: append before </body>
+        insertSnippetIntoPage(snippet, name || 'component');
     }
 
     function insertSnippetIntoPage(snippet, name) {

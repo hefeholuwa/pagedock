@@ -673,6 +673,77 @@
     dragPotential = null;
   }, true);
 
+  // --- 5c. Library Component Drag & Drop to Canvas ---
+  var libraryDragTarget = null;
+
+  document.addEventListener('dragover', function (e) {
+    e.preventDefault();
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'copy';
+    }
+    var under = document.elementFromPoint(e.clientX, e.clientY);
+    if (under && !isInert(under)) {
+      var sec = findSection(under);
+      if (sec && sec !== document.body) {
+        var rect = sec.getBoundingClientRect();
+        var midY = rect.top + rect.height / 2;
+        var pos = e.clientY < midY ? 'before' : 'after';
+        showDropIndicator(rect, pos);
+        libraryDragTarget = {
+          targetTag: sec.tagName,
+          targetIndex: tagIndex(sec),
+          position: pos
+        };
+        return;
+      }
+    }
+    hideDropIndicator();
+    libraryDragTarget = null;
+  });
+
+  document.addEventListener('dragleave', function (e) {
+    if (!e.relatedTarget) {
+      hideDropIndicator();
+      libraryDragTarget = null;
+    }
+  });
+
+  document.addEventListener('drop', function (e) {
+    e.preventDefault();
+    hideDropIndicator();
+    var snippet = '';
+    var name = 'Component';
+    var rawJson = '';
+    try {
+      rawJson = e.dataTransfer.getData('application/json');
+    } catch (err) {}
+
+    if (rawJson) {
+      try {
+        var parsed = JSON.parse(rawJson);
+        snippet = parsed.snippet || '';
+        name = parsed.name || 'Component';
+      } catch (err) {}
+    }
+    if (!snippet) {
+      try {
+        snippet = e.dataTransfer.getData('text/plain') || '';
+      } catch (err) {}
+    }
+
+    if (snippet) {
+      window.parent.postMessage({
+        type: 'library-drop',
+        name: name,
+        snippet: snippet,
+        targetTag: libraryDragTarget ? libraryDragTarget.targetTag : null,
+        targetIndex: libraryDragTarget ? libraryDragTarget.targetIndex : null,
+        position: libraryDragTarget ? libraryDragTarget.position : 'append'
+      }, '*');
+    }
+    libraryDragTarget = null;
+  });
+
   // --- 6. Form Preview Interception ---
   document.addEventListener('submit', function (e) {
     e.preventDefault();
