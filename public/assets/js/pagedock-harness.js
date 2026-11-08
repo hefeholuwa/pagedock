@@ -818,8 +818,11 @@
       var target = els && els[d.tagIndex];
       if (target && target.parentNode) {
         target.parentNode.removeChild(target);
-        if (selectedEl === target) {
+        if (selectedEl && (selectedEl === target || (target.contains && target.contains(selectedEl)))) {
           selectedEl = null;
+        }
+        if (hoveredEl && (hoveredEl === target || (target.contains && target.contains(hoveredEl)))) {
+          hoveredEl = null;
         }
         clearSectionHighlight();
         sendStructureTree();
@@ -828,7 +831,9 @@
 
     // Begin Text Edit
     if (d.type === 'begin-text-edit') {
-      var te = document.getElementsByTagName(d.tag)[d.tagIndex];
+      var te = (d.tag && d.tagIndex !== undefined)
+        ? (document.getElementsByTagName(d.tag) && document.getElementsByTagName(d.tag)[d.tagIndex])
+        : selectedEl;
       if (te && isTextOnly(te)) {
         editingEl = te;
         editingOriginalText = (te.textContent || '');

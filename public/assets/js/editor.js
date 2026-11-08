@@ -389,10 +389,24 @@
                 });
 
                 // 2. Synchronize Code Editor
-                if (cmEditor && state.selectedElement.html) {
+                if (cmEditor && state.selectedElement) {
                     const currentCode = cmEditor.getValue();
-                    const updatedCode = currentCode.replace(state.selectedElement.html, data.html);
-                    if (updatedCode !== currentCode) {
+                    const tag = state.selectedElement.tag;
+                    const tagIndex = state.selectedElement.tagIndex;
+                    let updatedCode = null;
+
+                    if (tag !== undefined && tagIndex !== undefined) {
+                        const range = findTagRangeInHtml(currentCode, tag, tagIndex);
+                        if (range) {
+                            updatedCode = currentCode.slice(0, range.start) + data.html + currentCode.slice(range.end);
+                        }
+                    }
+
+                    if (!updatedCode && state.selectedElement.html) {
+                        updatedCode = currentCode.replace(state.selectedElement.html, data.html);
+                    }
+
+                    if (updatedCode !== null && updatedCode !== currentCode) {
                         updateCodeEditor(updatedCode, false);
                     }
                 }
@@ -652,7 +666,9 @@
 
     function jumpToElementInCode() {
         if (!state.selectedElement || !cmEditor) return;
+        setMobileView('code');
         switchTab('code');
+        hidePopovers(true);
 
         const tag = state.selectedElement.tag;
         const tagIndex = state.selectedElement.tagIndex;
@@ -1251,8 +1267,16 @@
 
         if (dom.directInlineEditBtn) {
             dom.directInlineEditBtn.addEventListener('click', () => {
-                postToIframe({ type: 'begin-text-edit' });
-                hidePopovers();
+                if (state.selectedElement) {
+                    postToIframe({
+                        type: 'begin-text-edit',
+                        tag: state.selectedElement.tag,
+                        tagIndex: state.selectedElement.tagIndex
+                    });
+                } else {
+                    postToIframe({ type: 'begin-text-edit' });
+                }
+                hidePopovers(true);
             });
         }
 
