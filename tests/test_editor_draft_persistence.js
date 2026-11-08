@@ -278,8 +278,8 @@ test('editor.js contains localStorage draft persistence functions and storage ke
         'editor.js must format draft keys using "pagedock_draft_" prefix with slug and file'
     );
     assert(
-        editorJsContent.includes('Restored unsaved draft from local storage'),
-        'editor.js must contain recovery toast message: "Restored unsaved draft from local storage"'
+        editorJsContent.includes('Restored unsaved draft') && editorJsContent.includes('from local storage'),
+        'editor.js must contain recovery toast message: "Restored unsaved draft ... from local storage"'
     );
     assert(
         editorJsContent.includes('localStorage'),
@@ -299,7 +299,7 @@ test('Keystroke changes in CodeMirror are auto-saved to localStorage under paged
 
     vm.runInNewContext(editorJsContent, env.sandbox);
 
-    const draftKey = 'pagedock_draft_alpha-site_landing.html';
+    const draftKey = 'pagedock_draft_alpha-site_html';
     assert.strictEqual(env.localStorage.getItem(draftKey), null, 'localStorage should initially have no draft');
 
     // Trigger typing change
@@ -323,6 +323,7 @@ test('Keystroke changes in CodeMirror are auto-saved to localStorage under paged
     assert.strictEqual(draft.code, updatedCode, 'Saved draft must contain current CodeMirror code');
     assert.strictEqual(draft.slug, 'alpha-site', 'Draft must contain correct slug');
     assert.strictEqual(draft.file, 'landing.html', 'Draft must contain correct file');
+    assert.strictEqual(draft.type, 'html', 'Draft must contain correct file type');
     assert(typeof draft.timestamp === 'number' && draft.timestamp > 0, 'Draft must contain timestamp number');
 });
 
@@ -337,7 +338,7 @@ test('Multiple rapid keystrokes within debounce window only trigger single auto-
     });
 
     vm.runInNewContext(editorJsContent, env.sandbox);
-    const draftKey = 'pagedock_draft_beta-site_index.html';
+    const draftKey = 'pagedock_draft_beta-site_html';
 
     // Keystroke 1 at t=0
     env.triggerKeystroke('<p>Base A</p>');
@@ -373,7 +374,7 @@ test('On editor init, if local draft exists, is newer than initial load and has 
     const storage = new MockLocalStorage();
     const slug = 'gamma-site';
     const activeFile = 'index.html';
-    const draftKey = `pagedock_draft_${slug}_${activeFile}`;
+    const draftKey = `pagedock_draft_${slug}_html`;
 
     const serverHtml = '<html><body><h1>Server Stored HTML</h1></body></html>';
     const recoveredHtml = '<html><body><h1>Unsaved Restored Work From Crash</h1></body></html>';
@@ -383,6 +384,7 @@ test('On editor init, if local draft exists, is newer than initial load and has 
         code: recoveredHtml,
         timestamp: 1050000,
         slug,
+        type: 'html',
         file: activeFile
     }));
 
@@ -406,7 +408,7 @@ test('On editor init, if local draft exists, is newer than initial load and has 
     // 2. Recovery toast notification must be shown
     const toastEl = env.elements['hh-toast'];
     assert(
-        toastEl && toastEl.textContent.includes('Restored unsaved draft from local storage'),
+        toastEl && toastEl.textContent.includes('Restored unsaved draft') && toastEl.textContent.includes('from local storage'),
         `Toast should display recovery message. Got: "${toastEl ? toastEl.textContent : ''}"`
     );
 
@@ -425,7 +427,7 @@ test('On editor init, if local draft is older than server copy or identical, it 
     const storage = new MockLocalStorage();
     const slug = 'delta-site';
     const activeFile = 'index.html';
-    const draftKey = `pagedock_draft_${slug}_${activeFile}`;
+    const draftKey = `pagedock_draft_${slug}_html`;
     const serverHtml = '<header>Canonical Server Header</header>';
 
     // Case A: Draft is OLDER than server copy (e.g. server was updated from another device)
@@ -433,6 +435,7 @@ test('On editor init, if local draft is older than server copy or identical, it 
         code: '<header>Old Stale Draft</header>',
         timestamp: 900000, // Older than initialTimestamp 1,000,000
         slug,
+        type: 'html',
         file: activeFile
     }));
 
@@ -462,6 +465,7 @@ test('On editor init, if local draft is older than server copy or identical, it 
         code: serverHtml,
         timestamp: 1050000,
         slug,
+        type: 'html',
         file: activeFile
     }));
 
@@ -498,7 +502,7 @@ test('When user clicks Save Draft, localStorage draft is cleared/marked clean', 
     });
 
     vm.runInNewContext(editorJsContent, env.sandbox);
-    const draftKey = 'pagedock_draft_save-site_index.html';
+    const draftKey = 'pagedock_draft_save-site_html';
 
     // Type new changes and wait for auto-save debounce
     env.triggerKeystroke('<main>New Saved Code</main>');
@@ -533,7 +537,7 @@ test('When user clicks Publish, localStorage draft is cleared/marked clean', asy
     });
 
     vm.runInNewContext(editorJsContent, env.sandbox);
-    const draftKey = 'pagedock_draft_publish-site_index.html';
+    const draftKey = 'pagedock_draft_publish-site_html';
 
     // Type changes and wait for debounce
     env.triggerKeystroke('<main>Published Changes</main>');
