@@ -1,0 +1,35 @@
+# PageDock Root Apache Configuration for Shared Hosting / cPanel (InfinityFree)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Block direct access to sensitive directories and dotfiles
+    RewriteRule ^(\.git|\.env|\.agents|tests|src|config|data|storage|scripts|graphify-out) - [F,L,NC]
+    RewriteRule ^(\.htaccess|\.htpasswd|_redirects) - [F,L,NC]
+
+    # If request is already pointing to public/, handle it normally
+    RewriteCond %{REQUEST_URI} ^/public/ [NC]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^public/(.*)$ public/index.php [QSA,L]
+
+    # If the requested asset exists inside public/, transparently rewrite to public/
+    RewriteCond %{DOCUMENT_ROOT}/public/$1 -f [OR]
+    RewriteCond %{DOCUMENT_ROOT}/public/$1 -d
+    RewriteRule ^(.*)$ public/$1 [L]
+
+    # Route all other web requests through public/index.php
+    RewriteRule ^(.*)$ public/index.php [QSA,L]
+</IfModule>
+
+# Security Headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Disable Directory Browsing
+Options -Indexes
+

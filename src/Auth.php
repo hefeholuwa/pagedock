@@ -76,16 +76,47 @@ class Auth {
 
     public static function logout(): void {
         unset($_SESSION['user_id']);
-        session_destroy();
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_destroy();
+        }
+    }
+
+    /**
+     * Get validated active guest claim tokens that actually exist in the database.
+     * Prunes dead or already-claimed tokens from the session.
+     * 
+     * @return array List of valid claim tokens
+     */
+    public static function getActiveGuestTokens(): array {
+        if (empty($_SESSION['guest_claim_tokens']) || !is_array($_SESSION['guest_claim_tokens'])) {
+            return [];
+        }
+
+        $tokens = array_values(array_unique(array_filter($_SESSION['guest_claim_tokens'])));
+        if (empty($tokens)) {
+            $_SESSION['guest_claim_tokens'] = [];
+            return [];
+        }
+
+        $db = Database::getConnection();
+        $placeholders = implode(',', array_fill(0, count($tokens), '?'));
+        $stmt = $db->prepare("SELECT claim_token FROM sites WHERE user_id IS NULL AND claim_token IN ($placeholders)");
+        $stmt->execute($tokens);
+        $validTokens = $stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
+
+        // Prune session tokens so stale/deleted sites don't linger
+        $_SESSION['guest_claim_tokens'] = $validTokens;
+
+        return $validTokens;
     }
 
     /**
      * Link any anonymous sites created with this browser session's claim tokens to the user
      */
     public static function claimSessionSites(int $userId): void {
-        if (!empty($_SESSION['guest_claim_tokens']) && is_array($_SESSION['guest_claim_tokens'])) {
+        $tokens = self::getActiveGuestTokens();
+        if (!empty($tokens)) {
             $db = Database::getConnection();
-            $tokens = $_SESSION['guest_claim_tokens'];
             $in = str_repeat('?,', count($tokens) - 1) . '?';
             $params = array_merge([$userId], $tokens);
 

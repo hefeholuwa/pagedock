@@ -6,3 +6,21 @@ sites/*
 !data/.gitkeep
 .DS_Store
 *.log
+
+# Environment & Credentials
+.env
+.env.local
+.env.production
+.env.development
+!.env.example
+
+# Storage, Local Databases & Uploads
+storage/
+*.sqlite
+*.sqlite-*
+*.db
+*.zip
+overflow_repro.png
+graphify-out/
+__pycache__/
+*.pyc

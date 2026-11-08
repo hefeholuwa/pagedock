@@ -44,6 +44,13 @@ class SiteManager {
             return ['success' => false, 'error' => 'Could not create site directory on disk.'];
         }
 
+        // Automatically bind demo or template form placeholders to the allocated site slug
+        $html = str_replace(
+            ['/api/forms/demo', '/api/forms/YOUR-SLUG', '/api/forms/YOUR_SLUG'],
+            url('api/forms/' . $slug),
+            $html
+        );
+
         $entryFile = 'index.html';
         $filePath = $siteDir . '/' . $entryFile;
         file_put_contents($filePath, $html);
@@ -64,6 +71,13 @@ class SiteManager {
             VALUES (?, ?, ?, ?, ?, 1, ?)
         ");
         $stmt->execute([$userId, $claimToken, $slug, $title, $entryFile, $size]);
+        $siteId = (int)$db->lastInsertId();
+
+        // Automatically decouple inlined styles/scripts into physical files
+        self::decoupleAssets($slug, $entryFile, false);
+
+        // Create immutable v1 snapshot
+        $version = VersionManager::createSnapshot($siteId, $slug, 'Initial HTML deployment');
 
         // Track claim token in guest session
         if (!$userId) {
@@ -75,6 +89,7 @@ class SiteManager {
             'slug' => $slug,
             'title' => $title,
             'claim_token' => $claimToken,
+            'version' => $version,
             'url' => url('s/' . $slug)
         ];
     }
@@ -174,6 +189,10 @@ class SiteManager {
             VALUES (?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->execute([$userId, $claimToken, $slug, $title, $entryFile, $fileCount, $totalBytes]);
+        $siteId = (int)$db->lastInsertId();
+
+        // Create immutable v1 snapshot
+        $version = VersionManager::createSnapshot($siteId, $slug, 'Initial ZIP archive deployment');
 
         if (!$userId) {
             $_SESSION['guest_claim_tokens'][] = $claimToken;
@@ -184,6 +203,7 @@ class SiteManager {
             'slug' => $slug,
             'title' => $title,
             'claim_token' => $claimToken,
+            'version' => $version,
             'url' => url('s/' . $slug)
         ];
     }
@@ -199,23 +219,27 @@ class SiteManager {
     }
 
     /**
-     * Read the entry HTML content for a site
+     * Read the entry HTML content for a site (or specific relative HTML file)
      */
-    public static function getSiteHtml(string $slug): ?string {
+    public static function getSiteHtml(string $slug, ?string $relPath = null): ?string {
         $site = self::getSite($slug);
         if (!$site) return null;
 
-        $path = SITES_DIR . '/' . $slug . '/' . ($site['entry_file'] ?: 'index.html');
-        if (file_exists($path)) {
-            return file_get_contents($path);
+        $siteDir = realpath(SITES_DIR . '/' . $slug);
+        if (!$siteDir) return null;
+
+        $targetFile = $relPath ?: ($site['entry_file'] ?: 'index.html');
+        $targetPath = realpath($siteDir . '/' . ltrim($targetFile, '/'));
+        if ($targetPath && str_starts_with($targetPath, $siteDir) && file_exists($targetPath)) {
+            return file_get_contents($targetPath);
         }
         return null;
     }
 
     /**
-     * Update the HTML content of a site
+     * Update multiple site files atomically in a single operation
      */
-    public static function updateSiteHtml(string $slug, string $htmlContent): array {
+    public static function updateSiteFiles(string $slug, array $files, ?string $summary = null): array {
         $site = self::getSite($slug);
         if (!$site) {
             return ['success' => false, 'error' => 'Site not found.'];
@@ -225,17 +249,241 @@ class SiteManager {
             return ['success' => false, 'error' => 'Unauthorized to edit this site.'];
         }
 
-        $siteDir = SITES_DIR . '/' . $slug;
-        $entryFile = $site['entry_file'] ?: 'index.html';
-        $filePath = $siteDir . '/' . $entryFile;
+        $siteDir = realpath(SITES_DIR . '/' . $slug);
+        if (!$siteDir || !is_dir($siteDir)) {
+            return ['success' => false, 'error' => 'Site directory missing.'];
+        }
 
-        file_put_contents($filePath, $htmlContent);
+        $savedFiles = [];
+        foreach ($files as $relPath => $content) {
+            if (!is_string($relPath) || !is_string($content)) continue;
+            $cleanRel = ltrim($relPath, '/');
+            $targetPath = $siteDir . '/' . $cleanRel;
+
+            // Security traversal check
+            $realParent = realpath(dirname($targetPath));
+            if ($realParent && !str_starts_with($realParent, $siteDir)) {
+                continue;
+            }
+
+            $parent = dirname($targetPath);
+            if (!is_dir($parent)) {
+                mkdir($parent, 0755, true);
+            }
+
+            file_put_contents($targetPath, $content);
+            $savedFiles[] = $cleanRel;
+        }
+
+        if (empty($savedFiles)) {
+            return ['success' => false, 'error' => 'No valid files provided to save.'];
+        }
+
+        $allFiles = scandir($siteDir);
+        $realFiles = array_filter($allFiles, fn($f) => !in_array($f, ['.', '..', '.snapshots']));
+        $totalBytes = 0;
+        foreach ($realFiles as $rf) {
+            $p = $siteDir . '/' . $rf;
+            if (is_file($p)) $totalBytes += filesize($p);
+        }
 
         $db = Database::getConnection();
-        $stmt = $db->prepare("UPDATE sites SET updated_at = CURRENT_TIMESTAMP, total_size_bytes = ? WHERE id = ?");
-        $stmt->execute([filesize($filePath), $site['id']]);
+        $stmt = $db->prepare("UPDATE sites SET file_count = ?, total_size_bytes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
+        $stmt->execute([count($realFiles), $totalBytes, $site['id']]);
 
-        return ['success' => true, 'slug' => $slug];
+        // Create immutable revision snapshot
+        $snapshotSummary = $summary ?: ("Web Editor save (" . implode(', ', $savedFiles) . ")");
+        $version = VersionManager::createSnapshot((int)$site['id'], $slug, $snapshotSummary);
+
+        return [
+            'success' => true,
+            'slug' => $slug,
+            'files' => $savedFiles,
+            'version' => $version
+        ];
+    }
+
+    /**
+     * Update the HTML content of a site (or specific relative HTML file)
+     */
+    public static function updateSiteHtml(string $slug, string $htmlContent, ?string $relPath = null): array {
+        $targetRel = $relPath ?: 'index.html';
+        return self::updateSiteFiles($slug, [$targetRel => $htmlContent], "HTML update (" . basename($targetRel) . ") via Web Editor");
+    }
+
+    /**
+     * Decouple inlined <style> and <script> tags from an HTML file into physical style.css and script.js on disk.
+     *
+     * @param string $slug Site slug
+     * @param string $relFile Relative HTML file (defaults to 'index.html')
+     * @param bool $createSnapshot Whether to record an immutable version snapshot
+     * @return array Decoupling operation result
+     */
+    public static function decoupleAssets(string $slug, string $relFile = 'index.html', bool $createSnapshot = true): array {
+        $site = self::getSite($slug);
+        if (!$site) {
+            return ['success' => false, 'error' => 'Site not found.'];
+        }
+
+        $siteDir = realpath(SITES_DIR . '/' . $slug);
+        if (!$siteDir || !is_dir($siteDir)) {
+            return ['success' => false, 'error' => 'Site directory missing.'];
+        }
+
+        $targetRel = $relFile ?: ($site['entry_file'] ?: 'index.html');
+        $targetPath = $siteDir . '/' . ltrim($targetRel, '/');
+        if (!file_exists($targetPath) || !is_file($targetPath)) {
+            return ['success' => false, 'error' => 'HTML file not found.'];
+        }
+
+        // Security check
+        $realFile = realpath($targetPath);
+        if ($realFile && !str_starts_with($realFile, $siteDir)) {
+            return ['success' => false, 'error' => 'Invalid file path.'];
+        }
+
+        $html = file_get_contents($targetPath);
+        if ($html === false) {
+            return ['success' => false, 'error' => 'Could not read HTML file.'];
+        }
+
+        $cssDecoupled = false;
+        $jsDecoupled = false;
+
+        // 1. Extract inlined <style> tags
+        preg_match_all('/<style\b[^>]*>(.*?)<\/style>/is', $html, $styleMatches);
+        $extractedCss = [];
+        if (!empty($styleMatches[1])) {
+            foreach ($styleMatches[1] as $rawBlock) {
+                $trimmed = trim($rawBlock);
+                if ($trimmed !== '') {
+                    $extractedCss[] = $trimmed;
+                }
+            }
+        }
+
+        $cssRelPath = 'style.css';
+        $cssDiskPath = $siteDir . '/' . $cssRelPath;
+        if (!empty($extractedCss)) {
+            $combinedCss = implode("\n\n", $extractedCss);
+            if (file_exists($cssDiskPath)) {
+                $existingCss = file_get_contents($cssDiskPath);
+                if (!str_contains($existingCss, $combinedCss)) {
+                    file_put_contents($cssDiskPath, rtrim($existingCss) . "\n\n/* Inlined styles decoupled from {$targetRel} */\n" . $combinedCss . "\n");
+                }
+            } else {
+                file_put_contents($cssDiskPath, "/* style.css — Decoupled from {$targetRel} */\n\n" . $combinedCss . "\n");
+            }
+
+            // Check if HTML already links to style.css
+            $hasCssLink = (bool)preg_match('/<link\b[^>]*\bhref=["\']\S*style\.css["\'][^>]*>/i', $html);
+            $replacedFirst = false;
+
+            $html = preg_replace_callback('/<style\b[^>]*>.*?<\/style>/is', function($matches) use (&$replacedFirst, $hasCssLink, $cssRelPath) {
+                if (!$hasCssLink && !$replacedFirst) {
+                    $replacedFirst = true;
+                    return '<link rel="stylesheet" href="' . $cssRelPath . '">';
+                }
+                return '';
+            }, $html);
+
+            if (!$hasCssLink && !$replacedFirst) {
+                if (str_contains($html, '</head>')) {
+                    $html = str_replace('</head>', "    <link rel=\"stylesheet\" href=\"{$cssRelPath}\">\n</head>", $html);
+                } else {
+                    $html = "<link rel=\"stylesheet\" href=\"{$cssRelPath}\">\n" . $html;
+                }
+            }
+            $cssDecoupled = true;
+        }
+
+        // 2. Extract inlined <script> tags (excluding external src= and application/ld+json / application/json)
+        preg_match_all('/<script\b(?![^>]*\bsrc=)(?![^>]*\btype=["\']application\/(ld\+)?json["\'])[^>]*>(.*?)<\/script>/is', $html, $scriptMatches);
+        $extractedJs = [];
+        if (!empty($scriptMatches[2])) {
+            foreach ($scriptMatches[2] as $rawJs) {
+                $trimmed = trim($rawJs);
+                if ($trimmed !== '') {
+                    $extractedJs[] = $trimmed;
+                }
+            }
+        }
+
+        $jsRelPath = 'script.js';
+        $jsDiskPath = $siteDir . '/' . $jsRelPath;
+        if (!empty($extractedJs)) {
+            $combinedJs = implode("\n\n", $extractedJs);
+            if (file_exists($jsDiskPath)) {
+                $existingJs = file_get_contents($jsDiskPath);
+                if (!str_contains($existingJs, $combinedJs)) {
+                    file_put_contents($jsDiskPath, rtrim($existingJs) . "\n\n// Inlined scripts decoupled from {$targetRel}\n" . $combinedJs . "\n");
+                }
+            } else {
+                file_put_contents($jsDiskPath, "/* script.js — Decoupled from {$targetRel} */\n\n" . $combinedJs . "\n");
+            }
+
+            // Check if HTML already links to script.js
+            $hasJsLink = (bool)preg_match('/<script\b[^>]*\bsrc=["\']\S*script\.js["\'][^>]*><\/script>/i', $html);
+            $totalMatches = count($scriptMatches[0]);
+            $matchIndex = 0;
+
+            $html = preg_replace_callback('/<script\b(?![^>]*\bsrc=)(?![^>]*\btype=["\']application\/(ld\+)?json["\'])[^>]*>.*?<\/script>/is', function($matches) use (&$matchIndex, $totalMatches, $hasJsLink, $jsRelPath) {
+                $matchIndex++;
+                if (!$hasJsLink && $matchIndex === $totalMatches) {
+                    return '<script src="' . $jsRelPath . '"></script>';
+                }
+                return '';
+            }, $html);
+
+            if (!$hasJsLink && $matchIndex === 0) {
+                if (str_contains($html, '</body>')) {
+                    $html = str_replace('</body>', "    <script src=\"{$jsRelPath}\"></script>\n</body>", $html);
+                } else {
+                    $html .= "\n<script src=\"{$jsRelPath}\"></script>";
+                }
+            }
+            $jsDecoupled = true;
+        }
+
+        if ($cssDecoupled || $jsDecoupled) {
+            // Clean up excessive blank lines
+            $html = preg_replace("/\n{3,}/", "\n\n", $html);
+            file_put_contents($targetPath, $html);
+
+            // Update file count and total size in DB
+            $allFiles = scandir($siteDir);
+            $realFiles = array_filter($allFiles, fn($f) => !in_array($f, ['.', '..', '.snapshots']));
+            $totalBytes = 0;
+            foreach ($realFiles as $rf) {
+                $p = $siteDir . '/' . $rf;
+                if (is_file($p)) $totalBytes += filesize($p);
+            }
+
+            $db = Database::getConnection();
+            $stmt = $db->prepare("UPDATE sites SET file_count = ?, total_size_bytes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
+            $stmt->execute([count($realFiles), $totalBytes, $site['id']]);
+
+            $version = null;
+            if ($createSnapshot) {
+                $desc = "Decoupled inlined assets (" . implode(', ', array_filter([$cssDecoupled ? 'style.css' : '', $jsDecoupled ? 'script.js' : ''])) . ")";
+                $version = VersionManager::createSnapshot((int)$site['id'], $slug, $desc);
+            }
+
+            return [
+                'success' => true,
+                'decoupled' => true,
+                'css_created' => $cssDecoupled,
+                'js_created' => $jsDecoupled,
+                'version' => $version
+            ];
+        }
+
+        return [
+            'success' => true,
+            'decoupled' => false,
+            'css_created' => false,
+            'js_created' => false
+        ];
     }
 
     /**
@@ -266,16 +514,23 @@ class SiteManager {
         $db = Database::getConnection();
         $userId = Auth::id();
 
+        $selectSql = "
+            SELECT s.*, 
+                   (SELECT COUNT(*) FROM form_submissions WHERE site_id = s.id AND is_spam = 0) as forms_count,
+                   (SELECT COUNT(*) FROM form_submissions WHERE site_id = s.id AND is_spam = 1) as spam_count
+            FROM sites s
+        ";
+
         if ($userId) {
-            $stmt = $db->prepare("SELECT * FROM sites WHERE user_id = ? ORDER BY created_at DESC");
+            $stmt = $db->prepare($selectSql . " WHERE s.user_id = ? ORDER BY s.created_at DESC");
             $stmt->execute([$userId]);
             return $stmt->fetchAll();
         }
 
-        $tokens = $_SESSION['guest_claim_tokens'] ?? [];
+        $tokens = Auth::getActiveGuestTokens();
         if (!empty($tokens)) {
             $in = str_repeat('?,', count($tokens) - 1) . '?';
-            $stmt = $db->prepare("SELECT * FROM sites WHERE claim_token IN ($in) ORDER BY created_at DESC");
+            $stmt = $db->prepare($selectSql . " WHERE s.claim_token IN ($in) ORDER BY s.created_at DESC");
             $stmt->execute($tokens);
             return $stmt->fetchAll();
         }
@@ -290,6 +545,66 @@ class SiteManager {
         $db = Database::getConnection();
         $stmt = $db->prepare("UPDATE sites SET views_count = views_count + 1 WHERE id = ?");
         $stmt->execute([$siteId]);
+    }
+
+    /**
+     * Apply targeted AI patch to an HTML element fragment
+     */
+    public static function applyElementAiPatch(string $elementHtml, string $instruction): string {
+        $instr = strtolower(trim($instruction));
+        
+        // 1. Text changes
+        if (preg_match('/(?:change text to|set text to|rename to|say|title)\s+["\']?([^"\']+)["\']?/i', $instruction, $m)) {
+            $newText = htmlspecialchars(trim($m[1]));
+            return preg_replace('/>(.*?)</s', '>' . $newText . '<', $elementHtml, 1) ?: $elementHtml;
+        }
+
+        // 2. Hover effect / hover state
+        if (str_contains($instr, 'hover state') || str_contains($instr, 'hover effect') || str_contains($instr, 'hover')) {
+            if (str_contains($elementHtml, 'style="')) {
+                return preg_replace('/style="([^"]*)"/', 'style="$1; transition: all 0.25s ease; cursor: pointer;" onmouseover="this.style.transform=\'translateY(-2px) scale(1.02)\'; this.style.boxShadow=\'0 8px 24px rgba(125,211,252,0.35)\'" onmouseout="this.style.transform=\'\'; this.style.boxShadow=\'\'"', $elementHtml);
+            } else {
+                return preg_replace('/<([a-z0-9]+)/i', '<$1 style="transition: all 0.25s ease; cursor: pointer;" onmouseover="this.style.transform=\'translateY(-2px) scale(1.02)\'; this.style.boxShadow=\'0 8px 24px rgba(125,211,252,0.35)\'" onmouseout="this.style.transform=\'\'; this.style.boxShadow=\'\'"', $elementHtml, 1);
+            }
+        }
+
+        // 3. Make larger / make smaller
+        if (str_contains($instr, 'larger') || str_contains($instr, 'big')) {
+            if (str_contains($elementHtml, 'style="')) {
+                return preg_replace('/style="([^"]*)"/', 'style="$1; font-size: 1.25em; padding: 14px 28px;"', $elementHtml);
+            } else {
+                return preg_replace('/<([a-z0-9]+)/i', '<$1 style="font-size: 1.25em; padding: 14px 28px;"', $elementHtml, 1);
+            }
+        }
+
+        // 4. Change colors / dark gradient
+        if (str_contains($instr, 'gradient') || str_contains($instr, 'color') || str_contains($instr, 'dark')) {
+            $grad = 'background: linear-gradient(135deg, #0ea5e9, #38bdf8); color: #041421; font-weight: 600; border: none; border-radius: 8px;';
+            if (str_contains($instr, 'dark')) {
+                $grad = 'background: linear-gradient(135deg, #0b0f17, #1e293b); color: #7dd3fc; border: 1px solid #334155; border-radius: 8px;';
+            }
+            if (str_contains($elementHtml, 'style="')) {
+                return preg_replace('/style="([^"]*)"/', 'style="$1; ' . $grad . '"', $elementHtml);
+            } else {
+                return preg_replace('/<([a-z0-9]+)/i', '<$1 style="' . $grad . '"', $elementHtml, 1);
+            }
+        }
+
+        // 5. Make bolder
+        if (str_contains($instr, 'bold') || str_contains($instr, 'bolder')) {
+            if (str_contains($elementHtml, 'style="')) {
+                return preg_replace('/style="([^"]*)"/', 'style="$1; font-weight: 700;"', $elementHtml);
+            } else {
+                return preg_replace('/<([a-z0-9]+)/i', '<$1 style="font-weight: 700;"', $elementHtml, 1);
+            }
+        }
+
+        // Default graceful enhancement: apply modern styling touch
+        if (str_contains($elementHtml, 'style="')) {
+            return preg_replace('/style="([^"]*)"/', 'style="$1; box-shadow: 0 4px 14px rgba(0,0,0,0.15);"', $elementHtml);
+        } else {
+            return preg_replace('/<([a-z0-9]+)/i', '<$1 style="box-shadow: 0 4px 14px rgba(0,0,0,0.15);"', $elementHtml, 1);
+        }
     }
 
     /**

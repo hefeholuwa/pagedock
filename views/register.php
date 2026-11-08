@@ -5,11 +5,22 @@
             <p class="text-muted">Start hosting static HTML with zero friction.</p>
         </div>
 
+        <?php 
+        $activeClaimTokens = Auth::getActiveGuestTokens();
+        if (!empty($activeClaimTokens)): 
+        ?>
+            <div class="alert alert-info" style="background:rgba(199,245,71,0.08); border:1px solid rgba(199,245,71,0.3); color:#C7F547; border-radius:8px; padding:12px; margin-bottom:16px; font-size:13px;">
+                You have <strong><?= count($activeClaimTokens) ?> deployed site(s)</strong> waiting in this session. Create your account to claim and manage them permanently!
+            </div>
+        <?php endif; ?>
+
         <?php if (!empty($error)): ?>
             <div class="alert alert-error"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
         <form action="<?= url('register') ?>" method="POST" class="auth-form">
+            <input type="hidden" name="redirect" value="<?= htmlspecialchars($redirect ?? 'dashboard') ?>">
+
             <div class="form-group">
                 <label for="name">Your Name</label>
                 <input type="text" name="name" id="name" placeholder="John Doe" class="input-text">
@@ -29,7 +40,7 @@
         </form>
 
         <p class="auth-footer-text">
-            Already have an account? <a href="<?= url('login') ?>" class="accent-link">Sign in</a>
+            Already have an account? <a href="<?= url('login' . (!empty($redirect) && $redirect !== 'dashboard' ? '?redirect=' . urlencode($redirect) : '')) ?>" class="accent-link">Sign in</a>
         </p>
     </div>
 </div>

@@ -1,0 +1,35 @@
+# PageDock Production Web Server Rewrite Rules
+# Apache / LiteSpeed / cPanel Compatibility
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Block direct access to hidden files and directories (.env, .git, .htmlhost, etc.)
+    RewriteRule (^\.|/\.) - [F,L]
+
+    # Block public access to internal Netlify _redirects configuration files
+    RewriteRule _redirects$ - [F,L]
+
+    # If the request matches an existing static file or directory in public/, serve directly
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Forward all other requests to index.php, preserving the original query string
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>
+
+# Security & Content Delivery Headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    <FilesMatch "\.(css|js)$">
+        Header set Cache-Control "max-age=86400, public, must-revalidate"
+    </FilesMatch>
+</IfModule>
+
+# Disable Directory Browsing
+Options -Indexes
+
