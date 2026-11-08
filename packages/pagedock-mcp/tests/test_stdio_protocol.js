@@ -21,6 +21,7 @@ async function testStdioProtocol() {
     let buffer = '';
     let initReceived = false;
     let toolsReceived = false;
+    let callReceived = false;
     let stderrOutput = '';
 
     const timeout = setTimeout(() => {
@@ -117,6 +118,31 @@ async function testStdioProtocol() {
             toolsReceived = true;
             console.log('PASS: All 10 tools present in tools/list response');
 
+            // Send tools/call request (id = 3) to verify end-to-end tool execution over stdio
+            const callToolRequest = JSON.stringify({
+              jsonrpc: '2.0',
+              id: 3,
+              method: 'tools/call',
+              params: {
+                name: 'list_sites',
+                arguments: {},
+              },
+            }) + '\n';
+            child.stdin.write(callToolRequest);
+          } catch (err) {
+            clearTimeout(timeout);
+            child.kill();
+            return reject(err);
+          }
+        } else if (msg.id === 3) {
+          try {
+            assert.equal(msg.jsonrpc, '2.0', 'JSON-RPC version must be 2.0');
+            assert(msg.result, 'tools/call response must contain result');
+            assert(Array.isArray(msg.result.content), 'tools/call result.content must be array');
+            assert.equal(msg.result.content[0]?.type, 'text');
+            callReceived = true;
+            console.log('PASS: tools/call execution verified over stdio');
+
             // Close stdin to test clean exit
             child.stdin.end();
           } catch (err) {
@@ -138,6 +164,7 @@ async function testStdioProtocol() {
       try {
         assert.equal(initReceived, true, 'MCP initialize exchange must have completed');
         assert.equal(toolsReceived, true, 'MCP tools/list exchange must have completed');
+        assert.equal(callReceived, true, 'MCP tools/call exchange must have completed');
         assert.equal(code, 0, `Expected clean exit with code 0, got code ${code} (signal: ${signal})`);
         assert(
           !stderrOutput.includes('UnhandledPromiseRejection') &&

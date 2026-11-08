@@ -23,7 +23,10 @@ async function main() {
 }
 
 // Clean signal handling
+let isShuttingDown = false;
 const shutdown = async () => {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
   try {
     await server.close();
   } catch {

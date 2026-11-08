@@ -7,6 +7,10 @@
   "bin": {
     "pagedock-mcp": "./src/index.js"
   },
+  "files": [
+    "src",
+    "README.md"
+  ],
   "scripts": {
     "start": "node ./src/index.js",
     "test": "node tests/test_mcp_client.js && node tests/test_deploy_tools.js && node tests/test_patch_tools.js && node tests/test_insights_tools.js && node tests/test_stdio_protocol.js"
