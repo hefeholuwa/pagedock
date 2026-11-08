@@ -29,15 +29,24 @@
                 <span class="hh-badge-tag">PROJECT</span>
                 <span class="hh-badge-dot">&middot;</span>
                 <span class="hh-project-title" id="hh-project-title" title="Click to rename"><?= htmlspecialchars($site['title']) ?></span>
-                <?php if (!empty($htmlFiles) && count($htmlFiles) > 1): ?>
+                
+                <div class="hh-page-group">
                     <select id="hh-page-select" class="hh-page-switcher" title="Switch active page">
-                        <?php foreach ($htmlFiles as $f): ?>
+                        <?php 
+                        $filesToList = !empty($htmlFiles) ? $htmlFiles : ['index.html'];
+                        foreach ($filesToList as $f): 
+                        ?>
                             <option value="<?= htmlspecialchars($f) ?>" <?= ($f === ($activeFile ?? 'index.html')) ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($f) ?>
                             </option>
                         <?php endforeach; ?>
+                        <option value="__new__">+ Add New Page...</option>
                     </select>
-                <?php endif; ?>
+                    <button type="button" id="hh-add-page-btn" class="hh-btn-add-page" title="Create New Page">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                        <span>Page</span>
+                    </button>
+                </div>
             </div>
 
             <div class="hh-history-group">
@@ -595,6 +604,44 @@
         </div>
     </div>
 
+    <!-- Add Page Modal -->
+    <div id="hh-add-page-modal" class="hh-modal-overlay hidden" data-modal="add-page">
+        <div class="hh-modal-box">
+            <div class="hh-modal-header">
+                <h3>Add New Page</h3>
+                <button type="button" class="hh-modal-close" data-close-modal="add-page">&times;</button>
+            </div>
+            <div class="hh-modal-body">
+                <form id="hh-add-page-form" onsubmit="return false;">
+                    <div class="hh-form-group">
+                        <label for="hh-new-page-title">Page Title</label>
+                        <input type="text" id="hh-new-page-title" class="hh-input" placeholder="e.g. About Us, Contact, Pricing" required autofocus autocomplete="off">
+                    </div>
+                    <div class="hh-form-group">
+                        <label for="hh-new-page-filename">Filename / URL Slug</label>
+                        <div class="hh-input-slug-wrap">
+                            <span class="hh-slug-prefix">/</span>
+                            <input type="text" id="hh-new-page-filename" class="hh-input" placeholder="about.html" required autocomplete="off">
+                        </div>
+                        <span class="hh-input-hint">Will resolve to Clean URL e.g. /about</span>
+                    </div>
+                    <div class="hh-form-group">
+                        <label for="hh-new-page-layout">Layout Template</label>
+                        <select id="hh-new-page-layout" class="hh-select">
+                            <option value="inherit" selected>Inherit Site Layout (Shared Header, Footer &amp; Styles)</option>
+                            <option value="clone">Clone Current Page (<?= htmlspecialchars($activeFile ?? 'index.html') ?>)</option>
+                            <option value="blank">Blank HTML5 Canvas</option>
+                        </select>
+                    </div>
+                    <div class="hh-modal-actions">
+                        <button type="button" class="hh-btn-secondary" data-close-modal="add-page">Cancel</button>
+                        <button type="submit" id="hh-create-page-submit" class="hh-btn-primary">Create Page</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="hh-toast" class="hh-toast hidden"></div>
 
@@ -615,6 +662,9 @@
             mediaUrl: '<?= url('api/sites/' . $site['slug'] . '/media') . $editorTokenQuery ?>',
             mediaDeleteUrl: '<?= url('api/sites/' . $site['slug'] . '/media/delete') . $editorTokenQuery ?>',
             formsUrl: '<?= url('api/sites/' . $site['slug'] . '/forms') . $editorTokenQuery ?>',
+            pagesUrl: '<?= url('api/sites/' . $site['slug'] . '/pages') . $editorTokenQuery ?>',
+            pagesDeleteUrl: '<?= url('api/sites/' . $site['slug'] . '/pages/delete') . $editorTokenQuery ?>',
+            htmlFiles: <?= json_encode(!empty($htmlFiles) ? $htmlFiles : ['index.html']) ?>,
             activeFile: '<?= addslashes($activeFile ?? 'index.html') ?>',
             currentVersion: <?= (int)($site['current_version'] ?? 1) ?>,
             initialTimestamp: <?= (int)(strtotime($site['updated_at'] ?? $site['created_at'] ?? 'now') * 1000) ?>,

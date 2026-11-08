@@ -2360,4 +2360,65 @@ body.hh-editor-body {
     max-width: 320px;
 }
 
+/* Page Switcher & Add Page Controls */
+.hh-page-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 6px;
+}
+
+.hh-btn-add-page {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 24px;
+    padding: 0 8px;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: #38bdf8;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.hh-btn-add-page:hover {
+    background: rgba(56, 189, 248, 0.22);
+    border-color: #38bdf8;
+    color: #e0f2fe;
+}
+
+.hh-input-slug-wrap {
+    display: flex;
+    align-items: center;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.hh-slug-prefix {
+    padding: 0 10px;
+    color: #64748b;
+    font-size: 14px;
+    font-family: monospace;
+    user-select: none;
+}
+
+.hh-input-slug-wrap .hh-input {
+    border: none !important;
+    background: transparent !important;
+    padding-left: 0 !important;
+}
+
+.hh-input-hint {
+    display: block;
+    font-size: 11px;
+    color: #64748b;
+    margin-top: 4px;
+}
+
+
 
