@@ -476,6 +476,15 @@ class Router {
                 return;
             }
 
+            if (!empty($_GET['token']) && is_string($_GET['token'])) {
+                if (!isset($_SESSION['guest_claim_tokens']) || !is_array($_SESSION['guest_claim_tokens'])) {
+                    $_SESSION['guest_claim_tokens'] = [];
+                }
+                if (!in_array($_GET['token'], $_SESSION['guest_claim_tokens'], true)) {
+                    $_SESSION['guest_claim_tokens'][] = $_GET['token'];
+                }
+            }
+
             $activeFile = $_GET['file'] ?? ($site['entry_file'] ?: 'index.html');
             $canManage = SiteManager::canManage($site);
 
@@ -509,6 +518,15 @@ class Router {
             if (!$site) {
                 render_view('404', ['title' => 'Site Not Found']);
                 return;
+            }
+
+            if (!empty($_GET['token']) && is_string($_GET['token'])) {
+                if (!isset($_SESSION['guest_claim_tokens']) || !is_array($_SESSION['guest_claim_tokens'])) {
+                    $_SESSION['guest_claim_tokens'] = [];
+                }
+                if (!in_array($_GET['token'], $_SESSION['guest_claim_tokens'], true)) {
+                    $_SESSION['guest_claim_tokens'][] = $_GET['token'];
+                }
             }
 
             $activeFile = $_GET['file'] ?? ($site['entry_file'] ?: 'index.html');

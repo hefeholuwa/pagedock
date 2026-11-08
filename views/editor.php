@@ -583,18 +583,19 @@
     <div id="hh-toast" class="hh-toast hidden"></div>
 
     <!-- PageDock Global Configuration for Client JS -->
+    <?php $editorTokenQuery = !empty($_GET['token']) ? ('?token=' . urlencode($_GET['token'])) : ''; ?>
     <script>
         window.PAGEDOCK_CONFIG = {
             slug: '<?= addslashes($site['slug']) ?>',
-            saveUrl: '<?= url('api/editor/' . $site['slug']) ?>',
+            saveUrl: '<?= url('api/editor/' . $site['slug']) . $editorTokenQuery ?>',
             previewUrl: '<?= url('s/' . $site['slug'] . '/') ?>',
             aiAvailabilityUrl: '<?= url('api/ai/availability') ?>',
-            aiTaskUrl: '<?= url('api/ai/task') ?>',
-            aiBuiltinUrl: '<?= url('api/ai/builtin') ?>',
-            versionsUrl: '<?= url('api/sites/' . $site['slug'] . '/versions') ?>',
-            rollbackUrl: '<?= url('api/sites/' . $site['slug'] . '/rollback') ?>',
-            sharedBlocksUrl: '<?= url('api/sites/' . $site['slug'] . '/shared-blocks') ?>',
-            syncSharedUrl: '<?= url('api/sites/' . $site['slug'] . '/sync-shared') ?>',
+            aiTaskUrl: '<?= url('api/ai/task') . $editorTokenQuery ?>',
+            aiBuiltinUrl: '<?= url('api/ai/builtin') . $editorTokenQuery ?>',
+            versionsUrl: '<?= url('api/sites/' . $site['slug'] . '/versions') . $editorTokenQuery ?>',
+            rollbackUrl: '<?= url('api/sites/' . $site['slug'] . '/rollback') . $editorTokenQuery ?>',
+            sharedBlocksUrl: '<?= url('api/sites/' . $site['slug'] . '/shared-blocks') . $editorTokenQuery ?>',
+            syncSharedUrl: '<?= url('api/sites/' . $site['slug'] . '/sync-shared') . $editorTokenQuery ?>',
             activeFile: '<?= addslashes($activeFile ?? 'index.html') ?>',
             currentVersion: <?= (int)($site['current_version'] ?? 1) ?>,
             initialTimestamp: <?= (int)(strtotime($site['updated_at'] ?? $site['created_at'] ?? 'now') * 1000) ?>,

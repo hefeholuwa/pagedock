@@ -763,6 +763,17 @@
       }
     }
 
+    // Hot CSS Live Reload
+    if (d.type === 'live-style-update' && typeof d.css === 'string') {
+      var styleEl = document.getElementById('__pagedock_live_style');
+      if (!styleEl) {
+        styleEl = document.createElement('style');
+        styleEl.id = '__pagedock_live_style';
+        document.head.appendChild(styleEl);
+      }
+      styleEl.textContent = d.css;
+    }
+
     // Select Element
     if (d.type === 'select-element') {
       var targetEl = document.getElementsByTagName(d.tag)[d.tagIndex];

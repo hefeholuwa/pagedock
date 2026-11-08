@@ -17,8 +17,32 @@
         currentDevice: 'desktop', // 'desktop' | 'tablet' | 'mobile'
         mobileView: 'code',       // 'code' | 'preview'
         selectedElement: null,    // Last clicked element payload from iframe
-        historyStack: [],
-        redoStack: [],
+        activeFileType: 'html',   // 'html' | 'css' | 'js'
+        fileBuffers: {
+            html: '',
+            css: '',
+            js: ''
+        },
+        fileModes: {
+            html: 'htmlmixed',
+            css: 'css',
+            js: 'javascript'
+        },
+        fileLabels: {
+            html: 'HTML',
+            css: 'CSS',
+            js: 'JavaScript'
+        },
+        historyStacks: {
+            html: [],
+            css: [],
+            js: []
+        },
+        redoStacks: {
+            html: [],
+            css: [],
+            js: []
+        },
         aiQuotaUsed: 0,
         aiQuotaLimit: 5,
         isDirty: false,
@@ -52,6 +76,8 @@
         tabBtns: document.querySelectorAll('.hh-tab-btn'),
         tabContents: document.querySelectorAll('.hh-tab-content'),
         sourceTextarea: document.getElementById('hh-source-textarea'),
+        fileChips: document.querySelectorAll('.hh-file-chip'),
+        codeLangTag: document.getElementById('hh-code-lang-tag'),
         previewIframe: document.getElementById('preview-iframe'),
         viewportWrapper: document.getElementById('hh-viewport-wrapper'),
         // Popover Elements
@@ -101,14 +127,119 @@
     let isInternalUpdate = false;
 
     // =========================================================================
-    // 1. CODEMIRROR INITIALIZATION
+    // 1. CODEMIRROR INITIALIZATION & MULTI-FILE BUFFER MANAGEMENT
     // =========================================================================
+
+    function extractInlineCss(html) {
+        if (!html) return '';
+        const matches = html.match(/<style[^>]*>([\s\S]*?)<\/style>/gi);
+        if (!matches || !matches.length) return '';
+        return matches.map(m => m.replace(/<\/?style[^>]*>/gi, '')).join('\n\n').trim();
+    }
+
+    function extractInlineJs(html) {
+        if (!html) return '';
+        const scriptRegex = /<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi;
+        let scripts = [];
+        let match;
+        while ((match = scriptRegex.exec(html)) !== null) {
+            scripts.push(match[1].trim());
+        }
+        return scripts.join('\n\n').trim();
+    }
+
+    function injectInlineCss(html, newCss) {
+        if (!html) return html;
+        if (/<style[^>]*>[\s\S]*?<\/style>/i.test(html)) {
+            return html.replace(/<style[^>]*>[\s\S]*?<\/style>/i, `<style>\n${newCss}\n</style>`);
+        } else if (html.includes('</head>')) {
+            return html.replace('</head>', `<style>\n${newCss}\n</style>\n</head>`);
+        } else {
+            return `<style>\n${newCss}\n</style>\n` + html;
+        }
+    }
+
+    function injectInlineJs(html, newJs) {
+        if (!html) return html;
+        const scriptRegex = /<script(?![^>]*\bsrc=)[^>]*>[\s\S]*?<\/script>/i;
+        if (scriptRegex.test(html)) {
+            return html.replace(scriptRegex, `<script>\n${newJs}\n<\/script>`);
+        } else if (html.includes('</body>')) {
+            return html.replace('</body>', `<script>\n${newJs}\n<\/script>\n</body>`);
+        } else {
+            return html + `\n<script>\n${newJs}\n<\/script>`;
+        }
+    }
+
+    function getHtmlCode() {
+        if (state.activeFileType === 'html' && cmEditor) {
+            state.fileBuffers.html = cmEditor.getValue();
+        }
+        return state.fileBuffers.html;
+    }
+
+    function switchFile(fileType) {
+        if (!fileType || !state.fileBuffers.hasOwnProperty(fileType)) return;
+        if (fileType === state.activeFileType && cmEditor) return;
+
+        // 1. Sync current editor value to active buffer
+        if (cmEditor) {
+            state.fileBuffers[state.activeFileType] = cmEditor.getValue();
+        }
+
+        // 2. Set new active file type
+        state.activeFileType = fileType;
+
+        // 3. Update chips active state
+        const chips = dom.fileChips && dom.fileChips.length ? dom.fileChips : document.querySelectorAll('.hh-file-chip');
+        chips.forEach(chip => {
+            chip.classList.toggle('active', chip.dataset.file === fileType);
+        });
+
+        // 4. Update language indicator badge
+        if (dom.codeLangTag) {
+            dom.codeLangTag.textContent = state.fileLabels[fileType] || fileType.toUpperCase();
+        }
+
+        // 5. Update CodeMirror mode and content
+        if (cmEditor) {
+            isInternalUpdate = true;
+            cmEditor.setValue(state.fileBuffers[fileType] || '');
+            cmEditor.setOption('mode', state.fileModes[fileType] || 'htmlmixed');
+            isInternalUpdate = false;
+            cmEditor.refresh();
+            cmEditor.focus();
+        }
+
+        updateHistoryButtons();
+    }
 
     function initCodeMirror() {
         if (!dom.sourceTextarea) return;
 
+        const initialHtml = dom.sourceTextarea.value || '';
+        state.fileBuffers.html = initialHtml;
+
+        // Physical CSS vs Inline
+        if (window.PAGEDOCK_CONFIG?.hasPhysicalCss && typeof window.PAGEDOCK_CONFIG?.initialCss === 'string') {
+            state.fileBuffers.css = window.PAGEDOCK_CONFIG.initialCss;
+        } else {
+            state.fileBuffers.css = (typeof window.PAGEDOCK_CONFIG?.initialCss === 'string' && window.PAGEDOCK_CONFIG.initialCss.trim())
+                ? window.PAGEDOCK_CONFIG.initialCss
+                : extractInlineCss(initialHtml);
+        }
+
+        // Physical JS vs Inline
+        if (window.PAGEDOCK_CONFIG?.hasPhysicalJs && typeof window.PAGEDOCK_CONFIG?.initialJs === 'string') {
+            state.fileBuffers.js = window.PAGEDOCK_CONFIG.initialJs;
+        } else {
+            state.fileBuffers.js = (typeof window.PAGEDOCK_CONFIG?.initialJs === 'string' && window.PAGEDOCK_CONFIG.initialJs.trim())
+                ? window.PAGEDOCK_CONFIG.initialJs
+                : extractInlineJs(initialHtml);
+        }
+
         cmEditor = CodeMirror.fromTextArea(dom.sourceTextarea, {
-            mode: 'htmlmixed',
+            mode: state.fileModes[state.activeFileType] || 'htmlmixed',
             theme: 'material-darker',
             lineNumbers: true,
             lineWrapping: true,
@@ -118,8 +249,10 @@
             indentUnit: 2
         });
 
-        // Push initial state to history stack
-        state.historyStack.push(cmEditor.getValue());
+        // Push initial state to history stacks
+        state.historyStacks.html.push(state.fileBuffers.html);
+        if (state.fileBuffers.css) state.historyStacks.css.push(state.fileBuffers.css);
+        if (state.fileBuffers.js) state.historyStacks.js.push(state.fileBuffers.js);
 
         // Debounced sync to live preview iframe on code change
         let changeTimer = null;
@@ -149,10 +282,10 @@
         return null;
     }
 
-    function getDraftStorageKey() {
+    function getDraftStorageKey(fileType = state.activeFileType) {
         const slug = state.slug || 'default';
-        const file = state.activeFile || 'index.html';
-        return `pagedock_draft_${slug}_${file}`;
+        const type = fileType || 'html';
+        return `pagedock_draft_${slug}_${type}`;
     }
 
     function saveDraftToLocalStorage() {
@@ -161,12 +294,16 @@
         if (!storage) return;
 
         try {
-            const key = getDraftStorageKey();
+            const type = state.activeFileType || 'html';
             const code = cmEditor.getValue();
+            state.fileBuffers[type] = code;
+
+            const key = getDraftStorageKey(type);
             const payload = {
                 code: code,
                 timestamp: Date.now(),
                 slug: state.slug,
+                type: type,
                 file: state.activeFile
             };
             storage.setItem(key, JSON.stringify(payload));
@@ -188,8 +325,9 @@
         if (!storage) return;
 
         try {
-            const key = getDraftStorageKey();
-            storage.removeItem(key);
+            ['html', 'css', 'js'].forEach(type => {
+                storage.removeItem(getDraftStorageKey(type));
+            });
         } catch (e) {}
     }
 
@@ -199,36 +337,50 @@
         if (!storage) return;
 
         try {
-            const key = getDraftStorageKey();
-            const raw = storage.getItem(key);
-            if (!raw) return;
-
-            const draft = JSON.parse(raw);
-            if (!draft || typeof draft !== 'object' || typeof draft.code !== 'string') return;
-            if (draft.clean || draft.isClean) return;
-
-            const initialCode = cmEditor.getValue();
             const initialLoadTime = Number(
                 window.PAGEDOCK_CONFIG?.initialTimestamp ||
                 window.PAGEDOCK_CONFIG?.siteUpdatedAt ||
                 window.PAGEDOCK_CONFIG?.loadedAt ||
                 0
             );
-            const draftTime = Number(draft.timestamp || 0);
 
-            const isNewer = initialLoadTime === 0 ? draftTime > 0 : draftTime > initialLoadTime;
-            const isDifferent = draft.code !== initialCode;
+            let restoredCount = 0;
+            ['html', 'css', 'js'].forEach(type => {
+                const key = getDraftStorageKey(type);
+                const raw = storage.getItem(key);
+                if (!raw) return;
 
-            if (isNewer && isDifferent) {
-                isInternalUpdate = true;
-                cmEditor.setValue(draft.code);
-                isInternalUpdate = false;
-                setDirty(true);
+                const draft = JSON.parse(raw);
+                if (!draft || typeof draft !== 'object' || typeof draft.code !== 'string') return;
+                if (draft.clean || draft.isClean) return;
 
-                state.historyStack.push(draft.code);
+                const currentBuffer = state.fileBuffers[type] || '';
+                const draftTime = Number(draft.timestamp || 0);
+                const isNewer = initialLoadTime === 0 ? draftTime > 0 : draftTime > initialLoadTime;
+                const isDifferent = draft.code !== currentBuffer;
+
+                if (isNewer && isDifferent) {
+                    state.fileBuffers[type] = draft.code;
+                    state.historyStacks[type].push(draft.code);
+                    setDirty(true);
+                    restoredCount++;
+
+                    if (type === state.activeFileType) {
+                        isInternalUpdate = true;
+                        cmEditor.setValue(draft.code);
+                        isInternalUpdate = false;
+                        if (type === 'html') {
+                            postToIframe({ type: 'live-patch', html: draft.code });
+                        } else if (type === 'css') {
+                            postToIframe({ type: 'live-style-update', css: draft.code });
+                        }
+                    }
+                }
+            });
+
+            if (restoredCount > 0) {
                 updateHistoryButtons();
-                postToIframe({ type: 'live-patch', html: draft.code });
-                showToast('Restored unsaved draft from local storage');
+                showToast(`Restored unsaved draft (${restoredCount} file${restoredCount > 1 ? 's' : ''}) from local storage`);
             }
         } catch (e) {
             console.error('Failed to restore draft from local storage:', e);
@@ -238,31 +390,60 @@
     function syncCodeToPreview() {
         if (!cmEditor || !dom.previewIframe) return;
         const code = cmEditor.getValue();
-        
+        const type = state.activeFileType;
+        state.fileBuffers[type] = code;
+
         // Push snapshot to undo stack if different from last
-        if (state.historyStack[state.historyStack.length - 1] !== code) {
-            state.historyStack.push(code);
-            state.redoStack = [];
+        const curHist = state.historyStacks[type] || (state.historyStacks[type] = []);
+        if (curHist[curHist.length - 1] !== code) {
+            curHist.push(code);
+            state.redoStacks[type] = [];
             updateHistoryButtons();
         }
 
-        // Post message to iframe for real-time live patch
-        postToIframe({
-            type: 'live-patch',
-            html: code
-        });
+        if (type === 'html') {
+            postToIframe({
+                type: 'live-patch',
+                html: code
+            });
+        } else if (type === 'css') {
+            postToIframe({
+                type: 'live-style-update',
+                css: code
+            });
+            if (!window.PAGEDOCK_CONFIG?.hasPhysicalCss) {
+                state.fileBuffers.html = injectInlineCss(state.fileBuffers.html, code);
+            }
+        } else if (type === 'js') {
+            if (!window.PAGEDOCK_CONFIG?.hasPhysicalJs) {
+                state.fileBuffers.html = injectInlineJs(state.fileBuffers.html, code);
+            }
+        }
     }
 
     function updateCodeEditor(newHtml, updateIframe = true) {
-        if (!cmEditor) return;
-        isInternalUpdate = true;
-        cmEditor.setValue(newHtml);
-        isInternalUpdate = false;
-        setDirty(true);
+        state.fileBuffers.html = newHtml;
 
-        state.historyStack.push(newHtml);
-        state.redoStack = [];
-        updateHistoryButtons();
+        // If CSS/JS are inlined, synchronize extracted copies
+        if (!window.PAGEDOCK_CONFIG?.hasPhysicalCss) {
+            const extractedCss = extractInlineCss(newHtml);
+            if (extractedCss) state.fileBuffers.css = extractedCss;
+        }
+        if (!window.PAGEDOCK_CONFIG?.hasPhysicalJs) {
+            const extractedJs = extractInlineJs(newHtml);
+            if (extractedJs) state.fileBuffers.js = extractedJs;
+        }
+
+        if (state.activeFileType === 'html' && cmEditor) {
+            isInternalUpdate = true;
+            cmEditor.setValue(newHtml);
+            isInternalUpdate = false;
+            state.historyStacks.html.push(newHtml);
+            state.redoStacks.html = [];
+            updateHistoryButtons();
+        }
+
+        setDirty(true);
 
         if (updateIframe) {
             postToIframe({ type: 'live-patch', html: newHtml });
@@ -326,7 +507,7 @@
                 postToIframe({ type: 'request-structure' });
                 postToIframe({ type: 'ai-mode', enabled: state.editMode });
                 if (state.isDirty && cmEditor) {
-                    postToIframe({ type: 'live-patch', html: cmEditor.getValue() });
+                    postToIframe({ type: 'live-patch', html: getHtmlCode() });
                 }
                 break;
         }
@@ -497,7 +678,7 @@
 
                 // 2. Synchronize Code Editor
                 if (cmEditor && state.selectedElement) {
-                    const currentCode = cmEditor.getValue();
+                    const currentCode = getHtmlCode();
                     const tag = state.selectedElement.tag;
                     const tagIndex = state.selectedElement.tagIndex;
                     let updatedCode = null;
@@ -656,7 +837,7 @@
         const tag = payload.tag || (state.selectedElement && state.selectedElement.tag);
         const tagIndex = payload.tagIndex !== undefined ? payload.tagIndex : (state.selectedElement && state.selectedElement.tagIndex);
         const newText = payload.text !== undefined ? payload.text : '';
-        const currentCode = cmEditor.getValue();
+        const currentCode = getHtmlCode();
 
         let updatedCode = null;
         if (tag !== undefined && tagIndex !== undefined) {
@@ -687,7 +868,7 @@
         if (!state.selectedElement || !cmEditor) return;
         const tag = state.selectedElement.tag;
         const tagIndex = state.selectedElement.tagIndex;
-        const currentCode = cmEditor.getValue();
+        const currentCode = getHtmlCode();
 
         // 1. Dispatch DOM clone operation to preview iframe
         postToIframe({
@@ -728,7 +909,7 @@
         if (!state.selectedElement || !cmEditor) return;
         const tag = state.selectedElement.tag;
         const tagIndex = state.selectedElement.tagIndex;
-        const currentCode = cmEditor.getValue();
+        const currentCode = getHtmlCode();
 
         // 1. Dispatch delete operation to preview iframe
         postToIframe({
@@ -776,6 +957,10 @@
         setMobileView('code');
         switchTab('code');
         hidePopovers(true);
+
+        if (state.activeFileType !== 'html') {
+            switchFile('html');
+        }
 
         const tag = state.selectedElement.tag;
         const tagIndex = state.selectedElement.tagIndex;
@@ -1009,7 +1194,7 @@
 
     function insertSnippetIntoPage(snippet, name) {
         if (!cmEditor) return;
-        const currentCode = cmEditor.getValue();
+        const currentCode = getHtmlCode();
         
         let updatedCode = currentCode;
         if (currentCode.includes('</body>')) {
@@ -1078,37 +1263,55 @@
     // =========================================================================
 
     function updateHistoryButtons() {
-        if (dom.undoBtn) dom.undoBtn.disabled = state.historyStack.length <= 1;
-        if (dom.redoBtn) dom.redoBtn.disabled = state.redoStack.length === 0;
+        const curHist = state.historyStacks[state.activeFileType] || [];
+        const curRedo = state.redoStacks[state.activeFileType] || [];
+        if (dom.undoBtn) dom.undoBtn.disabled = curHist.length <= 1;
+        if (dom.redoBtn) dom.redoBtn.disabled = curRedo.length === 0;
     }
 
     function undo() {
-        if (state.historyStack.length <= 1 || !cmEditor) return;
-        const current = state.historyStack.pop();
-        state.redoStack.push(current);
-        const previous = state.historyStack[state.historyStack.length - 1];
+        const curHist = state.historyStacks[state.activeFileType];
+        const curRedo = state.redoStacks[state.activeFileType];
+        if (!curHist || curHist.length <= 1 || !cmEditor) return;
+        const current = curHist.pop();
+        curRedo.push(current);
+        const previous = curHist[curHist.length - 1];
 
         isInternalUpdate = true;
         cmEditor.setValue(previous);
         isInternalUpdate = false;
+        state.fileBuffers[state.activeFileType] = previous;
         setDirty(true);
         scheduleDraftAutoSave(1000);
-        postToIframe({ type: 'live-patch', html: previous });
+
+        if (state.activeFileType === 'html') {
+            postToIframe({ type: 'live-patch', html: previous });
+        } else if (state.activeFileType === 'css') {
+            postToIframe({ type: 'live-style-update', css: previous });
+        }
         updateHistoryButtons();
         showToast('[ACTION] Undo');
     }
 
     function redo() {
-        if (state.redoStack.length === 0 || !cmEditor) return;
-        const next = state.redoStack.pop();
-        state.historyStack.push(next);
+        const curHist = state.historyStacks[state.activeFileType];
+        const curRedo = state.redoStacks[state.activeFileType];
+        if (!curRedo || curRedo.length === 0 || !cmEditor) return;
+        const next = curRedo.pop();
+        curHist.push(next);
 
         isInternalUpdate = true;
         cmEditor.setValue(next);
         isInternalUpdate = false;
+        state.fileBuffers[state.activeFileType] = next;
         setDirty(true);
         scheduleDraftAutoSave(1000);
-        postToIframe({ type: 'live-patch', html: next });
+
+        if (state.activeFileType === 'html') {
+            postToIframe({ type: 'live-patch', html: next });
+        } else if (state.activeFileType === 'css') {
+            postToIframe({ type: 'live-style-update', css: next });
+        }
         updateHistoryButtons();
         showToast('[ACTION] Redo');
     }
@@ -1228,24 +1431,45 @@
         if (dom.saveStatusText) dom.saveStatusText.textContent = 'Saving...';
 
         try {
-            const html = cmEditor.getValue();
+            // 1. Sync current editor value to active buffer
+            state.fileBuffers[state.activeFileType] = cmEditor.getValue();
+
+            // 2. Synthesize inline CSS/JS into master HTML if not separate files
+            let masterHtml = state.fileBuffers.html;
+            if (!window.PAGEDOCK_CONFIG?.hasPhysicalCss && state.fileBuffers.css) {
+                masterHtml = injectInlineCss(masterHtml, state.fileBuffers.css);
+                state.fileBuffers.html = masterHtml;
+            }
+            if (!window.PAGEDOCK_CONFIG?.hasPhysicalJs && state.fileBuffers.js) {
+                masterHtml = injectInlineJs(masterHtml, state.fileBuffers.js);
+                state.fileBuffers.html = masterHtml;
+            }
+
+            // 3. Assemble multi-file payload
+            const filesToSave = {};
+            filesToSave['index.html'] = masterHtml;
+
+            if (window.PAGEDOCK_CONFIG?.hasPhysicalCss || state.fileBuffers.css) {
+                filesToSave['style.css'] = state.fileBuffers.css;
+            }
+            if (window.PAGEDOCK_CONFIG?.hasPhysicalJs || state.fileBuffers.js) {
+                filesToSave['script.js'] = state.fileBuffers.js;
+            }
+
             const res = await fetch(window.PAGEDOCK_CONFIG.saveUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    html: html,
+                    html: masterHtml,
+                    files: filesToSave,
                     file: state.activeFile
                 })
             });
 
             const data = await res.json();
             if (data.success) {
-                if (cmEditor && cmEditor.getValue() === html) {
-                    setDirty(false);
-                    clearLocalDraft();
-                } else {
-                    scheduleDraftAutoSave(500);
-                }
+                setDirty(false);
+                clearLocalDraft();
                 showToast('[STATUS] Draft saved successfully');
                 return true;
             } else {
@@ -1331,6 +1555,22 @@
         dom.tabBtns.forEach(btn => {
             btn.addEventListener('click', () => switchTab(btn.dataset.tab));
         });
+
+        // Subbar File Switcher Chips (index.html, style.css, script.js)
+        const fileChips = dom.fileChips && dom.fileChips.length
+            ? dom.fileChips
+            : document.querySelectorAll('.hh-file-chip');
+        if (fileChips && fileChips.length) {
+            fileChips.forEach(chip => {
+                chip.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const fileType = chip.dataset.file;
+                    if (fileType) {
+                        switchFile(fileType);
+                    }
+                });
+            });
+        }
 
         // Library Subtabs
         dom.libSubtabs.forEach(subtab => {
@@ -1472,7 +1712,7 @@
                 body: JSON.stringify({
                     mode: 'chat',
                     instruction: text,
-                    htmlContext: cmEditor ? cmEditor.getValue() : ''
+                    htmlContext: getHtmlCode() || ''
                 })
             });
 
