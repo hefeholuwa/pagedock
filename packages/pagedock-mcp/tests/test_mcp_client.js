@@ -34,6 +34,7 @@ await test('Instantiates with default baseUrl (http://localhost:8080) and no tok
   const client = new PageDockClient();
   assert.equal(client.baseUrl, 'http://localhost:8080');
   assert.equal(client.apiToken, null);
+  assert.equal(client.claimToken, null);
 });
 
 await test('Instantiates with custom baseUrl and trims trailing slash', () => {
@@ -64,7 +65,54 @@ await test('Instantiates with apiToken and sends Bearer Authorization header', a
   }
 });
 
-// Test 2: deployHtml({ html, title, slug, ttl })
+// Test 2: Claim Token & Guest Auth Fallback
+await test('claimToken attaches token query parameter and X-Claim-Token header when apiToken is not set', async () => {
+  let capturedUrl = null;
+  let capturedHeaders = null;
+  const restore = mockFetch((url, options) => {
+    capturedUrl = url;
+    capturedHeaders = options.headers;
+    return {
+      ok: true,
+      status: 200,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: async () => ({ success: true, site: { slug: 'guest-site' } }),
+    };
+  });
+
+  try {
+    const client = new PageDockClient({ claimToken: 'guest_token_12345' });
+    await client.getSite('guest-site');
+    assert(capturedUrl.includes('token=guest_token_12345'), 'URL should contain token query parameter');
+    assert.equal(capturedHeaders['X-Claim-Token'], 'guest_token_12345');
+    assert.equal(capturedHeaders.Authorization, undefined);
+  } finally {
+    restore();
+  }
+});
+
+await test('per-call token overrides or attaches token query parameter', async () => {
+  let capturedUrl = null;
+  const restore = mockFetch((url) => {
+    capturedUrl = url;
+    return {
+      ok: true,
+      status: 200,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: async () => ({ success: true }),
+    };
+  });
+
+  try {
+    const client = new PageDockClient();
+    await client.listSites({ token: 'call_specific_token' });
+    assert(capturedUrl.includes('token=call_specific_token'));
+  } finally {
+    restore();
+  }
+});
+
+// Test 3: deployHtml({ html, title, slug, ttl })
 await test('deployHtml with slug issues POST /api/editor/{slug}', async () => {
   let capturedUrl = null;
   let capturedMethod = null;
@@ -140,7 +188,40 @@ await test('deployHtml without slug issues POST /api/upload', async () => {
   }
 });
 
-// Test 3: listSites() -> GET /api/sites
+await test('deployHtml supports custom endpoint override (e.g. /api/paste)', async () => {
+  let capturedUrl = null;
+  let capturedMethod = null;
+  let capturedBody = null;
+
+  const restore = mockFetch((url, options) => {
+    capturedUrl = url;
+    capturedMethod = options.method;
+    capturedBody = JSON.parse(options.body);
+    return {
+      ok: true,
+      status: 200,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: async () => ({ success: true, slug: 'pasted-site' }),
+    };
+  });
+
+  try {
+    const client = new PageDockClient();
+    const res = await client.deployHtml({
+      html: '<h1>Pasted Page</h1>',
+      endpoint: '/api/paste',
+    });
+
+    assert.equal(capturedMethod, 'POST');
+    assert.equal(capturedUrl, 'http://localhost:8080/api/paste');
+    assert.equal(capturedBody.html, '<h1>Pasted Page</h1>');
+    assert.equal(res.success, true);
+  } finally {
+    restore();
+  }
+});
+
+// Test 4: listSites() -> GET /api/sites
 await test('listSites issues GET /api/sites', async () => {
   let capturedUrl = null;
   let capturedMethod = null;
@@ -169,7 +250,7 @@ await test('listSites issues GET /api/sites', async () => {
   }
 });
 
-// Test 4: getSite(slug) -> GET /api/sites?slug={slug}
+// Test 5: getSite(slug) -> GET /api/sites?slug={slug}
 await test('getSite issues GET /api/sites?slug={slug}', async () => {
   let capturedUrl = null;
   let capturedMethod = null;
@@ -198,7 +279,7 @@ await test('getSite issues GET /api/sites?slug={slug}', async () => {
   }
 });
 
-// Test 5: pullSite(slug) -> GET /s/{slug}/
+// Test 6: pullSite(slug) -> GET /s/{slug}/
 await test('pullSite issues GET /s/{slug}/ and retrieves HTML content', async () => {
   let capturedUrl = null;
   let capturedMethod = null;
@@ -229,7 +310,7 @@ await test('pullSite issues GET /s/{slug}/ and retrieves HTML content', async ()
   }
 });
 
-// Test 6: listVersions(slug) -> GET /api/sites/{slug}/versions
+// Test 7: listVersions(slug) -> GET /api/sites/{slug}/versions
 await test('listVersions issues GET /api/sites/{slug}/versions', async () => {
   let capturedUrl = null;
   let capturedMethod = null;
@@ -263,8 +344,8 @@ await test('listVersions issues GET /api/sites/{slug}/versions', async () => {
   }
 });
 
-// Test 7: rollbackSite(slug, version) -> POST /api/sites/{slug}/rollback
-await test('rollbackSite issues POST /api/sites/{slug}/rollback with version', async () => {
+// Test 8: rollbackSite(slug, version)
+await test('rollbackSite with version issues POST /api/sites/{slug}/rollback with version', async () => {
   let capturedUrl = null;
   let capturedMethod = null;
   let capturedBody = null;
@@ -294,7 +375,37 @@ await test('rollbackSite issues POST /api/sites/{slug}/rollback with version', a
   }
 });
 
-// Test 8: getAnalytics(slug) -> GET /api/sites/{slug}/analytics
+await test('rollbackSite without version issues POST /api/sites/{slug}/rollback with empty payload (1-click)', async () => {
+  let capturedUrl = null;
+  let capturedMethod = null;
+  let capturedBody = null;
+
+  const restore = mockFetch((url, options) => {
+    capturedUrl = url;
+    capturedMethod = options.method;
+    capturedBody = JSON.parse(options.body);
+    return {
+      ok: true,
+      status: 200,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: async () => ({ success: true, restored_version: 1 }),
+    };
+  });
+
+  try {
+    const client = new PageDockClient();
+    const res = await client.rollbackSite('my-app');
+
+    assert.equal(capturedMethod, 'POST');
+    assert.equal(capturedUrl, 'http://localhost:8080/api/sites/my-app/rollback');
+    assert.deepEqual(capturedBody, {});
+    assert.equal(res.success, true);
+  } finally {
+    restore();
+  }
+});
+
+// Test 9: getAnalytics(slug) -> GET /api/sites/{slug}/analytics
 await test('getAnalytics issues GET /api/sites/{slug}/analytics and accepts optional days', async () => {
   let capturedUrl = null;
   let capturedMethod = null;
@@ -324,7 +435,7 @@ await test('getAnalytics issues GET /api/sites/{slug}/analytics and accepts opti
   }
 });
 
-// Test 9: getFormSubmissions(slug, isSpam) -> GET /api/sites/{slug}/forms
+// Test 10: getFormSubmissions(slug, isSpam) -> GET /api/sites/{slug}/forms
 await test('getFormSubmissions issues GET /api/sites/{slug}/forms with spam filtering', async () => {
   let capturedUrl = null;
   let capturedMethod = null;
@@ -355,7 +466,103 @@ await test('getFormSubmissions issues GET /api/sites/{slug}/forms with spam filt
   }
 });
 
-// Test 10: Graceful error handling
+// Test 11: deleteSite(slug) -> POST /api/sites/{slug}/delete
+await test('deleteSite issues POST /api/sites/{slug}/delete', async () => {
+  let capturedUrl = null;
+  let capturedMethod = null;
+
+  const restore = mockFetch((url, options) => {
+    capturedUrl = url;
+    capturedMethod = options.method;
+    return {
+      ok: true,
+      status: 200,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: async () => ({ success: true }),
+    };
+  });
+
+  try {
+    const client = new PageDockClient();
+    const res = await client.deleteSite('my-site');
+    assert.equal(capturedMethod, 'POST');
+    assert.equal(capturedUrl, 'http://localhost:8080/api/sites/my-site/delete');
+    assert.equal(res.success, true);
+  } finally {
+    restore();
+  }
+});
+
+// Test 12: updateSiteFiles normalizations (Array format vs Object format)
+await test('updateSiteFiles with array format normalizes to object map', async () => {
+  let capturedUrl = null;
+  let capturedMethod = null;
+  let capturedBody = null;
+
+  const restore = mockFetch((url, options) => {
+    capturedUrl = url;
+    capturedMethod = options.method;
+    capturedBody = JSON.parse(options.body);
+    return {
+      ok: true,
+      status: 200,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: async () => ({ success: true, updated: ['index.html', 'style.css'] }),
+    };
+  });
+
+  try {
+    const client = new PageDockClient();
+    const res = await client.updateSiteFiles(
+      'my-site',
+      [
+        { path: 'index.html', content: '<h1>New Heading</h1>' },
+        { file: 'style.css', code: 'body { margin: 0; }' },
+      ],
+      'Batch update styles and markup'
+    );
+
+    assert.equal(capturedMethod, 'POST');
+    assert.equal(capturedUrl, 'http://localhost:8080/api/editor/my-site');
+    assert.deepEqual(capturedBody.files, {
+      'index.html': '<h1>New Heading</h1>',
+      'style.css': 'body { margin: 0; }',
+    });
+    assert.equal(capturedBody.summary, 'Batch update styles and markup');
+    assert.equal(res.success, true);
+  } finally {
+    restore();
+  }
+});
+
+await test('updateSiteFiles with object format preserves map', async () => {
+  let capturedBody = null;
+
+  const restore = mockFetch((url, options) => {
+    capturedBody = JSON.parse(options.body);
+    return {
+      ok: true,
+      status: 200,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: async () => ({ success: true }),
+    };
+  });
+
+  try {
+    const client = new PageDockClient();
+    await client.updateSiteFiles('my-site', {
+      'about.html': '<h1>About Page</h1>',
+    });
+
+    assert.deepEqual(capturedBody.files, {
+      'about.html': '<h1>About Page</h1>',
+    });
+  } finally {
+    restore();
+  }
+});
+
+// Test 13: Graceful error handling
 await test('Throws formatted error on API failure', async () => {
   const restore = mockFetch(() => {
     return {

@@ -1,0 +1,10 @@
+{
+  "name": "pagedock",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "npm test --prefix packages/pagedock-mcp"
+  }
+}

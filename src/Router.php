@@ -169,9 +169,11 @@ class Router {
 
         // 4. API Paste: POST /api/paste
         if ($path === 'api/paste' && $method === 'POST') {
-            $html = $_POST['html'] ?? '';
-            $title = $_POST['title'] ?? null;
-            $slug = $_POST['slug'] ?? null;
+            $raw = file_get_contents('php://input');
+            $data = json_decode($raw, true) ?: $_POST;
+            $html = $data['html'] ?? '';
+            $title = $data['title'] ?? null;
+            $slug = $data['slug'] ?? null;
             $res = SiteManager::createFromHtml($html, $title, $slug);
             json_response($res, $res['success'] ? 200 : 400);
             return;
@@ -721,7 +723,15 @@ class Router {
      */
     private static function handleApiUpload(): void {
         if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
+            $raw = file_get_contents('php://input');
+            $data = json_decode($raw, true) ?: [];
+            if (!empty($data['html'])) {
+                $res = SiteManager::createFromHtml($data['html'], $data['title'] ?? null, $data['slug'] ?? null);
+                json_response($res, $res['success'] ? 200 : 400);
+                return;
+            }
             json_response(['success' => false, 'error' => 'No file uploaded or upload error.'], 400);
+            return;
         }
 
         $file = $_FILES['file'];
