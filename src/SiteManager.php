@@ -312,6 +312,135 @@ class SiteManager {
     }
 
     /**
+     * Create a new page with smart scaffolding, layout inheritance, or cloning
+     */
+    public static function createPage(string $slug, string $filename, string $title, string $layout = 'inherit', string $sourceFile = 'index.html'): array {
+        $site = self::getSite($slug);
+        if (!$site) {
+            return ['success' => false, 'error' => 'Site not found.'];
+        }
+
+        if (!self::canManage($site)) {
+            return ['success' => false, 'error' => 'Unauthorized to edit this site.'];
+        }
+
+        $siteDir = realpath(SITES_DIR . '/' . $slug);
+        if (!$siteDir || !is_dir($siteDir)) {
+            return ['success' => false, 'error' => 'Site directory missing.'];
+        }
+
+        // Clean & sanitize filename
+        $cleanName = basename(trim($filename));
+        $cleanName = preg_replace('/\.html?$/i', '', $cleanName);
+        $cleanName = preg_replace('/[^a-zA-Z0-9_-]/', '-', strtolower($cleanName));
+        $cleanName = trim($cleanName, '-');
+        if (empty($cleanName)) {
+            $cleanName = 'page-' . time();
+        }
+        $targetFile = $cleanName . '.html';
+        $targetPath = $siteDir . '/' . $targetFile;
+
+        if (file_exists($targetPath)) {
+            return ['success' => false, 'error' => 'Page already exists: ' . $targetFile];
+        }
+
+        $title = trim($title) ?: ucfirst(str_replace(['-', '_'], ' ', $cleanName));
+        $siteTitle = $site['title'] ?: 'PageDock Site';
+        $pageTitle = $title . ' — ' . $siteTitle;
+
+        $pageContent = '';
+
+        if ($layout === 'clone') {
+            $sourceContent = self::getSiteHtml($slug, $sourceFile) ?: self::getSiteHtml($slug, 'index.html');
+            if (!$sourceContent) {
+                return ['success' => false, 'error' => 'Source page to clone not found.'];
+            }
+            if (preg_match('/<title\b[^>]*>(.*?)<\/title>/is', $sourceContent)) {
+                $pageContent = preg_replace('/<title\b[^>]*>(.*?)<\/title>/is', '<title>' . htmlspecialchars($pageTitle) . '</title>', $sourceContent);
+            } else {
+                $pageContent = $sourceContent;
+            }
+        } elseif ($layout === 'blank') {
+            $hasCss = file_exists($siteDir . '/style.css');
+            $hasJs = file_exists($siteDir . '/script.js');
+            $cssLink = $hasCss ? "  <link rel=\"stylesheet\" href=\"style.css\">\n" : '';
+            $jsScript = $hasJs ? "  <script defer src=\"script.js\"></script>\n" : '';
+            $pageContent = "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>" . htmlspecialchars($pageTitle) . "</title>\n{$cssLink}{$jsScript}</head>\n<body>\n  <main class=\"container\" id=\"main\">\n    <section class=\"py-16\">\n      <h1>" . htmlspecialchars($title) . "</h1>\n      <p>Welcome to the " . htmlspecialchars($title) . " page.</p>\n    </section>\n  </main>\n</body>\n</html>";
+        } else {
+            // Default: 'inherit' layout from sourceFile or index.html
+            $sourceContent = self::getSiteHtml($slug, $sourceFile) ?: self::getSiteHtml($slug, 'index.html');
+            if (!$sourceContent) {
+                return self::createPage($slug, $filename, $title, 'blank', $sourceFile);
+            }
+
+            // Extract <head>
+            $headContent = '';
+            if (preg_match('/<head\b[^>]*>([\s\S]*?)<\/head>/i', $sourceContent, $headMatch)) {
+                $headInner = $headMatch[1];
+                if (preg_match('/<title\b[^>]*>(.*?)<\/title>/is', $headInner)) {
+                    $headInner = preg_replace('/<title\b[^>]*>(.*?)<\/title>/is', '<title>' . htmlspecialchars($pageTitle) . '</title>', $headInner);
+                } else {
+                    $headInner = "  <title>" . htmlspecialchars($pageTitle) . "</title>\n" . $headInner;
+                }
+                $headContent = $headInner;
+            } else {
+                $headContent = "  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>" . htmlspecialchars($pageTitle) . "</title>";
+            }
+
+            // Extract body attributes
+            $bodyAttrs = '';
+            if (preg_match('/<body\b([^>]*)>/i', $sourceContent, $bodyMatch)) {
+                $bodyAttrs = trim($bodyMatch[1]);
+            }
+
+            // Extract shared header block
+            $headerBlock = '';
+            if (preg_match('/(<!--\s*(?:pd|hh):shared\s+header(?:\s+[^>]*)?\s*-->[\s\S]*?<!--\s*\/(?:pd|hh):shared\s+header\s*-->)/i', $sourceContent, $hMatch)) {
+                $rawHeader = $hMatch[1];
+                $newRoute = '/' . $cleanName;
+                $headerBlock = SharedLayoutManager::tailorBlockForPage($rawHeader, $newRoute, $targetFile, 'active', 'true');
+            } elseif (preg_match('/(<header\b[^>]*>[\s\S]*?<\/header>)/i', $sourceContent, $hMatch)) {
+                $headerBlock = "<!-- hh:shared header -->\n" . $hMatch[1] . "\n<!-- /hh:shared header -->";
+            }
+
+            // Extract shared footer block
+            $footerBlock = '';
+            if (preg_match('/(<!--\s*(?:pd|hh):shared\s+footer(?:\s+[^>]*)?\s*-->[\s\S]*?<!--\s*\/(?:pd|hh):shared\s+footer\s*-->)/i', $sourceContent, $fMatch)) {
+                $footerBlock = $fMatch[1];
+            } elseif (preg_match('/(<footer\b[^>]*>[\s\S]*?<\/footer>)/i', $sourceContent, $fMatch)) {
+                $footerBlock = "<!-- hh:shared footer -->\n" . $fMatch[1] . "\n<!-- /hh:shared footer -->";
+            }
+
+            $bodyOpen = $bodyAttrs ? "<body {$bodyAttrs}>" : "<body>";
+
+            $mainContent = "  <main id=\"main\" class=\"container\">\n    <section class=\"py-16\">\n      <h1>" . htmlspecialchars($title) . "</h1>\n      <p>Welcome to the " . htmlspecialchars($title) . " page.</p>\n    </section>\n  </main>";
+
+            $pageContent = "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n{$headContent}\n</head>\n{$bodyOpen}\n";
+            if ($headerBlock) {
+                $pageContent .= $headerBlock . "\n";
+            }
+            $pageContent .= $mainContent . "\n";
+            if ($footerBlock) {
+                $pageContent .= $footerBlock . "\n";
+            }
+            $pageContent .= "</body>\n</html>";
+        }
+
+        $res = self::updateSiteFiles($slug, [$targetFile => $pageContent], "Created page {$targetFile} ({$title})");
+        if (!$res['success']) {
+            return $res;
+        }
+
+        return [
+            'success' => true,
+            'file' => $targetFile,
+            'relPath' => $targetFile,
+            'title' => $title,
+            'url' => url('s/' . $slug . '/' . $cleanName)
+        ];
+    }
+
+    /**
      * Decouple inlined <style> and <script> tags from an HTML file into physical style.css and script.js on disk.
      *
      * @param string $slug Site slug
