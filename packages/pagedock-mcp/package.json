@@ -4,10 +4,12 @@
   "description": "PageDock Model Context Protocol (MCP) Server & Autonomous Agent Tools",
   "type": "module",
   "main": "./src/index.js",
-  "bin": "./src/index.js",
+  "bin": {
+    "pagedock-mcp": "./src/index.js"
+  },
   "scripts": {
     "start": "node ./src/index.js",
-    "test": "node tests/test_mcp_client.js && node tests/test_deploy_tools.js && node tests/test_patch_tools.js && node tests/test_insights_tools.js"
+    "test": "node tests/test_mcp_client.js && node tests/test_deploy_tools.js && node tests/test_patch_tools.js && node tests/test_insights_tools.js && node tests/test_stdio_protocol.js"
   },
   "keywords": [
     "pagedock",

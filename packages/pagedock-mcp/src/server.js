@@ -18,11 +18,13 @@ import { registerFormTools } from './tools/forms.js';
  * @returns {McpServer}
  */
 export function createMcpServer(options = {}) {
-  const client = options.client || new PageDockClient(options);
+  const isClientInstance = Boolean(options && (typeof options.deployHtml === 'function' || options instanceof PageDockClient));
+  const client = isClientInstance ? options : (options.client || new PageDockClient(options));
+  const serverInfo = isClientInstance ? {} : (options.serverInfo || {});
   const server = new McpServer({
-    name: 'pagedock',
+    name: 'pagedock-mcp',
     version: '0.1.0',
-    ...(options.serverInfo || {}),
+    ...serverInfo,
   });
 
   server.client = client;
