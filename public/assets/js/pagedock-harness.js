@@ -222,10 +222,33 @@
     return out;
   }
 
-  function isTextOnly(el) {
-    if (!el || el.children.length !== 0) return false;
+  function isEditableTextNode(el) {
+    if (!el || el.nodeType !== 1) return false;
+    if (isInert(el)) return false;
     if (/^(IMG|INPUT|BR|HR|SCRIPT|STYLE|TEXTAREA|SELECT|IFRAME|CANVAS|SVG|VIDEO|AUDIO|EMBED|OBJECT)$/i.test(el.tagName)) return false;
-    return (el.textContent || '').trim().length > 0;
+
+    // Direct leaf node with text
+    if (el.children.length === 0) {
+      return (el.textContent || '').trim().length > 0;
+    }
+
+    // Semantic text elements that may contain inline formatting (span, strong, em, b, i, a, code, small)
+    var textTags = /^(H1|H2|H3|H4|H5|H6|P|BUTTON|A|LI|BLOCKQUOTE|LABEL|SPAN|STRONG|EM|B|I|SMALL|CITE|FIGCAPTION)$/i;
+    if (textTags.test(el.tagName)) {
+      // Ensure it doesn't contain block-level structural containers
+      for (var i = 0; i < el.children.length; i++) {
+        var childTag = el.children[i].tagName;
+        if (/^(DIV|SECTION|ARTICLE|NAV|HEADER|FOOTER|MAIN|ASIDE|FORM|TABLE|UL|OL)$/i.test(childTag)) {
+          return false;
+        }
+      }
+      return (el.textContent || '').trim().length > 0;
+    }
+    return false;
+  }
+
+  function isTextOnly(el) {
+    return isEditableTextNode(el);
   }
 
   function formInfo(el) {
@@ -463,8 +486,11 @@
   document.addEventListener('dblclick', function (e) {
     if (!aiEnabled || isInert(e.target)) return;
     var el = e.target;
+    if (!isEditableTextNode(el) && el.parentElement && isEditableTextNode(el.parentElement)) {
+      el = el.parentElement;
+    }
+    if (!isEditableTextNode(el)) return;
     if (editingEl === el) return;
-    if (!isTextOnly(el)) return;
     e.preventDefault();
     e.stopPropagation();
     if (editingEl) endTextEdit(true);
@@ -473,6 +499,8 @@
     editingEl = el;
     editingOriginalText = (el.textContent || '');
     el.setAttribute('contenteditable', 'plaintext-only');
+    el.style.outline = '2px solid #38bdf8';
+    el.style.outlineOffset = '2px';
     el.focus();
     selectElement(el);
   }, true);
