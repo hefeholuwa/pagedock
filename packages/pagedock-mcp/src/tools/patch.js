@@ -22,7 +22,7 @@ export function registerPatchTools(server, client) {
         .describe('Change summary for snapshot version history [default: Updated file via MCP]'),
     },
     async ({ slug, path, content, summary }) => {
-      const filePath = path || 'index.html';
+      const filePath = (path || 'index.html').replace(/^\/+/, '');
       const changeSummary = summary || 'Updated file via MCP';
       try {
         const res = await client.updateSiteFiles(

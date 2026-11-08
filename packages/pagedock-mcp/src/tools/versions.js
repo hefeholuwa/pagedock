@@ -65,6 +65,8 @@ export function registerVersionTools(server, client) {
       slug: z.string().describe('Unique site slug identifier'),
       version: z
         .number()
+        .int()
+        .positive()
         .optional()
         .describe('Target version number to restore (optional - if omitted, reverts to previous version)'),
     },

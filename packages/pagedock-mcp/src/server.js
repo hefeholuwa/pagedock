@@ -4,6 +4,8 @@ import { registerDeployTools } from './tools/deploy.js';
 import { registerSiteTools } from './tools/sites.js';
 import { registerPatchTools } from './tools/patch.js';
 import { registerVersionTools } from './tools/versions.js';
+import { registerAnalyticsTools } from './tools/analytics.js';
+import { registerFormTools } from './tools/forms.js';
 
 /**
  * Creates and initializes a PageDock McpServer instance
@@ -37,6 +39,12 @@ export function createMcpServer(options = {}) {
   // Register version and rollback tools (list_versions, rollback_site)
   registerVersionTools(server, client);
 
+  // Register analytics and insight tools (get_site_analytics)
+  registerAnalyticsTools(server, client);
+
+  // Register form lead capture tools (list_form_submissions)
+  registerFormTools(server, client);
+
   return server;
 }
 
@@ -47,5 +55,7 @@ export {
   registerSiteTools,
   registerPatchTools,
   registerVersionTools,
+  registerAnalyticsTools,
+  registerFormTools,
 };
 
