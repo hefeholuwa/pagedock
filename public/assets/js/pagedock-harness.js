@@ -67,6 +67,7 @@
   }, true);
 
   function signalDomReady() {
+    initBlockOverlays();
     window.parent.postMessage({ type: 'buffer-dom-ready' }, '*');
   }
 
@@ -201,7 +202,142 @@
     if (!sec) return;
     highlightedSection = sec;
     sec.style.outline = '1.5px dashed rgba(125, 211, 252, 0.35)';
-    sec.style.outlineOffset = '2px';
+  // --- Element Overlays & Dedicated Action Toolbars ---
+  var blockIdCounter = 1;
+
+  function createBlockOverlay(el) {
+    if (!el || el.nodeType !== 1 || isInert(el)) return;
+    if (el === document.body || el === document.documentElement) return;
+    if (el.querySelector && el.querySelector(':scope > .pd-element-overlay')) return;
+
+    if (!el.getAttribute('data-pd-id')) {
+      el.setAttribute('data-pd-id', 'pd_' + (el.tagName.toLowerCase()) + '_' + (blockIdCounter++));
+    }
+    el.classList.add('pd-has-overlay');
+
+    var cs = window.getComputedStyle(el);
+    if (cs.position === 'static') {
+      el.style.position = 'relative';
+    }
+
+    var overlay = document.createElement('div');
+    overlay.className = 'pd-element-overlay';
+    overlay.setAttribute('data-pagedock-ui', 'overlay');
+
+    var toolbar = document.createElement('div');
+    toolbar.className = 'pd-element-toolbar';
+    toolbar.setAttribute('data-pagedock-ui', 'toolbar');
+
+    // 1. Drag Handle
+    var dragBtn = document.createElement('button');
+    dragBtn.type = 'button';
+    dragBtn.className = 'pd-tool-btn pd-tool-drag';
+    dragBtn.title = 'Drag to Move';
+    dragBtn.setAttribute('draggable', 'true');
+    dragBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="5" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="15" cy="5" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="15" cy="19" r="1.5"/></svg>';
+
+    dragBtn.addEventListener('mousedown', function (e) {
+      e.stopPropagation();
+      dragPotential = {
+        startX: e.clientX,
+        startY: e.clientY,
+        sourceSec: el,
+        startTime: Date.now()
+      };
+    });
+
+    dragBtn.addEventListener('dragstart', function (e) {
+      dragPotential = {
+        startX: e.clientX,
+        startY: e.clientY,
+        sourceSec: el,
+        startTime: Date.now()
+      };
+      if (e.dataTransfer) {
+        e.dataTransfer.setData('text/plain', el.getAttribute('data-pd-id') || el.tagName);
+        e.dataTransfer.effectAllowed = 'move';
+      }
+    });
+
+    // 2. Duplicate Block
+    var dupBtn = document.createElement('button');
+    dupBtn.type = 'button';
+    dupBtn.className = 'pd-tool-btn pd-tool-duplicate';
+    dupBtn.title = 'Duplicate Block';
+    dupBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+
+    dupBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      window.parent.postMessage({
+        type: 'element-duplicate',
+        targetId: el.getAttribute('data-pd-id'),
+        targetTag: el.tagName,
+        targetIndex: tagIndex(el)
+      }, '*');
+    });
+
+    // 3. Add Block Below
+    var addBtn = document.createElement('button');
+    addBtn.type = 'button';
+    addBtn.className = 'pd-tool-btn pd-tool-add';
+    addBtn.title = 'Add Block Below';
+    addBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+
+    addBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      window.parent.postMessage({
+        type: 'open-library-insert',
+        targetId: el.getAttribute('data-pd-id'),
+        targetTag: el.tagName,
+        targetIndex: tagIndex(el)
+      }, '*');
+    });
+
+    // 4. Delete Block
+    var delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.className = 'pd-tool-btn pd-tool-delete';
+    delBtn.title = 'Delete Block';
+    delBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
+    delBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      window.parent.postMessage({
+        type: 'element-delete',
+        targetId: el.getAttribute('data-pd-id'),
+        targetTag: el.tagName,
+        targetIndex: tagIndex(el)
+      }, '*');
+    });
+
+    toolbar.appendChild(dragBtn);
+    toolbar.appendChild(dupBtn);
+    toolbar.appendChild(addBtn);
+    toolbar.appendChild(delBtn);
+    overlay.appendChild(toolbar);
+    el.appendChild(overlay);
+  }
+
+  function initBlockOverlays() {
+    if (!document.body) return;
+    var tags = ['SECTION', 'ARTICLE', 'MAIN', 'HEADER', 'FOOTER', 'NAV', 'ASIDE'];
+    tags.forEach(function (tag) {
+      var elems = document.getElementsByTagName(tag);
+      for (var i = 0; i < elems.length; i++) {
+        createBlockOverlay(elems[i]);
+      }
+    });
+
+    var bodyChildren = document.body.children;
+    for (var j = 0; j < bodyChildren.length; j++) {
+      var child = bodyChildren[j];
+      if (!isInert(child) && child.tagName === 'DIV') {
+        createBlockOverlay(child);
+      }
+    }
   }
 
   function tagIndex(el) {
@@ -593,14 +729,17 @@
   document.addEventListener('mousedown', function (e) {
     if (!aiEnabled || isInert(e.target) || e.button !== 0) return;
     if (editingEl) return;
-    var sec = findSection(e.target);
-    if (sec && sec !== document.body) {
-      dragPotential = {
-        startX: e.clientX,
-        startY: e.clientY,
-        sourceSec: sec,
-        startTime: Date.now()
-      };
+    var dragHandle = e.target.closest ? e.target.closest('.pd-tool-drag') : null;
+    if (dragHandle) {
+      var sec = findSection(dragHandle);
+      if (sec && sec !== document.body) {
+        dragPotential = {
+          startX: e.clientX,
+          startY: e.clientY,
+          sourceSec: sec,
+          startTime: Date.now()
+        };
+      }
     }
   }, true);
 

@@ -2205,3 +2205,73 @@ body.hh-editor-body {
         padding: 0 8px;
     }
 }
+
+/* ==========================================================================
+   Elementor-Style Canvas Overlays & Action Toolbars
+   ========================================================================== */
+.pd-has-overlay {
+    position: relative !important;
+}
+
+.pd-element-overlay {
+    position: absolute;
+    inset-inline-end: 8px;
+    inset-block-start: -14px;
+    z-index: 99999;
+    pointer-events: none;
+}
+
+.pd-element-toolbar {
+    display: inline-flex;
+    align-items: center;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    pointer-events: all;
+    padding: 2px;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    transform: translateY(-2px);
+}
+
+.pd-has-overlay:hover > .pd-element-overlay .pd-element-toolbar,
+.pd-element-selected > .pd-element-overlay .pd-element-toolbar {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.pd-tool-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.12s ease;
+}
+
+.pd-tool-btn:hover {
+    background: #1e293b;
+    color: #38bdf8;
+}
+
+.pd-tool-btn.pd-tool-drag {
+    cursor: grab;
+}
+
+.pd-tool-btn.pd-tool-drag:active {
+    cursor: grabbing;
+}
+
+.pd-tool-btn.pd-tool-delete:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+}
+
