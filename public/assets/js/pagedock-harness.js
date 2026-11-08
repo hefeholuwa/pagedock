@@ -137,6 +137,7 @@
   var dragState = null;
   var dragPotential = null;
   var dropIndicator = null;
+  var justFinishedDrag = false;
 
   function ensureDropIndicator() {
     if (!dropIndicator || !dropIndicator.parentNode) {
@@ -172,7 +173,9 @@
   }
 
   function findSection(el) {
+    if (!el || el === document.body || el === document.documentElement) return null;
     var tags = ['SECTION', 'ARTICLE', 'MAIN', 'HEADER', 'FOOTER', 'NAV', 'ASIDE'];
+    if (tags.indexOf(el.tagName) !== -1) return el;
     var cur = el.parentElement;
     while (cur && cur !== document.body && cur !== document.documentElement) {
       if (tags.indexOf(cur.tagName) !== -1) return cur;
@@ -182,7 +185,7 @@
     while (cur.parentElement && cur.parentElement !== document.body) {
       cur = cur.parentElement;
     }
-    return cur !== el ? cur : null;
+    return cur !== document.body ? cur : null;
   }
 
   function clearSectionHighlight() {
@@ -460,6 +463,11 @@
 
   // --- 5. Click Selection & In-Place Text Edit ---
   document.addEventListener('click', function (e) {
+    if (justFinishedDrag) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
     // 1. Prevent link clicks from navigating the preview frame away to 404 or external pages
     var link = e.target.closest('a');
     if (link) {
@@ -600,12 +608,14 @@
     if (dragPotential && !dragState) {
       var dx = Math.abs(e.clientX - dragPotential.startX);
       var dy = Math.abs(e.clientY - dragPotential.startY);
-      if (dx > 8 || dy > 8) {
+      if (dx > 4 || dy > 4) {
         dragState = {
           active: true,
           sourceSec: dragPotential.sourceSec
         };
+        document.body.style.userSelect = 'none';
         dragState.sourceSec.style.opacity = '0.5';
+        dragState.sourceSec.style.transition = 'opacity 0.15s ease';
       }
     }
 
@@ -614,7 +624,7 @@
       var under = document.elementFromPoint(e.clientX, e.clientY);
       if (under && !isInert(under)) {
         var targetSec = findSection(under);
-        if (targetSec && targetSec !== dragState.sourceSec && targetSec.parentNode === dragState.sourceSec.parentNode) {
+        if (targetSec && targetSec !== dragState.sourceSec) {
           var rect = targetSec.getBoundingClientRect();
           var midY = rect.top + rect.height / 2;
           var pos = e.clientY < midY ? 'before' : 'after';
@@ -633,6 +643,8 @@
     if (dragState && dragState.active) {
       e.preventDefault();
       e.stopPropagation();
+      justFinishedDrag = true;
+      document.body.style.userSelect = '';
       dragState.sourceSec.style.opacity = '';
       hideDropIndicator();
 
@@ -647,10 +659,12 @@
         var targetIndex = tagIndex(tgt);
 
         // Perform DOM reorder in preview
-        if (pos === 'before') {
-          tgt.parentNode.insertBefore(src, tgt);
-        } else {
-          tgt.parentNode.insertBefore(src, tgt.nextSibling);
+        if (tgt.parentNode) {
+          if (pos === 'before') {
+            tgt.parentNode.insertBefore(src, tgt);
+          } else {
+            tgt.parentNode.insertBefore(src, tgt.nextSibling);
+          }
         }
 
         // Notify parent editor to reorder in CodeMirror
@@ -668,6 +682,7 @@
 
       dragState = null;
       dragPotential = null;
+      setTimeout(function () { justFinishedDrag = false; }, 300);
       return;
     }
     dragPotential = null;
@@ -1089,6 +1104,52 @@
     // Request Structure Tree
     if (d.type === 'request-structure') {
       sendStructureTree();
+    }
+
+    // Library Component Drag from Parent Window
+    if (d.type === 'library-drag-hover') {
+      var under = document.elementFromPoint(d.x, d.y);
+      if (under && !isInert(under)) {
+        var sec = findSection(under);
+        if (sec && sec !== document.body) {
+          var rect = sec.getBoundingClientRect();
+          var midY = rect.top + rect.height / 2;
+          var pos = d.y < midY ? 'before' : 'after';
+          showDropIndicator(rect, pos);
+          libraryDragTarget = {
+            targetTag: sec.tagName,
+            targetIndex: tagIndex(sec),
+            position: pos,
+            snippet: d.snippet,
+            name: d.name
+          };
+          return;
+        }
+      }
+      hideDropIndicator();
+      libraryDragTarget = null;
+    }
+
+    if (d.type === 'library-drag-drop') {
+      hideDropIndicator();
+      var snippet = d.snippet || (libraryDragTarget ? libraryDragTarget.snippet : '');
+      var name = d.name || (libraryDragTarget ? libraryDragTarget.name : 'Component');
+      if (snippet) {
+        window.parent.postMessage({
+          type: 'library-drop',
+          name: name,
+          snippet: snippet,
+          targetTag: libraryDragTarget ? libraryDragTarget.targetTag : null,
+          targetIndex: libraryDragTarget ? libraryDragTarget.targetIndex : null,
+          position: libraryDragTarget ? libraryDragTarget.position : 'append'
+        }, '*');
+      }
+      libraryDragTarget = null;
+    }
+
+    if (d.type === 'library-drag-end') {
+      hideDropIndicator();
+      libraryDragTarget = null;
     }
   });
 

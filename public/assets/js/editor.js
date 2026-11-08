@@ -1237,6 +1237,7 @@
                         </div>
                     `;
                     card.addEventListener('dragstart', (e) => {
+                        state.draggedLibrarySnippet = item;
                         e.dataTransfer.setData('text/plain', item.snippet);
                         e.dataTransfer.setData('application/json', JSON.stringify({
                             name: item.name,
@@ -1275,6 +1276,7 @@
                         </div>
                     `;
                     card.addEventListener('dragstart', (e) => {
+                        state.draggedLibrarySnippet = item;
                         e.dataTransfer.setData('text/plain', item.snippet);
                         e.dataTransfer.setData('application/json', JSON.stringify({
                             name: item.name,
@@ -2394,6 +2396,60 @@
                     closeAllModals();
                 }
             });
+        });
+
+        // Cross-window Library drag onto Preview Canvas
+        document.addEventListener('dragover', (e) => {
+            if (state.draggedLibrarySnippet) {
+                e.preventDefault();
+                if (e.dataTransfer) {
+                    e.dataTransfer.dropEffect = 'copy';
+                }
+                if (dom.previewIframe) {
+                    const rect = dom.previewIframe.getBoundingClientRect();
+                    if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        postToIframe({
+                            type: 'library-drag-hover',
+                            x: x,
+                            y: y,
+                            snippet: state.draggedLibrarySnippet.snippet,
+                            name: state.draggedLibrarySnippet.name
+                        });
+                    } else {
+                        postToIframe({ type: 'library-drag-end' });
+                    }
+                }
+            }
+        });
+
+        document.addEventListener('drop', (e) => {
+            if (state.draggedLibrarySnippet) {
+                e.preventDefault();
+                if (dom.previewIframe) {
+                    const rect = dom.previewIframe.getBoundingClientRect();
+                    if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        postToIframe({
+                            type: 'library-drag-drop',
+                            x: x,
+                            y: y,
+                            snippet: state.draggedLibrarySnippet.snippet,
+                            name: state.draggedLibrarySnippet.name
+                        });
+                    }
+                }
+                state.draggedLibrarySnippet = null;
+            }
+        });
+
+        document.addEventListener('dragend', () => {
+            if (state.draggedLibrarySnippet) {
+                state.draggedLibrarySnippet = null;
+                postToIframe({ type: 'library-drag-end' });
+            }
         });
     }
 
