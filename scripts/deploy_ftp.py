@@ -20,6 +20,8 @@ EXCLUDE_DIRS = {
     '__pycache__',
     'storage',
     'node_modules',
+    'packages',
+    'sites',
 }
 
 EXCLUDE_FILES = {
@@ -30,12 +32,18 @@ EXCLUDE_FILES = {
     '.graphifyignore',
     'HTMLHOST_REVERSE_ENGINEERING.md',
     'HTMLHOST_REVERSE_ENGINEERING_VERIFIED.md',
+    'HTMLHOST_AI_EDITOR_REVERSE_ENGINEERED.md',
+    'overflow_repro.png',
+    'package.json',
+    'package-lock.json',
 }
 
 EXCLUDE_EXTENSIONS = {
     '.pyc',
+    '.sqlite',
     '.sqlite-shm',
     '.sqlite-wal',
+    '.db',
 }
 
 
