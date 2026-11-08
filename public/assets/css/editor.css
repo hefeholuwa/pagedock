@@ -1673,3 +1673,171 @@ body.hh-editor-body {
 .hh-toast.hidden {
     display: none;
 }
+
+/* ==========================================================================
+   MOBILE RESPONSIVE OVERHAUL (< 768px and < 480px)
+   ========================================================================== */
+
+/* Mobile View Switcher (Hidden on desktop) */
+.hh-mobile-view-bar {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    /* Mobile View Switcher */
+    .hh-mobile-view-bar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 6px 12px;
+        background: var(--bg-1);
+        border-bottom: 1px solid var(--line);
+        flex-shrink: 0;
+        z-index: 50;
+    }
+
+    .hh-mobile-view-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        flex: 1;
+        max-width: 200px;
+        height: 40px;
+        min-height: 40px;
+        min-width: 40px;
+        padding: 0 16px;
+        border-radius: var(--radius-sm);
+        background: var(--bg-2);
+        border: 1px solid var(--line);
+        color: var(--fg-3);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .hh-mobile-view-btn.active {
+        background: var(--accent);
+        color: #030712;
+        border-color: var(--accent);
+        font-weight: 600;
+    }
+
+    /* Topbar Layout & Touch Targets */
+    .hh-topbar {
+        padding: 0 8px;
+        gap: 6px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .hh-topbar .hh-btn-icon,
+    .hh-topbar .hh-btn-ghost,
+    .hh-topbar .hh-toggle-pill,
+    .hh-topbar .hh-aiedit-switch,
+    .hh-topbar .hh-btn-publish {
+        min-height: 40px;
+        min-width: 40px;
+        height: 40px;
+    }
+
+    .hh-btn-icon,
+    .hh-btn-ghost {
+        min-height: 40px;
+        min-width: 40px;
+    }
+
+    /* Hide redundant / desktop-only controls in topbar on mobile */
+    .hh-device-switcher,
+    .hh-expiry-pill,
+    .hh-back-label,
+    .hh-media-trigger span:not(.hh-chip-dot),
+    .hh-chat-trigger span,
+    .hh-dropdown-trigger .hh-chevron,
+    #hh-savedraft-btn #hh-save-status-text {
+        display: none;
+    }
+
+    /* Main Workspace & Panels */
+    .hh-workspace {
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .hh-splitter {
+        display: none !important;
+    }
+
+    /* Code Mode Active */
+    .hh-mobile-mode-code .hh-left-panel {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 1 1 auto;
+        display: flex !important;
+        border-right: none;
+    }
+
+    .hh-mobile-mode-code .hh-canvas-area {
+        display: none !important;
+    }
+
+    /* Preview Mode Active */
+    .hh-mobile-mode-preview .hh-left-panel {
+        display: none !important;
+        width: 0 !important;
+    }
+
+    .hh-mobile-mode-preview .hh-canvas-area {
+        display: flex !important;
+        width: 100% !important;
+        flex: 1 1 auto;
+        padding: 8px;
+    }
+
+    .hh-mobile-mode-preview .hh-viewport-wrapper {
+        width: 100% !important;
+    }
+
+    /* Popovers Clamp on Mobile */
+    .hh-popover-card {
+        max-width: calc(100vw - 20px) !important;
+        width: calc(100vw - 20px) !important;
+    }
+
+    .hh-popover-anchor {
+        max-width: calc(100vw - 20px);
+        left: 10px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Hide extra redundant text labels on small mobile screens */
+    #hh-editmode-label,
+    .hh-badge-tag,
+    .hh-badge-dot,
+    .hh-project-badge .hh-badge-tag,
+    .hh-project-badge .hh-badge-dot,
+    .hh-topbar-left .hh-history-group {
+        display: none;
+    }
+
+    .hh-topbar-center {
+        gap: 4px;
+    }
+
+    .hh-topbar-right {
+        gap: 4px;
+    }
+
+    .hh-panel-tabs-bar {
+        overflow-x: auto;
+    }
+
+    .hh-tab-btn {
+        min-height: 40px;
+        min-width: 40px;
+        padding: 0 8px;
+    }
+}

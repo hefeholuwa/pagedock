@@ -14,7 +14,7 @@
     <!-- PageDock Editor CSS -->
     <link rel="stylesheet" href="<?= asset('assets/css/editor.css') ?>">
 </head>
-<body class="hh-editor-body">
+<body class="hh-editor-body hh-mobile-mode-code">
 
     <!-- Top Navigation & Action Toolbar (1:1 htmlhost.co) -->
     <header class="hh-topbar" id="hh-topbar">
@@ -162,6 +162,18 @@
             <?php endif; ?>
         </div>
     </header>
+
+    <!-- Mobile Segmented View Switcher (Visible only on mobile/tablet <= 768px) -->
+    <div class="hh-mobile-view-bar" id="hh-mobile-view-bar">
+        <button type="button" class="hh-mobile-view-btn active" data-view="code" id="hh-mobile-btn-code">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            <span>Code</span>
+        </button>
+        <button type="button" class="hh-mobile-view-btn" data-view="preview" id="hh-mobile-btn-preview">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            <span>Preview</span>
+        </button>
+    </div>
 
     <!-- Main Workspace (Left Collapsible Drawer + Center Preview Canvas + Right Chat Drawer) -->
     <main class="hh-workspace" id="hh-workspace">

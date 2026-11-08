@@ -15,6 +15,7 @@
         activeTab: 'code',        // 'code' | 'library' | 'structure' | 'shared'
         activeLibView: 'sections',// 'sections' | 'elements'
         currentDevice: 'desktop', // 'desktop' | 'tablet' | 'mobile'
+        mobileView: 'code',       // 'code' | 'preview'
         selectedElement: null,    // Last clicked element payload from iframe
         historyStack: [],
         redoStack: [],
@@ -35,6 +36,10 @@
         chatBtn: document.getElementById('hh-chat-btn'),
         quotaLabel: document.getElementById('hh-quota-label'),
         deviceBtns: document.querySelectorAll('.hh-device-btn'),
+        mobileViewBar: document.getElementById('hh-mobile-view-bar'),
+        mobileViewBtns: document.querySelectorAll('.hh-mobile-view-btn'),
+        mobileBtnCode: document.getElementById('hh-mobile-btn-code'),
+        mobileBtnPreview: document.getElementById('hh-mobile-btn-preview'),
         toolsBtn: document.getElementById('hh-tools-btn'),
         toolsMenu: document.getElementById('hh-tools-menu'),
         saveDraftBtn: document.getElementById('hh-savedraft-btn'),
@@ -485,6 +490,41 @@
         }
     }
 
+    // Mobile View Switcher (Code vs Preview)
+    function setMobileView(mode) {
+        state.mobileView = mode;
+        const isCode = mode === 'code';
+
+        if (document.body) {
+            document.body.classList.toggle('hh-mobile-mode-code', isCode);
+            document.body.classList.toggle('hh-mobile-mode-preview', !isCode);
+        }
+
+        const workspace = dom.workspace || document.getElementById('hh-workspace');
+        if (workspace) {
+            workspace.classList.toggle('hh-mobile-mode-code', isCode);
+            workspace.classList.toggle('hh-mobile-mode-preview', !isCode);
+        }
+
+        const viewBtns = dom.mobileViewBtns && dom.mobileViewBtns.length
+            ? dom.mobileViewBtns
+            : document.querySelectorAll('.hh-mobile-view-btn');
+
+        if (viewBtns && viewBtns.length) {
+            viewBtns.forEach(btn => {
+                const btnView = btn.dataset.view || (btn.id.includes('preview') ? 'preview' : 'code');
+                btn.classList.toggle('active', btnView === mode);
+            });
+        }
+
+        if (isCode && cmEditor) {
+            cmEditor.refresh();
+            setTimeout(() => {
+                if (cmEditor) cmEditor.refresh();
+            }, 50);
+        }
+    }
+
     // Comprehensive Library: 46 Sections & 48 Elements
     const LIBRARY_DATA = {
         sections: [
@@ -906,6 +946,19 @@
             });
         });
 
+        // Mobile View Switcher (Segmented Code / Preview)
+        const mobileBtns = dom.mobileViewBtns && dom.mobileViewBtns.length
+            ? dom.mobileViewBtns
+            : document.querySelectorAll('.hh-mobile-view-btn');
+        if (mobileBtns && mobileBtns.length) {
+            mobileBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const view = btn.dataset.view || (btn.id.includes('preview') ? 'preview' : 'code');
+                    setMobileView(view);
+                });
+            });
+        }
+
         // Tools Dropdown
         if (dom.toolsBtn && dom.toolsMenu) {
             dom.toolsBtn.addEventListener('click', (e) => {
@@ -1085,6 +1138,7 @@
         renderLibrary();
         updateHistoryButtons();
         updateQuotaDisplay();
+        setMobileView(document.body && document.body.classList.contains('hh-mobile-mode-preview') ? 'preview' : 'code');
     }
 
     if (document.readyState === 'loading') {
