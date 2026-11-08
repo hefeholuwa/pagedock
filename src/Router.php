@@ -1318,7 +1318,8 @@ class Router {
                         obs.observe(document.documentElement, { childList: true, subtree: true });
                     } catch(e){}
                 })();
-                </script>';
+                </script>
+                <link rel="stylesheet" href="' . asset('assets/css/editor.css') . '">';
                 if (stripos($content, '<head>') !== false) {
                     $content = str_ireplace('<head>', "<head>\n" . $headHarness, $content);
                 }

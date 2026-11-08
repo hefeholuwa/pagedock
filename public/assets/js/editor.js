@@ -1106,7 +1106,9 @@
     }
 
     function handleOpenLibraryInsert(payload) {
+        state.pendingInsertTarget = payload;
         switchTab('library');
+        showToast('[ACTION] Tap a component to insert below');
         if (dom.libSearchInput) {
             dom.libSearchInput.focus();
         }
@@ -1391,8 +1393,11 @@
     }
 
     function handleLibraryDrop(data) {
-        if (!cmEditor || !data || !data.snippet) return;
-        const { snippet, name, targetTag, targetIndex, position } = data;
+        if (!cmEditor || !data) return;
+        const snippet = data.snippet || (state.draggedLibrarySnippet ? state.draggedLibrarySnippet.snippet : '');
+        const name = data.name || (state.draggedLibrarySnippet ? state.draggedLibrarySnippet.name : 'Component');
+        if (!snippet) return;
+        const { targetTag, targetIndex, position } = data;
         const currentCode = getHtmlCode();
 
         if (targetTag && targetIndex !== null && targetIndex !== undefined) {
@@ -1433,9 +1438,32 @@
     }
 
     function insertSnippetIntoPage(snippet, name) {
-        if (!cmEditor) return;
+        if (!cmEditor || !snippet) return;
         const currentCode = getHtmlCode();
         
+        let target = state.pendingInsertTarget;
+        state.pendingInsertTarget = null;
+
+        if (target && target.targetTag && target.targetIndex !== undefined) {
+            const tgtRange = findTagRangeInHtml(currentCode, target.targetTag, target.targetIndex);
+            if (tgtRange) {
+                const updatedCode = currentCode.slice(0, tgtRange.end) + '\n\n' + snippet + currentCode.slice(tgtRange.end);
+                updateCodeEditor(updatedCode, false);
+                showToast(`[ACTION] Inserted ${name} below block.`);
+                return;
+            }
+        }
+
+        if (state.selectedElement && state.selectedElement.sectionTag) {
+            const secRange = findTagRangeInHtml(currentCode, state.selectedElement.sectionTag, state.selectedElement.sectionTagIndex);
+            if (secRange) {
+                const updatedCode = currentCode.slice(0, secRange.end) + '\n\n' + snippet + currentCode.slice(secRange.end);
+                updateCodeEditor(updatedCode, false);
+                showToast(`[ACTION] Inserted ${name} below selected section.`);
+                return;
+            }
+        }
+
         let updatedCode = currentCode;
         if (!currentCode || !currentCode.trim()) {
             updatedCode = bootstrapEmptyPage(snippet);

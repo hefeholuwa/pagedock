@@ -66,8 +66,143 @@
     holdNode(e.target);
   }, true);
 
+  function ensureHarnessStyles() {
+    if (document.getElementById('pd-harness-styles')) return;
+    var style = document.createElement('style');
+    style.id = 'pd-harness-styles';
+    style.setAttribute('data-pagedock-ui', 'styles');
+    style.textContent = `
+      .pd-has-overlay {
+        position: relative !important;
+      }
+      .pd-element-overlay {
+        position: absolute !important;
+        inset-inline-end: 8px !important;
+        inset-block-start: -14px !important;
+        z-index: 99999 !important;
+        pointer-events: none !important;
+      }
+      .pd-element-toolbar {
+        display: inline-flex !important;
+        align-items: center !important;
+        background: #0f172a !important;
+        border: 1px solid #334155 !important;
+        border-radius: 6px !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+        pointer-events: all !important;
+        padding: 2px !important;
+        gap: 2px !important;
+        opacity: 0;
+        transition: opacity 0.15s ease, transform 0.15s ease !important;
+        transform: translateY(-2px) !important;
+      }
+      .pd-has-overlay:hover > .pd-element-overlay .pd-element-toolbar,
+      .pd-element-selected > .pd-element-overlay .pd-element-toolbar,
+      .pd-has-overlay.pd-element-selected > .pd-element-overlay .pd-element-toolbar,
+      .pd-has-overlay.pd-element-active > .pd-element-overlay .pd-element-toolbar {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+      }
+      .pd-tool-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 22px !important;
+        height: 22px !important;
+        min-width: 22px !important;
+        min-height: 22px !important;
+        padding: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        color: #94a3b8 !important;
+        border-radius: 4px !important;
+        cursor: pointer !important;
+        touch-action: manipulation !important;
+        user-select: none !important;
+        -webkit-user-select: none !important;
+        transition: all 0.12s ease !important;
+      }
+      .pd-tool-btn:hover, .pd-tool-btn:active {
+        background: #1e293b !important;
+        color: #38bdf8 !important;
+      }
+      .pd-tool-btn.pd-tool-drag {
+        cursor: grab !important;
+      }
+      .pd-tool-btn.pd-tool-drag:active, .pd-dragging .pd-tool-btn.pd-tool-drag {
+        cursor: grabbing !important;
+      }
+      .pd-tool-btn.pd-tool-delete:hover, .pd-tool-btn.pd-tool-delete:active {
+        background: rgba(239, 68, 68, 0.2) !important;
+        color: #f87171 !important;
+      }
+      .pd-drop-slot {
+        box-sizing: border-box !important;
+        background: rgba(56, 189, 248, 0.25) !important;
+        border: 2px dashed #38bdf8 !important;
+        border-radius: 6px !important;
+        pointer-events: none !important;
+        position: absolute !important;
+        z-index: 999999 !important;
+        box-shadow: 0 0 14px rgba(56, 189, 248, 0.7) !important;
+        animation: pd-slot-pulse 1s infinite alternate cubic-bezier(0.4, 0, 0.2, 1) !important;
+        display: none;
+      }
+      @keyframes pd-slot-pulse {
+        from {
+          border-color: #38bdf8;
+          background: rgba(56, 189, 248, 0.16);
+        }
+        to {
+          border-color: #818cf8;
+          background: rgba(129, 140, 248, 0.32);
+        }
+      }
+      .pd-empty-canvas {
+        margin: 40px auto !important;
+        max-width: 600px !important;
+        padding: 60px 24px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        border: 2px dashed rgba(56, 189, 248, 0.45) !important;
+        border-radius: 12px !important;
+        background: rgba(15, 23, 42, 0.65) !important;
+        backdrop-filter: blur(8px) !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+      }
+      .pd-empty-canvas:hover, .pd-empty-canvas.dragover {
+        border-color: #38bdf8 !important;
+        background: rgba(56, 189, 248, 0.1) !important;
+        box-shadow: 0 0 24px rgba(56, 189, 248, 0.25) !important;
+      }
+      .pd-empty-icon {
+        color: #38bdf8 !important;
+        margin-bottom: 12px !important;
+      }
+      .pd-empty-title {
+        font-family: system-ui, -apple-system, sans-serif !important;
+        font-size: 18px !important;
+        font-weight: 600 !important;
+        color: #f1f5f9 !important;
+        margin-bottom: 6px !important;
+      }
+      .pd-empty-desc {
+        font-family: system-ui, -apple-system, sans-serif !important;
+        font-size: 13px !important;
+        color: #94a3b8 !important;
+        max-width: 320px !important;
+      }
+    `;
+    (document.head || document.documentElement).appendChild(style);
+  }
+
   function checkEmptyCanvas() {
     if (!document.body) return;
+    ensureHarnessStyles();
     var meaningfulChildren = [];
     for (var i = 0; i < document.body.children.length; i++) {
       var ch = document.body.children[i];
@@ -81,7 +216,10 @@
         var emptyBox = document.createElement('div');
         emptyBox.className = 'pd-empty-canvas';
         emptyBox.setAttribute('data-pagedock-ui', 'empty-canvas');
-        emptyBox.innerHTML = '<div class="pd-empty-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div><div class="pd-empty-title">Start Building Your Page</div><div class="pd-empty-desc">Drag any section or element from the library into this space</div>';
+        emptyBox.innerHTML = '<div class="pd-empty-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div><div class="pd-empty-title">Start Building Your Page</div><div class="pd-empty-desc">Drag any section or element from the library into this space, or tap here to pick a component</div>';
+        emptyBox.addEventListener('click', function () {
+          window.parent.postMessage({ type: 'open-library-insert' }, '*');
+        });
         document.body.appendChild(emptyBox);
       }
     } else if (existing) {
@@ -90,11 +228,13 @@
   }
 
   function signalDomReady() {
+    ensureHarnessStyles();
     initBlockOverlays();
     checkEmptyCanvas();
     window.parent.postMessage({ type: 'buffer-dom-ready' }, '*');
   }
 
+  ensureHarnessStyles();
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', signalDomReady);
   } else {
@@ -307,8 +447,48 @@
     if (!sec) return;
     highlightedSection = sec;
     sec.style.outline = '1.5px dashed rgba(125, 211, 252, 0.35)';
+  }
+
   // --- Element Overlays & Dedicated Action Toolbars ---
   var blockIdCounter = 1;
+
+  function getAdjacentBlock(sec, direction) {
+    if (!sec || !sec.parentElement) return null;
+    var sib = direction === -1 ? sec.previousElementSibling : sec.nextElementSibling;
+    while (sib) {
+      if (!isInert(sib) && ['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEMPLATE'].indexOf(sib.tagName) === -1) {
+        return sib;
+      }
+      sib = direction === -1 ? sib.previousElementSibling : sib.nextElementSibling;
+    }
+    return null;
+  }
+
+  function moveBlockRelative(sec, direction) {
+    var target = getAdjacentBlock(sec, direction);
+    if (!target) return;
+    var sourceTag = sec.tagName;
+    var sourceIndex = tagIndex(sec);
+    var targetTag = target.tagName;
+    var targetIndex = tagIndex(target);
+    var pos = direction === -1 ? 'before' : 'after';
+
+    if (direction === -1) {
+      sec.parentNode.insertBefore(sec, target);
+    } else {
+      sec.parentNode.insertBefore(sec, target.nextSibling);
+    }
+
+    window.parent.postMessage({
+      type: 'element-reorder',
+      sourceTag: sourceTag,
+      sourceIndex: sourceIndex,
+      targetTag: targetTag,
+      targetIndex: targetIndex,
+      position: pos
+    }, '*');
+    sendStructureTree();
+  }
 
   function createBlockOverlay(el) {
     if (!el || el.nodeType !== 1 || isInert(el)) return;
@@ -338,39 +518,51 @@
     dragBtn.type = 'button';
     dragBtn.className = 'pd-tool-btn pd-tool-drag';
     dragBtn.title = 'Drag to Move';
-    dragBtn.setAttribute('draggable', 'true');
     dragBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="5" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="15" cy="5" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="15" cy="19" r="1.5"/></svg>';
 
-    dragBtn.addEventListener('mousedown', function (e) {
+    function handleDragGripStart(e) {
       e.stopPropagation();
+      var pt = e.touches ? e.touches[0] : e;
       dragPotential = {
-        startX: e.clientX,
-        startY: e.clientY,
+        startX: pt.clientX,
+        startY: pt.clientY,
         sourceSec: el,
         startTime: Date.now()
       };
+    }
+    dragBtn.addEventListener('mousedown', handleDragGripStart);
+    dragBtn.addEventListener('touchstart', handleDragGripStart, { passive: false });
+
+    // 2. Move Up Button
+    var upBtn = document.createElement('button');
+    upBtn.type = 'button';
+    upBtn.className = 'pd-tool-btn pd-tool-up';
+    upBtn.title = 'Move Up';
+    upBtn.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>';
+    upBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      moveBlockRelative(el, -1);
     });
 
-    dragBtn.addEventListener('dragstart', function (e) {
-      dragPotential = {
-        startX: e.clientX,
-        startY: e.clientY,
-        sourceSec: el,
-        startTime: Date.now()
-      };
-      if (e.dataTransfer) {
-        e.dataTransfer.setData('text/plain', el.getAttribute('data-pd-id') || el.tagName);
-        e.dataTransfer.effectAllowed = 'move';
-      }
+    // 3. Move Down Button
+    var downBtn = document.createElement('button');
+    downBtn.type = 'button';
+    downBtn.className = 'pd-tool-btn pd-tool-down';
+    downBtn.title = 'Move Down';
+    downBtn.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>';
+    downBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      moveBlockRelative(el, 1);
     });
 
-    // 2. Duplicate Block
+    // 4. Duplicate Block
     var dupBtn = document.createElement('button');
     dupBtn.type = 'button';
     dupBtn.className = 'pd-tool-btn pd-tool-duplicate';
     dupBtn.title = 'Duplicate Block';
     dupBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
-
     dupBtn.addEventListener('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -382,13 +574,12 @@
       }, '*');
     });
 
-    // 3. Add Block Below
+    // 5. Add Block Below
     var addBtn = document.createElement('button');
     addBtn.type = 'button';
     addBtn.className = 'pd-tool-btn pd-tool-add';
     addBtn.title = 'Add Block Below';
     addBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
-
     addBtn.addEventListener('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -400,13 +591,12 @@
       }, '*');
     });
 
-    // 4. Delete Block
+    // 6. Delete Block
     var delBtn = document.createElement('button');
     delBtn.type = 'button';
     delBtn.className = 'pd-tool-btn pd-tool-delete';
     delBtn.title = 'Delete Block';
     delBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
-
     delBtn.addEventListener('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -419,6 +609,8 @@
     });
 
     toolbar.appendChild(dragBtn);
+    toolbar.appendChild(upBtn);
+    toolbar.appendChild(downBtn);
     toolbar.appendChild(dupBtn);
     toolbar.appendChild(addBtn);
     toolbar.appendChild(delBtn);
@@ -428,6 +620,7 @@
 
   function initBlockOverlays() {
     if (!document.body) return;
+    ensureHarnessStyles();
     var tags = ['SECTION', 'ARTICLE', 'MAIN', 'HEADER', 'FOOTER', 'NAV', 'ASIDE'];
     tags.forEach(function (tag) {
       var elems = document.getElementsByTagName(tag);
@@ -439,7 +632,7 @@
     var bodyChildren = document.body.children;
     for (var j = 0; j < bodyChildren.length; j++) {
       var child = bodyChildren[j];
-      if (!isInert(child) && child.tagName === 'DIV') {
+      if (!isInert(child) && ['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEMPLATE'].indexOf(child.tagName) === -1) {
         createBlockOverlay(child);
       }
     }
@@ -584,10 +777,16 @@
     if (selectedEl && selectedEl !== el) {
       selectedEl.style.outline = '';
       selectedEl.style.outlineOffset = '';
+      selectedEl.classList.remove('pd-element-selected');
+      var oldSec = findSection(selectedEl);
+      if (oldSec) oldSec.classList.remove('pd-element-selected');
     }
     selectedEl = el;
     el.style.outline = '2px solid #7dd3fc';
     el.style.outlineOffset = '-1px';
+    el.classList.add('pd-element-selected');
+    var curSec = findSection(el);
+    if (curSec) curSec.classList.add('pd-element-selected');
   }
 
   function postSelected(el) {
@@ -831,27 +1030,31 @@
   }, true);
 
   // --- 5b. Section Drag-and-Drop Reordering ---
-  document.addEventListener('mousedown', function (e) {
-    if (!aiEnabled || isInert(e.target) || e.button !== 0) return;
+  function onPointerDown(e) {
+    if (!aiEnabled || isInert(e.target) || (e.button !== undefined && e.button !== 0)) return;
     if (editingEl) return;
     var dragHandle = e.target.closest ? e.target.closest('.pd-tool-drag') : null;
     if (dragHandle) {
       var sec = findSection(dragHandle);
       if (sec && sec !== document.body) {
+        var pt = e.touches ? e.touches[0] : e;
         dragPotential = {
-          startX: e.clientX,
-          startY: e.clientY,
+          startX: pt.clientX,
+          startY: pt.clientY,
           sourceSec: sec,
           startTime: Date.now()
         };
       }
     }
-  }, true);
+  }
 
-  document.addEventListener('mousemove', function (e) {
+  function onPointerMove(e) {
+    var pt = e.touches ? e.touches[0] : e;
+    if (!pt) return;
+
     if (dragPotential && !dragState) {
-      var dx = Math.abs(e.clientX - dragPotential.startX);
-      var dy = Math.abs(e.clientY - dragPotential.startY);
+      var dx = Math.abs(pt.clientX - dragPotential.startX);
+      var dy = Math.abs(pt.clientY - dragPotential.startY);
       if (dx > 4 || dy > 4) {
         dragState = {
           active: true,
@@ -859,37 +1062,48 @@
         };
         document.body.style.userSelect = 'none';
         dragState.sourceSec.style.opacity = '0.5';
+        dragState.sourceSec.classList.add('pd-dragging');
         dragState.sourceSec.style.transition = 'opacity 0.15s ease';
       }
     }
 
     if (dragState && dragState.active) {
-      e.preventDefault();
-      var under = document.elementFromPoint(e.clientX, e.clientY);
+      if (e.cancelable) e.preventDefault();
+      // Auto-scroll near edges
+      if (pt.clientY < 50) {
+        window.scrollBy(0, -12);
+      } else if (pt.clientY > window.innerHeight - 50) {
+        window.scrollBy(0, 12);
+      }
+
+      var under = document.elementFromPoint(pt.clientX, pt.clientY);
       if (under && !isInert(under)) {
         var targetSec = findSection(under);
         if (targetSec && targetSec !== dragState.sourceSec) {
           var rect = targetSec.getBoundingClientRect();
           var midY = rect.top + rect.height / 2;
-          var pos = e.clientY < midY ? 'before' : 'after';
+          var pos = pt.clientY < midY ? 'before' : 'after';
           dragState.targetSec = targetSec;
           dragState.position = pos;
-          showDropIndicator(rect, pos);
+          showDropIndicator(rect, pos, targetSec);
           return;
         }
       }
       hideDropIndicator();
       dragState.targetSec = null;
     }
-  }, true);
+  }
 
-  document.addEventListener('mouseup', function (e) {
+  function onPointerUp(e) {
     if (dragState && dragState.active) {
-      e.preventDefault();
+      if (e.cancelable) e.preventDefault();
       e.stopPropagation();
       justFinishedDrag = true;
       document.body.style.userSelect = '';
-      dragState.sourceSec.style.opacity = '';
+      if (dragState.sourceSec) {
+        dragState.sourceSec.style.opacity = '';
+        dragState.sourceSec.classList.remove('pd-dragging');
+      }
       hideDropIndicator();
 
       if (dragState.targetSec && dragState.sourceSec) {
@@ -930,7 +1144,17 @@
       return;
     }
     dragPotential = null;
-  }, true);
+  }
+
+  document.addEventListener('mousedown', onPointerDown, true);
+  document.addEventListener('touchstart', onPointerDown, { passive: false });
+
+  document.addEventListener('mousemove', onPointerMove, true);
+  document.addEventListener('touchmove', onPointerMove, { passive: false });
+
+  document.addEventListener('mouseup', onPointerUp, true);
+  document.addEventListener('touchend', onPointerUp, true);
+  document.addEventListener('touchcancel', onPointerUp, true);
 
   // --- 5c. Library Component Drag & Drop to Canvas ---
   var libraryDragTarget = null;
@@ -990,16 +1214,14 @@
       } catch (err) {}
     }
 
-    if (snippet) {
-      window.parent.postMessage({
-        type: 'library-drop',
-        name: name,
-        snippet: snippet,
-        targetTag: libraryDragTarget ? libraryDragTarget.targetTag : null,
-        targetIndex: libraryDragTarget ? libraryDragTarget.targetIndex : null,
-        position: libraryDragTarget ? libraryDragTarget.position : 'append'
-      }, '*');
-    }
+    window.parent.postMessage({
+      type: 'library-drop',
+      name: name,
+      snippet: snippet,
+      targetTag: libraryDragTarget ? libraryDragTarget.targetTag : null,
+      targetIndex: libraryDragTarget ? libraryDragTarget.targetIndex : null,
+      position: libraryDragTarget ? libraryDragTarget.position : 'append'
+    }, '*');
     libraryDragTarget = null;
   });
 
