@@ -503,6 +503,18 @@
                 handleElementReorder(data);
                 break;
 
+            case 'element-duplicate':
+                handleElementDuplicate(data);
+                break;
+
+            case 'element-delete':
+                handleElementDelete(data);
+                break;
+
+            case 'open-library-insert':
+                handleOpenLibraryInsert(data);
+                break;
+
             case 'text-edit-start':
                 hidePopovers(true);
                 break;
@@ -1013,6 +1025,90 @@
         if (updatedCode && updatedCode !== currentCode) {
             updateCodeEditor(updatedCode, false);
             showToast('[STATUS] Reordered sections');
+        }
+    }
+
+    function handleElementDuplicate(payload) {
+        if (!cmEditor || !payload) return;
+        const { targetTag, targetIndex, targetId } = payload;
+        const currentCode = getHtmlCode();
+
+        let tgtRange = null;
+        if (targetId && currentCode.includes(targetId)) {
+            const idPattern = new RegExp(`data-pd-id=["']${targetId}["']`, 'i');
+            const match = idPattern.exec(currentCode);
+            if (match) {
+                const openStart = currentCode.lastIndexOf('<', match.index);
+                if (openStart !== -1) {
+                    const tagMatch = currentCode.slice(openStart).match(/^<([a-zA-Z0-9-]+)/);
+                    if (tagMatch) {
+                        const tag = tagMatch[1];
+                        let count = 0;
+                        const regex = new RegExp(`<${tag}(?=[\\s>/])`, 'gi');
+                        let m;
+                        while ((m = regex.exec(currentCode)) !== null && m.index < openStart) {
+                            count++;
+                        }
+                        tgtRange = findTagRangeInHtml(currentCode, tag, count);
+                    }
+                }
+            }
+        }
+
+        if (!tgtRange && targetTag && targetIndex !== undefined && targetIndex !== null) {
+            tgtRange = findTagRangeInHtml(currentCode, targetTag, targetIndex);
+        }
+
+        if (!tgtRange) return;
+
+        const cloneOuter = tgtRange.outerHTML;
+        const updatedCode = currentCode.slice(0, tgtRange.end) + '\n\n' + cloneOuter + currentCode.slice(tgtRange.end);
+        updateCodeEditor(updatedCode, false);
+        showToast('[STATUS] Duplicated block');
+    }
+
+    function handleElementDelete(payload) {
+        if (!cmEditor || !payload) return;
+        const { targetTag, targetIndex, targetId } = payload;
+        const currentCode = getHtmlCode();
+
+        let tgtRange = null;
+        if (targetId && currentCode.includes(targetId)) {
+            const idPattern = new RegExp(`data-pd-id=["']${targetId}["']`, 'i');
+            const match = idPattern.exec(currentCode);
+            if (match) {
+                const openStart = currentCode.lastIndexOf('<', match.index);
+                if (openStart !== -1) {
+                    const tagMatch = currentCode.slice(openStart).match(/^<([a-zA-Z0-9-]+)/);
+                    if (tagMatch) {
+                        const tag = tagMatch[1];
+                        let count = 0;
+                        const regex = new RegExp(`<${tag}(?=[\\s>/])`, 'gi');
+                        let m;
+                        while ((m = regex.exec(currentCode)) !== null && m.index < openStart) {
+                            count++;
+                        }
+                        tgtRange = findTagRangeInHtml(currentCode, tag, count);
+                    }
+                }
+            }
+        }
+
+        if (!tgtRange && targetTag && targetIndex !== undefined && targetIndex !== null) {
+            tgtRange = findTagRangeInHtml(currentCode, targetTag, targetIndex);
+        }
+
+        if (!tgtRange) return;
+
+        const updatedCode = currentCode.slice(0, tgtRange.start) + currentCode.slice(tgtRange.end);
+        updateCodeEditor(updatedCode, false);
+        showToast('[STATUS] Block deleted (Ctrl+Z to undo)');
+    }
+
+    function handleOpenLibraryInsert(payload) {
+        switchTab('library');
+        if (dom.libSearchInput) {
+            dom.libSearchInput.focus();
         }
     }
 
