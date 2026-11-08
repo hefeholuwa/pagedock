@@ -80,6 +80,37 @@ class Router {
             return;
         }
 
+        // 2b-0. Form Submissions JSON API: GET /api/sites/{slug}/forms
+        if (!empty($parts) && $parts[0] === 'api' && ($parts[1] ?? '') === 'sites' && ($parts[3] ?? '') === 'forms' && !isset($parts[4]) && $method === 'GET') {
+            $slug = $parts[2] ?? '';
+            $site = SiteManager::getSite($slug);
+            if (!$site) {
+                json_response(['error' => 'Site not found'], 404);
+                return;
+            }
+            if (!SiteManager::canManage($site)) {
+                json_response(['error' => 'Unauthorized'], 403);
+                return;
+            }
+            $isSpam = null;
+            if (isset($_GET['is_spam'])) {
+                $isSpam = filter_var($_GET['is_spam'], FILTER_VALIDATE_BOOLEAN);
+            } elseif (isset($_GET['spam'])) {
+                $isSpam = filter_var($_GET['spam'], FILTER_VALIDATE_BOOLEAN);
+            }
+            $submissions = Forms::getSubmissions((int)$site['id'], $isSpam);
+            $stats = Forms::getSubmissionStats((int)$site['id']);
+            header('Access-Control-Allow-Origin: *');
+            json_response([
+                'success' => true,
+                'site' => $site['slug'],
+                'count' => count($submissions),
+                'stats' => $stats,
+                'submissions' => $submissions
+            ]);
+            return;
+        }
+
         // 2b. Form Submissions CSV Export: GET /api/sites/{slug}/forms/export
         if (!empty($parts) && $parts[0] === 'api' && ($parts[1] ?? '') === 'sites' && ($parts[3] ?? '') === 'forms' && ($parts[4] ?? '') === 'export') {
             $slug = $parts[2] ?? '';
