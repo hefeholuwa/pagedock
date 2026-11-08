@@ -1,0 +1,27 @@
+{
+  "name": "pagedock-mcp",
+  "version": "0.1.0",
+  "description": "PageDock Model Context Protocol (MCP) Server & Autonomous Agent Tools",
+  "type": "module",
+  "main": "./src/index.js",
+  "bin": "./src/index.js",
+  "scripts": {
+    "start": "node ./src/index.js",
+    "test": "node ./tests/test_mcp_client.js"
+  },
+  "keywords": [
+    "pagedock",
+    "mcp",
+    "modelcontextprotocol",
+    "ai-agents",
+    "claude-code",
+    "antigravity",
+    "cursor"
+  ],
+  "author": "PageDock Team",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "zod": "^3.24.2"
+  }
+}
