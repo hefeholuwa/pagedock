@@ -532,7 +532,16 @@
 
             case 'navigate-page':
                 if (data.path) {
-                    switchPage(data.path);
+                    const cleanPath = data.path.replace(/^\//, '');
+                    const knownFiles = window.PAGEDOCK_CONFIG?.htmlFiles || ['index.html'];
+                    if (!knownFiles.includes(cleanPath)) {
+                        const rawTitle = cleanPath.replace(/\.html?$/i, '').replace(/[-_]/g, ' ');
+                        const derivedTitle = rawTitle.replace(/\b\w/g, c => c.toUpperCase());
+                        openAddPageModal(derivedTitle, cleanPath);
+                        showToast(`[ACTION] Page "${cleanPath}" does not exist yet. Create it below with your site layout.`);
+                        return;
+                    }
+                    switchPage(cleanPath);
                 }
                 break;
 
