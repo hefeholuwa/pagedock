@@ -597,6 +597,7 @@
             syncSharedUrl: '<?= url('api/sites/' . $site['slug'] . '/sync-shared') ?>',
             activeFile: '<?= addslashes($activeFile ?? 'index.html') ?>',
             currentVersion: <?= (int)($site['current_version'] ?? 1) ?>,
+            initialTimestamp: <?= (int)(strtotime($site['updated_at'] ?? $site['created_at'] ?? 'now') * 1000) ?>,
             canManage: <?= $canManage ? 'true' : 'false' ?>,
             hasPhysicalCss: <?= file_exists(SITES_DIR . '/' . $site['slug'] . '/style.css') ? 'true' : 'false' ?>,
             hasPhysicalJs: <?= file_exists(SITES_DIR . '/' . $site['slug'] . '/script.js') ? 'true' : 'false' ?>,

@@ -1091,6 +1091,8 @@
         isInternalUpdate = true;
         cmEditor.setValue(previous);
         isInternalUpdate = false;
+        setDirty(true);
+        scheduleDraftAutoSave(1000);
         postToIframe({ type: 'live-patch', html: previous });
         updateHistoryButtons();
         showToast('[ACTION] Undo');
@@ -1104,6 +1106,8 @@
         isInternalUpdate = true;
         cmEditor.setValue(next);
         isInternalUpdate = false;
+        setDirty(true);
+        scheduleDraftAutoSave(1000);
         postToIframe({ type: 'live-patch', html: next });
         updateHistoryButtons();
         showToast('[ACTION] Redo');
@@ -1148,6 +1152,14 @@
         } else if (e.key === 'Escape') {
             hidePopovers();
             closeChatDrawer();
+        }
+    });
+
+    window.addEventListener('beforeunload', () => {
+        if (draftSaveTimer && state.isDirty && cmEditor) {
+            clearTimeout(draftSaveTimer);
+            draftSaveTimer = null;
+            saveDraftToLocalStorage();
         }
     });
 
@@ -1211,7 +1223,7 @@
     }
 
     async function saveDraft() {
-        if (!cmEditor || state.isSaving) return;
+        if (!cmEditor || state.isSaving) return false;
         state.isSaving = true;
         if (dom.saveStatusText) dom.saveStatusText.textContent = 'Saving...';
 
@@ -1228,22 +1240,30 @@
 
             const data = await res.json();
             if (data.success) {
-                setDirty(false);
-                clearLocalDraft();
+                if (cmEditor && cmEditor.getValue() === html) {
+                    setDirty(false);
+                    clearLocalDraft();
+                } else {
+                    scheduleDraftAutoSave(500);
+                }
                 showToast('[STATUS] Draft saved successfully');
+                return true;
             } else {
                 showToast(`[ERROR] Save failed: ${data.error || 'Server error'}`);
+                return false;
             }
         } catch (err) {
             console.error('Save error:', err);
             showToast('[ERROR] Failed to save draft.');
+            return false;
         } finally {
             state.isSaving = false;
         }
     }
 
     async function publishSite() {
-        await saveDraft();
+        const saved = await saveDraft();
+        if (!saved) return;
         clearLocalDraft();
         showToast('[STATUS] Site published live! Changes deployed to CDN.');
     }
