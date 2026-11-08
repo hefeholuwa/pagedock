@@ -424,6 +424,185 @@ class Router {
             return;
         }
 
+        // 6c-6. Site Media API: GET /api/sites/{slug}/media
+        if (!empty($parts) && $parts[0] === 'api' && ($parts[1] ?? '') === 'sites' && ($parts[3] ?? '') === 'media' && count($parts) === 4 && $method === 'GET') {
+            $slug = $parts[2] ?? '';
+            $site = SiteManager::getSite($slug);
+            if (!$site) {
+                json_response(['success' => false, 'error' => 'Site not found'], 404);
+                return;
+            }
+            if (!SiteManager::canManage($site)) {
+                json_response(['success' => false, 'error' => 'Unauthorized'], 403);
+                return;
+            }
+
+            $siteDir = realpath(SITES_DIR . '/' . $slug);
+            if (!$siteDir || !is_dir($siteDir)) {
+                json_response(['success' => false, 'error' => 'Site directory not found'], 404);
+                return;
+            }
+
+            $mediaExts = ['png', 'jpg', 'jpeg', 'webp', 'svg', 'gif', 'ico', 'mp4', 'webm', 'pdf'];
+            $files = [];
+
+            $iterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($siteDir, RecursiveDirectoryIterator::SKIP_DOTS),
+                RecursiveIteratorIterator::SELF_FIRST
+            );
+
+            foreach ($iterator as $item) {
+                if ($item->isFile()) {
+                    $relPath = ltrim(substr($item->getPathname(), strlen($siteDir)), '/\\');
+                    $relPath = str_replace('\\', '/', $relPath);
+
+                    if (str_starts_with($relPath, '.') || str_contains($relPath, '/.')) {
+                        continue;
+                    }
+
+                    $ext = strtolower(pathinfo($relPath, PATHINFO_EXTENSION));
+                    if (in_array($ext, $mediaExts, true)) {
+                        $size = $item->getSize();
+                        $formattedSize = $size >= 1048576 
+                            ? round($size / 1048576, 1) . ' MB' 
+                            : ($size >= 1024 ? round($size / 1024, 1) . ' KB' : $size . ' B');
+
+                        $files[] = [
+                            'name' => basename($relPath),
+                            'relPath' => $relPath,
+                            'url' => url('s/' . $slug . '/' . $relPath),
+                            'size' => $size,
+                            'formattedSize' => $formattedSize,
+                            'isImage' => in_array($ext, ['png', 'jpg', 'jpeg', 'webp', 'svg', 'gif', 'ico'], true),
+                            'updatedAt' => date('Y-m-d H:i:s', $item->getMTime())
+                        ];
+                    }
+                }
+            }
+
+            usort($files, fn($a, $b) => strcmp($b['updatedAt'], $a['updatedAt']));
+
+            json_response([
+                'success' => true,
+                'slug' => $slug,
+                'files' => $files
+            ]);
+            return;
+        }
+
+        // 6c-7. Site Media Upload: POST /api/sites/{slug}/media
+        if (!empty($parts) && $parts[0] === 'api' && ($parts[1] ?? '') === 'sites' && ($parts[3] ?? '') === 'media' && count($parts) === 4 && $method === 'POST') {
+            $slug = $parts[2] ?? '';
+            $site = SiteManager::getSite($slug);
+            if (!$site) {
+                json_response(['success' => false, 'error' => 'Site not found'], 404);
+                return;
+            }
+            if (!SiteManager::canManage($site)) {
+                json_response(['success' => false, 'error' => 'Unauthorized'], 403);
+                return;
+            }
+
+            $siteDir = realpath(SITES_DIR . '/' . $slug);
+            if (!$siteDir || !is_dir($siteDir)) {
+                json_response(['success' => false, 'error' => 'Site directory not found'], 404);
+                return;
+            }
+
+            $assetsDir = $siteDir . '/assets';
+            if (!is_dir($assetsDir)) {
+                mkdir($assetsDir, 0755, true);
+            }
+
+            $uploadedFile = $_FILES['file'] ?? null;
+            if (!$uploadedFile || $uploadedFile['error'] !== UPLOAD_ERR_OK) {
+                json_response(['success' => false, 'error' => 'No file uploaded or upload error occurred.'], 400);
+                return;
+            }
+
+            $origName = basename($uploadedFile['name']);
+            $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
+            $allowedExts = ['png', 'jpg', 'jpeg', 'webp', 'svg', 'gif', 'ico', 'mp4', 'webm', 'pdf'];
+
+            if (!in_array($ext, $allowedExts, true)) {
+                json_response(['success' => false, 'error' => 'Unsupported file type. Allowed: ' . implode(', ', $allowedExts)], 400);
+                return;
+            }
+
+            $rawName = pathinfo($origName, PATHINFO_FILENAME);
+            $cleanName = preg_replace('/[^a-zA-Z0-9_-]/', '-', strtolower($rawName));
+            $cleanName = trim($cleanName, '-');
+            if (empty($cleanName)) $cleanName = 'asset_' . time();
+            $targetFileName = $cleanName . '.' . $ext;
+            $targetPath = $assetsDir . '/' . $targetFileName;
+
+            $counter = 1;
+            while (file_exists($targetPath)) {
+                $targetFileName = $cleanName . '-' . $counter . '.' . $ext;
+                $targetPath = $assetsDir . '/' . $targetFileName;
+                $counter++;
+            }
+
+            if (!move_uploaded_file($uploadedFile['tmp_name'], $targetPath)) {
+                json_response(['success' => false, 'error' => 'Failed to save uploaded file.'], 500);
+                return;
+            }
+
+            $size = filesize($targetPath);
+            $formattedSize = $size >= 1048576 
+                ? round($size / 1048576, 1) . ' MB' 
+                : ($size >= 1024 ? round($size / 1024, 1) . ' KB' : $size . ' B');
+
+            $relPath = 'assets/' . $targetFileName;
+
+            json_response([
+                'success' => true,
+                'file' => [
+                    'name' => $targetFileName,
+                    'relPath' => $relPath,
+                    'url' => url('s/' . $slug . '/' . $relPath),
+                    'size' => $size,
+                    'formattedSize' => $formattedSize,
+                    'isImage' => in_array($ext, ['png', 'jpg', 'jpeg', 'webp', 'svg', 'gif', 'ico'], true)
+                ]
+            ]);
+            return;
+        }
+
+        // 6c-8. Site Media Delete: POST /api/sites/{slug}/media/delete
+        if (!empty($parts) && $parts[0] === 'api' && ($parts[1] ?? '') === 'sites' && ($parts[3] ?? '') === 'media' && ($parts[4] ?? '') === 'delete' && $method === 'POST') {
+            $slug = $parts[2] ?? '';
+            $site = SiteManager::getSite($slug);
+            if (!$site) {
+                json_response(['success' => false, 'error' => 'Site not found'], 404);
+                return;
+            }
+            if (!SiteManager::canManage($site)) {
+                json_response(['success' => false, 'error' => 'Unauthorized'], 403);
+                return;
+            }
+
+            $siteDir = realpath(SITES_DIR . '/' . $slug);
+            $raw = file_get_contents('php://input');
+            $data = json_decode($raw, true) ?: $_POST;
+            $relPath = ltrim($data['relPath'] ?? $data['file'] ?? '', '/\\');
+
+            if (empty($relPath)) {
+                json_response(['success' => false, 'error' => 'File path required'], 400);
+                return;
+            }
+
+            $targetPath = realpath($siteDir . '/' . $relPath);
+            if (!$targetPath || !str_starts_with($targetPath, $siteDir) || !is_file($targetPath)) {
+                json_response(['success' => false, 'error' => 'File not found or invalid path'], 404);
+                return;
+            }
+
+            @unlink($targetPath);
+            json_response(['success' => true, 'message' => 'File deleted']);
+            return;
+        }
+
         // 6b. API Clone Template to New Site: POST /api/templates/{slug}/use
         if (!empty($parts) && $parts[0] === 'api' && ($parts[1] ?? '') === 'templates' && ($parts[3] ?? '') === 'use' && $method === 'POST') {
             $templateSlug = $parts[2] ?? '';

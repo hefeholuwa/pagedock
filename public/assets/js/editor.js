@@ -115,11 +115,24 @@
         chatInput: document.getElementById('hh-chat-input'),
         sendChatBtn: document.getElementById('hh-send-chat-btn'),
         chatMessages: document.getElementById('hh-chat-messages'),
-        // Modals
+        // Modals & Tool Items
         mediaBtn: document.getElementById('hh-media-btn'),
         mediaModal: document.getElementById('hh-media-modal'),
+        mediaDropzone: document.getElementById('hh-media-dropzone'),
+        mediaFileInput: document.getElementById('hh-media-file-input'),
+        mediaBrowseBtn: document.getElementById('hh-media-browse-btn'),
+        mediaGallery: document.getElementById('hh-media-gallery'),
+        mediaRefreshBtn: document.getElementById('hh-media-refresh-btn'),
+        mediaCountLabel: document.getElementById('hh-media-count-label'),
         versionsModal: document.getElementById('hh-versions-modal'),
+        versionsList: document.getElementById('hh-versions-list'),
         formsModal: document.getElementById('hh-forms-modal'),
+        formsCountBadge: document.getElementById('hh-forms-count-badge'),
+        formsContainer: document.getElementById('hh-forms-container'),
+        toolFormatCode: document.getElementById('tool-format-code'),
+        toolCleanHtml: document.getElementById('tool-clean-html'),
+        toolRevisions: document.getElementById('tool-revisions'),
+        toolFormsInbox: document.getElementById('tool-forms-inbox'),
         toast: document.getElementById('hh-toast')
     };
 
@@ -1355,6 +1368,7 @@
         } else if (e.key === 'Escape') {
             hidePopovers();
             closeChatDrawer();
+            closeAllModals();
         }
     });
 
@@ -1500,6 +1514,505 @@
         dom.toastTimer = setTimeout(() => {
             dom.toast.classList.add('hidden');
         }, 3200);
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    // =========================================================================
+    // 8.1 CODE FORMATTING & HTML CLEANING
+    // =========================================================================
+
+    function formatHtmlCode(html) {
+        if (!html) return '';
+        const preserved = [];
+        let processed = html.replace(/<(pre|code|style|script)\b[^>]*>[\s\S]*?<\/\1>/gi, (match) => {
+            const id = `___PAGE_DOCK_PRESERVED_${preserved.length}___`;
+            preserved.push(match);
+            return id;
+        });
+
+        let tab = '  ';
+        let result = '';
+        let indent = 0;
+        const voidElements = new Set([
+            'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 
+            'link', 'meta', 'param', 'source', 'track', 'wbr', '!doctype'
+        ]);
+
+        const tokens = processed.replace(/>\s*</g, '><').match(/(<[^>]+>|[^<]+)/g) || [];
+
+        for (let i = 0; i < tokens.length; i++) {
+            let token = tokens[i].trim();
+            if (!token) continue;
+
+            if (token.startsWith('</')) {
+                indent = Math.max(0, indent - 1);
+                result += (indent > 0 ? tab.repeat(indent) : '') + token + '\n';
+            } else if (token.startsWith('<') && !token.startsWith('<!--')) {
+                const tagNameMatch = token.match(/^<([a-zA-Z0-9_-]+)/);
+                const tagName = tagNameMatch ? tagNameMatch[1].toLowerCase() : '';
+                const isSelfClosing = token.endsWith('/>') || voidElements.has(tagName);
+
+                result += (indent > 0 ? tab.repeat(indent) : '') + token + '\n';
+                if (!isSelfClosing) {
+                    indent++;
+                }
+            } else if (token.startsWith('<!--')) {
+                result += (indent > 0 ? tab.repeat(indent) : '') + token + '\n';
+            } else {
+                result += (indent > 0 ? tab.repeat(indent) : '') + token + '\n';
+            }
+        }
+
+        preserved.forEach((block, idx) => {
+            result = result.replace(`___PAGE_DOCK_PRESERVED_${idx}___`, block);
+        });
+
+        return result.trimEnd() + '\n';
+    }
+
+    function formatCssCode(css) {
+        if (!css) return '';
+        let formatted = css
+            .replace(/\s*\{\s*/g, ' {\n  ')
+            .replace(/\s*;\s*/g, ';\n  ')
+            .replace(/\s*\}\s*/g, '\n}\n\n')
+            .replace(/\n\s*\n\s*\n/g, '\n\n')
+            .trim();
+        return formatted + '\n';
+    }
+
+    function formatJsCode(js) {
+        if (!js) return '';
+        let lines = js.split('\n');
+        let indent = 0;
+        let tab = '  ';
+        let result = [];
+
+        for (let line of lines) {
+            let trimmed = line.trim();
+            if (!trimmed) {
+                result.push('');
+                continue;
+            }
+
+            if (trimmed.startsWith('}') || trimmed.startsWith(']') || trimmed.startsWith(')')) {
+                indent = Math.max(0, indent - 1);
+            }
+
+            result.push(tab.repeat(indent) + trimmed);
+
+            const opens = (trimmed.match(/[\{\[\(]/g) || []).length;
+            const closes = (trimmed.match(/[\}\]\)]/g) || []).length;
+            const diff = opens - closes;
+            if (diff > 0 && !trimmed.startsWith('}') && !trimmed.startsWith(']') && !trimmed.startsWith(')')) {
+                indent += diff;
+            }
+        }
+
+        return result.join('\n').trimEnd() + '\n';
+    }
+
+    function formatCode() {
+        if (!cmEditor) return;
+        const type = state.activeFileType || 'html';
+        const currentCode = cmEditor.getValue();
+
+        try {
+            let formatted = '';
+            if (type === 'html') {
+                formatted = formatHtmlCode(currentCode);
+            } else if (type === 'css') {
+                formatted = formatCssCode(currentCode);
+            } else if (type === 'js') {
+                formatted = formatJsCode(currentCode);
+            }
+
+            if (formatted && formatted !== currentCode) {
+                isInternalUpdate = true;
+                cmEditor.setValue(formatted);
+                isInternalUpdate = false;
+                state.fileBuffers[type] = formatted;
+                setDirty(true);
+                scheduleDraftAutoSave(800);
+                if (type === 'html') {
+                    postToIframe({ type: 'live-patch', html: formatted });
+                } else if (type === 'css') {
+                    postToIframe({ type: 'live-style-update', css: formatted });
+                }
+                showToast(`[STATUS] Formatted ${state.fileLabels[type] || type.toUpperCase()} code`);
+            } else {
+                showToast('[STATUS] Code is already formatted');
+            }
+        } catch (e) {
+            console.error('Format error:', e);
+            showToast('[ERROR] Failed to format code.');
+        }
+    }
+
+    function cleanHtmlCode() {
+        if (!cmEditor) return;
+        const currentCode = getHtmlCode();
+
+        try {
+            let cleaned = currentCode;
+            cleaned = cleaned.replace(/\s+data-pagedock-[a-z0-9_-]+="[^"]*"/gi, '');
+            cleaned = cleaned.replace(/\s+data-htmlhost-[a-z0-9_-]+="[^"]*"/gi, '');
+            cleaned = cleaned.replace(/\s+contenteditable="[^"]*"/gi, '');
+            cleaned = cleaned.replace(/<!--\s*-->/g, '');
+            cleaned = cleaned.replace(/\n\s*\n\s*\n+/g, '\n\n');
+            cleaned = cleaned.split('\n').map(l => l.trimEnd()).join('\n');
+            cleaned = formatHtmlCode(cleaned);
+
+            if (cleaned !== currentCode) {
+                updateCodeEditor(cleaned, true);
+                showToast('[STATUS] Cleaned HTML successfully');
+            } else {
+                showToast('[STATUS] HTML is already clean');
+            }
+        } catch (e) {
+            console.error('Clean HTML error:', e);
+            showToast('[ERROR] Failed to clean HTML.');
+        }
+    }
+
+    // =========================================================================
+    // 8.2 MEDIA & ASSET LIBRARY CONTROLLER
+    // =========================================================================
+
+    function openMediaModal() {
+        if (!dom.mediaModal) return;
+        closeAllModals();
+        dom.mediaModal.classList.remove('hidden');
+        loadMediaFiles();
+    }
+
+    async function loadMediaFiles() {
+        if (!window.PAGEDOCK_CONFIG?.mediaUrl || !dom.mediaGallery) return;
+        dom.mediaGallery.innerHTML = '<div class="hh-empty-media">Loading assets...</div>';
+
+        try {
+            const res = await fetch(window.PAGEDOCK_CONFIG.mediaUrl);
+            const data = await res.json();
+            if (data.success && Array.isArray(data.files)) {
+                renderMediaGallery(data.files);
+            } else {
+                dom.mediaGallery.innerHTML = `<div class="hh-empty-media">${data.error || 'No assets found.'}</div>`;
+            }
+        } catch (e) {
+            dom.mediaGallery.innerHTML = '<div class="hh-empty-media">Failed to load media files.</div>';
+        }
+    }
+
+    function renderMediaGallery(files) {
+        if (!dom.mediaGallery) return;
+        dom.mediaGallery.innerHTML = '';
+
+        if (dom.mediaCountLabel) {
+            dom.mediaCountLabel.textContent = `Uploaded Assets (${files.length})`;
+        }
+
+        if (files.length === 0) {
+            dom.mediaGallery.innerHTML = '<div class="hh-empty-media">No media files uploaded yet. Drag and drop files above.</div>';
+            return;
+        }
+
+        files.forEach(file => {
+            const card = document.createElement('div');
+            card.className = 'hh-media-card';
+            card.innerHTML = `
+                <div class="hh-media-thumb">
+                    ${file.isImage 
+                        ? `<img src="${file.url}" alt="${escapeHtml(file.name)}" loading="lazy">` 
+                        : `<div class="hh-media-thumb-doc">📄</div>`}
+                </div>
+                <div class="hh-media-info">
+                    <div class="hh-media-name" title="${escapeHtml(file.name)}">${escapeHtml(file.name)}</div>
+                    <div class="hh-media-size">${file.formattedSize}</div>
+                </div>
+                <div class="hh-media-actions">
+                    <button type="button" class="hh-media-btn-insert" title="Insert into Editor">Insert</button>
+                    <button type="button" class="hh-media-btn-copy" title="Copy URL">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    </button>
+                    <button type="button" class="hh-media-btn-del" title="Delete Asset">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    </button>
+                </div>
+            `;
+
+            card.querySelector('.hh-media-btn-insert').addEventListener('click', () => {
+                insertMediaIntoEditor(file);
+            });
+
+            card.querySelector('.hh-media-btn-copy').addEventListener('click', () => {
+                navigator.clipboard.writeText(file.relPath);
+                showToast(`[STATUS] Copied "${file.relPath}" to clipboard`);
+            });
+
+            card.querySelector('.hh-media-btn-del').addEventListener('click', () => {
+                deleteMediaFile(file);
+            });
+
+            dom.mediaGallery.appendChild(card);
+        });
+    }
+
+    function insertMediaIntoEditor(file) {
+        if (!cmEditor) return;
+        const type = state.activeFileType;
+        let snippet = '';
+
+        if (type === 'html') {
+            snippet = file.isImage 
+                ? `<img src="${file.relPath}" alt="${file.name.replace(/\.[^/.]+$/, '')}">`
+                : `<a href="${file.relPath}" download>${file.name}</a>`;
+        } else if (type === 'css') {
+            snippet = `url("${file.relPath}")`;
+        } else {
+            snippet = `"${file.relPath}"`;
+        }
+
+        const doc = cmEditor.getDoc();
+        const cursor = doc.getCursor();
+        doc.replaceRange(snippet, cursor);
+        cmEditor.focus();
+        closeAllModals();
+        showToast(`[ACTION] Inserted ${file.name}`);
+    }
+
+    async function uploadMediaFiles(fileList) {
+        if (!fileList || fileList.length === 0 || !window.PAGEDOCK_CONFIG?.mediaUrl) return;
+
+        showToast(`[STATUS] Uploading ${fileList.length} file(s)...`);
+        let uploaded = 0;
+
+        for (const file of fileList) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const res = await fetch(window.PAGEDOCK_CONFIG.mediaUrl, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.success) {
+                    uploaded++;
+                } else {
+                    showToast(`[ERROR] Failed to upload ${file.name}: ${data.error || 'Server error'}`);
+                }
+            } catch (err) {
+                showToast(`[ERROR] Network error uploading ${file.name}`);
+            }
+        }
+
+        if (uploaded > 0) {
+            showToast(`[STATUS] Successfully uploaded ${uploaded} file(s)`);
+            loadMediaFiles();
+        }
+    }
+
+    async function deleteMediaFile(file) {
+        if (!confirm(`Are you sure you want to delete "${file.name}"?`)) return;
+
+        try {
+            const res = await fetch(window.PAGEDOCK_CONFIG.mediaDeleteUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ relPath: file.relPath })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showToast(`[STATUS] Deleted ${file.name}`);
+                loadMediaFiles();
+            } else {
+                showToast(`[ERROR] Delete failed: ${data.error || 'Server error'}`);
+            }
+        } catch (e) {
+            showToast('[ERROR] Failed to delete file');
+        }
+    }
+
+    // =========================================================================
+    // 8.3 VERSION HISTORY & 1-CLICK ROLLBACK CONTROLLER
+    // =========================================================================
+
+    function openVersionsModal() {
+        if (!dom.versionsModal) return;
+        closeAllModals();
+        dom.versionsModal.classList.remove('hidden');
+        loadVersionsTimeline();
+    }
+
+    async function loadVersionsTimeline() {
+        if (!dom.versionsList || !window.PAGEDOCK_CONFIG?.versionsUrl) return;
+        dom.versionsList.innerHTML = '<div style="text-align:center; padding:20px; color:var(--fg-4);">Loading historical snapshots...</div>';
+
+        try {
+            const res = await fetch(window.PAGEDOCK_CONFIG.versionsUrl);
+            const data = await res.json();
+            if (data.success && Array.isArray(data.versions)) {
+                renderVersionsTimeline(data.versions, data.current_version);
+            } else {
+                dom.versionsList.innerHTML = '<div style="text-align:center; padding:20px; color:var(--fg-4);">No historical versions found.</div>';
+            }
+        } catch (e) {
+            dom.versionsList.innerHTML = '<div style="text-align:center; padding:20px; color:var(--fg-4);">Failed to load version history.</div>';
+        }
+    }
+
+    function renderVersionsTimeline(versions, currentVersion) {
+        if (!dom.versionsList) return;
+        dom.versionsList.innerHTML = '';
+
+        if (versions.length === 0) {
+            dom.versionsList.innerHTML = '<div style="text-align:center; padding:20px; color:var(--fg-4);">Initial version active. Modifications will create restore points.</div>';
+            return;
+        }
+
+        const activeVer = currentVersion !== undefined ? Number(currentVersion) : Number(window.PAGEDOCK_CONFIG?.currentVersion || 1);
+
+        versions.forEach(v => {
+            const isCurrent = Number(v.version_number) === activeVer;
+            const item = document.createElement('div');
+            item.className = 'hh-version-item ' + (isCurrent ? 'active' : '');
+            item.innerHTML = `
+                <div class="hh-version-left">
+                    <span class="hh-version-badge">v${v.version_number}</span>
+                    <div class="hh-version-details">
+                        <div class="hh-version-summary">${escapeHtml(v.summary || 'Snapshot revision')}</div>
+                        <div class="hh-version-meta">${v.created_at} · ${v.file_count || 1} file(s)</div>
+                    </div>
+                </div>
+                ${isCurrent 
+                    ? '<span class="hh-version-current-label">Current Active</span>' 
+                    : `<button type="button" class="hh-version-rollback-btn" data-version="${v.version_number}">Restore</button>`}
+            `;
+
+            const rollbackBtn = item.querySelector('.hh-version-rollback-btn');
+            if (rollbackBtn) {
+                rollbackBtn.addEventListener('click', () => {
+                    rollbackToVersion(Number(v.version_number));
+                });
+            }
+
+            dom.versionsList.appendChild(item);
+        });
+    }
+
+    async function rollbackToVersion(targetVersion) {
+        if (!confirm(`Restore site to version v${targetVersion}? Unsaved changes in your current session will be replaced.`)) {
+            return;
+        }
+
+        showToast(`[STATUS] Restoring version v${targetVersion}...`);
+
+        try {
+            const res = await fetch(window.PAGEDOCK_CONFIG.rollbackUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ version: targetVersion })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                clearLocalDraft();
+                setDirty(false);
+                closeAllModals();
+                showToast(`[STATUS] Restored to version v${targetVersion}! Reloading editor...`);
+                setTimeout(() => {
+                    window.location.reload();
+                }, 900);
+            } else {
+                showToast(`[ERROR] Rollback failed: ${data.error || 'Server error'}`);
+            }
+        } catch (e) {
+            showToast('[ERROR] Failed to restore version');
+        }
+    }
+
+    // =========================================================================
+    // 8.4 FORMS INBOX CONTROLLER
+    // =========================================================================
+
+    function openFormsModal() {
+        if (!dom.formsModal) return;
+        closeAllModals();
+        dom.formsModal.classList.remove('hidden');
+        loadFormSubmissions();
+    }
+
+    async function loadFormSubmissions() {
+        if (!dom.formsContainer || !window.PAGEDOCK_CONFIG?.formsUrl) return;
+
+        try {
+            const res = await fetch(window.PAGEDOCK_CONFIG.formsUrl);
+            const data = await res.json();
+            if (data.submissions && Array.isArray(data.submissions)) {
+                renderFormSubmissions(data.submissions);
+            }
+        } catch (e) {
+            // Keep server-rendered content as fallback
+        }
+    }
+
+    function renderFormSubmissions(submissions) {
+        if (!dom.formsContainer) return;
+
+        if (dom.formsCountBadge) {
+            dom.formsCountBadge.textContent = String(submissions.length);
+        }
+
+        if (submissions.length === 0) {
+            dom.formsContainer.innerHTML = `
+                <div class="hh-empty-submissions">
+                    <p>No submissions received yet.</p>
+                </div>
+            `;
+            return;
+        }
+
+        let html = '<div class="hh-submissions-grid">';
+        submissions.forEach(sub => {
+            html += `
+                <div class="hh-submission-item">
+                    <div class="hh-sub-header">
+                        <span>${escapeHtml(sub.created_at || '')}</span>
+                        <span>${escapeHtml(sub.ip_address || '')}</span>
+                    </div>
+                    <div class="hh-sub-body">
+            `;
+            const payload = typeof sub.data === 'string' ? JSON.parse(sub.data || '{}') : (sub.data || {});
+            for (const [k, v] of Object.entries(payload)) {
+                const valStr = typeof v === 'object' ? JSON.stringify(v) : String(v);
+                html += `
+                    <div class="hh-sub-row">
+                        <strong>${escapeHtml(k)}:</strong>
+                        <span>${escapeHtml(valStr)}</span>
+                    </div>
+                `;
+            }
+            html += `
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+
+        dom.formsContainer.innerHTML = html;
+    }
+
+    function closeAllModals() {
+        document.querySelectorAll('.hh-modal-overlay').forEach(m => m.classList.add('hidden'));
     }
 
     // =========================================================================
@@ -1667,6 +2180,87 @@
 
         // Splitter Dragging
         initSplitterDrag();
+
+        // Media Modal Trigger & Actions
+        if (dom.mediaBtn) dom.mediaBtn.addEventListener('click', openMediaModal);
+        if (dom.mediaBrowseBtn && dom.mediaFileInput) {
+            dom.mediaBrowseBtn.addEventListener('click', () => dom.mediaFileInput.click());
+        }
+        if (dom.mediaFileInput) {
+            dom.mediaFileInput.addEventListener('change', (e) => {
+                uploadMediaFiles(e.target.files);
+                dom.mediaFileInput.value = '';
+            });
+        }
+        if (dom.mediaRefreshBtn) dom.mediaRefreshBtn.addEventListener('click', loadMediaFiles);
+
+        // Media Drag and Drop
+        if (dom.mediaDropzone) {
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dom.mediaDropzone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dom.mediaDropzone.classList.add('dragover');
+                });
+            });
+            ['dragleave', 'drop'].forEach(eventName => {
+                dom.mediaDropzone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dom.mediaDropzone.classList.remove('dragover');
+                });
+            });
+            dom.mediaDropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dom.mediaDropzone.classList.remove('dragover');
+                const dt = e.dataTransfer;
+                if (dt && dt.files && dt.files.length) {
+                    uploadMediaFiles(dt.files);
+                }
+            });
+        }
+
+        // Tools Menu Items
+        if (dom.toolFormatCode) {
+            dom.toolFormatCode.addEventListener('click', () => {
+                if (dom.toolsMenu) dom.toolsMenu.classList.add('hidden');
+                formatCode();
+            });
+        }
+        if (dom.toolCleanHtml) {
+            dom.toolCleanHtml.addEventListener('click', () => {
+                if (dom.toolsMenu) dom.toolsMenu.classList.add('hidden');
+                cleanHtmlCode();
+            });
+        }
+        if (dom.toolRevisions) {
+            dom.toolRevisions.addEventListener('click', () => {
+                if (dom.toolsMenu) dom.toolsMenu.classList.add('hidden');
+                openVersionsModal();
+            });
+        }
+        if (dom.toolFormsInbox) {
+            dom.toolFormsInbox.addEventListener('click', () => {
+                if (dom.toolsMenu) dom.toolsMenu.classList.add('hidden');
+                openFormsModal();
+            });
+        }
+
+        // Generic Modal Close Buttons & Backdrop Dismissal
+        document.querySelectorAll('[data-close-modal]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeAllModals();
+            });
+        });
+        document.querySelectorAll('.hh-modal-overlay').forEach(modal => {
+            modal.addEventListener('mousedown', (e) => {
+                if (e.target === modal) {
+                    closeAllModals();
+                }
+            });
+        });
     }
 
     function initSplitterDrag() {

@@ -503,7 +503,7 @@
     <!-- Modals -->
     <!-- 1. Media Manager Modal -->
     <div id="hh-media-modal" class="hh-modal-overlay hidden">
-        <div class="hh-modal-card">
+        <div class="hh-modal-card hh-modal-card-lg">
             <div class="hh-modal-header">
                 <h3>Media &amp; Asset Library</h3>
                 <button type="button" class="hh-modal-close" data-close-modal>&times;</button>
@@ -511,12 +511,19 @@
             <div class="hh-modal-body">
                 <div class="hh-media-upload-zone" id="hh-media-dropzone">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                    <p>Drop images or media files here to upload</p>
-                    <input type="file" id="hh-media-file-input" multiple accept="image/*,video/*" class="hidden">
-                    <button type="button" class="hh-btn-xs" onclick="document.getElementById('hh-media-file-input').click()">Browse Files</button>
+                    <p>Drop images or media files here to upload, or</p>
+                    <input type="file" id="hh-media-file-input" multiple accept="image/*,video/*,.pdf" class="hidden">
+                    <button type="button" class="hh-btn-xs" id="hh-media-browse-btn">Browse Files</button>
+                    <span class="hh-media-help-text">PNG, JPG, SVG, WebP, GIF, MP4 (max 25MB)</span>
+                </div>
+                <div class="hh-media-gallery-header">
+                    <span id="hh-media-count-label">Uploaded Assets</span>
+                    <button type="button" class="hh-btn-icon-subtle" id="hh-media-refresh-btn" title="Refresh Media">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                    </button>
                 </div>
                 <div class="hh-media-gallery" id="hh-media-gallery">
-                    <!-- Media items -->
+                    <div class="hh-empty-media">Loading assets...</div>
                 </div>
             </div>
         </div>
@@ -524,10 +531,10 @@
 
     <!-- 2. Versions & Revisions Modal -->
     <div id="hh-versions-modal" class="hh-modal-overlay hidden">
-        <div class="hh-modal-card">
+        <div class="hh-modal-card hh-modal-card-md">
             <div class="hh-modal-header">
                 <h3>Version History &mdash; <?= htmlspecialchars($site['title']) ?></h3>
-                <button type="button" class="hh-modal-close" data-close-modal>&times;</button>
+                <button type="button" class="hh-modal-close" data-close-modal title="Close (Esc)">&times;</button>
             </div>
             <div class="hh-modal-body">
                 <div id="hh-versions-list" class="hh-versions-timeline">
@@ -539,15 +546,23 @@
 
     <!-- 3. Form Submissions Modal -->
     <div id="hh-forms-modal" class="hh-modal-overlay hidden">
-        <div class="hh-modal-card">
+        <div class="hh-modal-card hh-modal-card-lg">
             <div class="hh-modal-header">
-                <h3>Form Submissions for <?= htmlspecialchars($site['title']) ?></h3>
-                <button type="button" class="hh-modal-close" data-close-modal>&times;</button>
+                <div class="hh-modal-title-group">
+                    <h3>Form Submissions &mdash; <?= htmlspecialchars($site['title']) ?></h3>
+                    <span class="hh-badge-count" id="hh-forms-count-badge">0</span>
+                </div>
+                <button type="button" class="hh-modal-close" data-close-modal title="Close (Esc)">&times;</button>
             </div>
             <div class="hh-modal-body">
                 <div class="hh-form-endpoint-info">
-                    Endpoint: <code><?= url('api/forms/' . $site['slug']) ?></code>
+                    <div class="hh-form-endpoint-row">
+                        <span class="hh-endpoint-tag">Native Form Endpoint:</span>
+                        <code><?= url('__pd/form') ?></code>
+                    </div>
+                    <p class="hh-endpoint-hint">Any HTML &lt;form action="/__pd/form" method="POST"&gt; submits directly here with zero backend code required.</p>
                 </div>
+                <div id="hh-forms-container">
                 <?php
                 $submissions = Forms::getSubmissions((int)$site['id']);
                 if (empty($submissions)):
@@ -575,6 +590,7 @@
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
+                </div>
             </div>
         </div>
     </div>
@@ -596,6 +612,9 @@
             rollbackUrl: '<?= url('api/sites/' . $site['slug'] . '/rollback') . $editorTokenQuery ?>',
             sharedBlocksUrl: '<?= url('api/sites/' . $site['slug'] . '/shared-blocks') . $editorTokenQuery ?>',
             syncSharedUrl: '<?= url('api/sites/' . $site['slug'] . '/sync-shared') . $editorTokenQuery ?>',
+            mediaUrl: '<?= url('api/sites/' . $site['slug'] . '/media') . $editorTokenQuery ?>',
+            mediaDeleteUrl: '<?= url('api/sites/' . $site['slug'] . '/media/delete') . $editorTokenQuery ?>',
+            formsUrl: '<?= url('api/sites/' . $site['slug'] . '/forms') . $editorTokenQuery ?>',
             activeFile: '<?= addslashes($activeFile ?? 'index.html') ?>',
             currentVersion: <?= (int)($site['current_version'] ?? 1) ?>,
             initialTimestamp: <?= (int)(strtotime($site['updated_at'] ?? $site['created_at'] ?? 'now') * 1000) ?>,
