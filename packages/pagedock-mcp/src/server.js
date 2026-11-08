@@ -1,0 +1,37 @@
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { PageDockClient } from './client.js';
+import { registerDeployTools } from './tools/deploy.js';
+import { registerSiteTools } from './tools/sites.js';
+
+/**
+ * Creates and initializes a PageDock McpServer instance
+ * @param {Object} [options]
+ * @param {PageDockClient} [options.client] - Custom or mocked PageDockClient
+ * @param {string} [options.baseUrl] - PageDock REST API base URL
+ * @param {string} [options.apiToken] - Bearer authentication token
+ * @param {string} [options.claimToken] - Guest site claim token
+ * @param {Object} [options.serverInfo] - Name and version overrides
+ * @returns {McpServer}
+ */
+export function createMcpServer(options = {}) {
+  const client = options.client || new PageDockClient(options);
+  const server = new McpServer({
+    name: 'pagedock',
+    version: '0.1.0',
+    ...(options.serverInfo || {}),
+  });
+
+  server.client = client;
+
+  // Register deployment tools (deploy_html)
+  registerDeployTools(server, client);
+
+  // Register site management tools (list_sites, get_site, pull_site, delete_site)
+  registerSiteTools(server, client);
+
+  return server;
+}
+
+export const server = createMcpServer();
+export default server;
+export { registerDeployTools, registerSiteTools };
