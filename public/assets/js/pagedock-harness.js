@@ -156,6 +156,48 @@
         background: rgba(239, 68, 68, 0.2) !important;
         color: #f87171 !important;
       }
+      .pd-dragging {
+        opacity: 0.35 !important;
+        pointer-events: none !important;
+        transition: opacity 0.15s ease !important;
+      }
+      .pd-drag-ghost {
+        box-sizing: border-box !important;
+        position: fixed !important;
+        pointer-events: none !important;
+        z-index: 9999999 !important;
+        opacity: 0.85 !important;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(56, 189, 248, 0.5) !important;
+        border: 2px solid #38bdf8 !important;
+        border-radius: 8px !important;
+        background: rgba(15, 23, 42, 0.92) !important;
+        color: #f8fafc !important;
+        padding: 8px 14px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        transform: translate(-50%, -50%) scale(0.9) !important;
+        transform-origin: center center !important;
+        backdrop-filter: blur(8px) !important;
+        max-width: 320px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+      }
+      .pd-drag-ghost-badge {
+        background: #0284c7 !important;
+        color: #ffffff !important;
+        padding: 2px 6px !important;
+        border-radius: 4px !important;
+        text-transform: uppercase !important;
+        font-size: 10px !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.5px !important;
+        flex-shrink: 0 !important;
+      }
       .pd-drop-slot {
         box-sizing: border-box !important;
         background: rgba(56, 189, 248, 0.25) !important;
@@ -429,6 +471,97 @@
       }
     }
     ind.style.display = 'block';
+  }
+
+  var dragGhost = null;
+
+  function ensureDragGhost() {
+    if (!dragGhost || !dragGhost.parentNode) {
+      dragGhost = document.createElement('div');
+      dragGhost.className = 'pd-drag-ghost';
+      dragGhost.setAttribute('data-pagedock-ui', 'drag-ghost');
+      (document.body || document.documentElement).appendChild(dragGhost);
+    }
+    return dragGhost;
+  }
+
+  function createDragGhost(el, clientX, clientY) {
+    if (!el) return null;
+    var ghost = ensureDragGhost();
+    var tagName = (el.tagName || 'ELEMENT').toLowerCase();
+    var previewText = (el.innerText || el.textContent || '').trim().replace(/\s+/g, ' ');
+    if (previewText.length > 25) {
+      previewText = previewText.slice(0, 25) + '…';
+    }
+    ghost.innerHTML = '<span class="pd-drag-ghost-badge">' + tagName + '</span><span>' + (previewText || 'Reordering block') + '</span>';
+    ghost.style.left = clientX + 'px';
+    ghost.style.top = clientY + 'px';
+    ghost.style.display = 'flex';
+    return ghost;
+  }
+
+  function updateDragGhost(clientX, clientY) {
+    if (dragGhost && dragGhost.style.display !== 'none') {
+      dragGhost.style.left = clientX + 'px';
+      dragGhost.style.top = clientY + 'px';
+    }
+  }
+
+  function removeDragGhost() {
+    if (dragGhost) {
+      dragGhost.style.display = 'none';
+      if (dragGhost.parentNode) {
+        dragGhost.parentNode.removeChild(dragGhost);
+      }
+      dragGhost = null;
+    }
+  }
+
+  function findDropCandidate(sourceEl, under, clientX, clientY) {
+    if (!sourceEl || !under || isInert(under) || under === sourceEl || sourceEl.contains(under)) return null;
+
+    var tags = ['SECTION', 'ARTICLE', 'MAIN', 'HEADER', 'FOOTER', 'NAV', 'ASIDE'];
+    var isTopLevelSection = (tags.indexOf(sourceEl.tagName) !== -1) || (sourceEl.parentElement === document.body);
+
+    if (isTopLevelSection) {
+      var targetSec = findSection(under);
+      if (targetSec && targetSec !== sourceEl && !sourceEl.contains(targetSec)) {
+        var rect = targetSec.getBoundingClientRect();
+        var midY = rect.top + rect.height / 2;
+        var pos = clientY < midY ? 'before' : 'after';
+        return { target: targetSec, position: pos, rect: rect };
+      }
+      return null;
+    }
+
+    // Source is an inner element:
+    // 1. If under or an ancestor of under is a sibling of sourceEl
+    if (sourceEl.parentElement) {
+      var sibling = under;
+      while (sibling && sibling.parentElement !== sourceEl.parentElement && sibling !== document.body) {
+        sibling = sibling.parentElement;
+      }
+      if (sibling && sibling.parentElement === sourceEl.parentElement && sibling !== sourceEl) {
+        var dropPlan = detectDropPosition(sibling, clientX, clientY);
+        return { target: sibling, position: dropPlan.position, rect: sibling.getBoundingClientRect() };
+      }
+    }
+
+    // 2. If under is another element or container
+    var dropPlan = detectDropPosition(under, clientX, clientY);
+    if (dropPlan && dropPlan.target && dropPlan.target !== document.body && dropPlan.target !== document.documentElement && dropPlan.target !== sourceEl && !sourceEl.contains(dropPlan.target)) {
+      return { target: dropPlan.target, position: dropPlan.position, rect: dropPlan.target.getBoundingClientRect() };
+    }
+
+    // 3. Fallback: section
+    var targetSec = findSection(under);
+    if (targetSec && targetSec !== sourceEl && !sourceEl.contains(targetSec)) {
+      var rect = targetSec.getBoundingClientRect();
+      var midY = rect.top + rect.height / 2;
+      return { target: targetSec, position: clientY < midY ? 'before' : 'after', rect: rect };
+    }
+
+    return null;
   }
 
   function isInert(el) {
@@ -1330,6 +1463,25 @@
 
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
+      if (dragState && dragState.active) {
+        e.preventDefault();
+        e.stopPropagation();
+        var cancelEl = dragState.sourceSec;
+        if (cancelEl) {
+          cancelEl.style.opacity = '';
+          cancelEl.style.pointerEvents = '';
+          cancelEl.classList.remove('pd-dragging');
+          setTimeout(function () {
+            attachSelectionToolbar(cancelEl);
+          }, 30);
+        }
+        removeDragGhost();
+        hideDropIndicator();
+        dragState = null;
+        dragPotential = null;
+        document.body.style.userSelect = '';
+        return;
+      }
       if (editingEl) {
         e.preventDefault();
         e.stopPropagation();
@@ -1384,19 +1536,39 @@
     }
   }, true);
 
-  // --- 5b. Section Drag-and-Drop Reordering ---
+  // --- 5b. Section & Element Drag-and-Drop Reordering ---
   function onPointerDown(e) {
     if (!aiEnabled || isInert(e.target) || (e.button !== undefined && e.button !== 0)) return;
     if (editingEl) return;
+
     var dragHandle = e.target.closest ? e.target.closest('.pd-tool-drag') : null;
     if (dragHandle) {
-      var sec = findSection(dragHandle);
-      if (sec && sec !== document.body) {
+      var target = selectedEl;
+      if (!target) {
+        var blockOverlay = dragHandle.closest ? dragHandle.closest('.pd-element-overlay') : null;
+        target = blockOverlay ? blockOverlay.parentElement : findSection(dragHandle);
+      }
+      if (target && target !== document.body && target !== document.documentElement) {
         var pt = e.touches ? e.touches[0] : e;
         dragPotential = {
           startX: pt.clientX,
           startY: pt.clientY,
-          sourceSec: sec,
+          sourceSec: target,
+          startTime: Date.now()
+        };
+      }
+      return;
+    }
+
+    // Direct drag on selected element
+    if (selectedEl && (e.target === selectedEl || selectedEl.contains(e.target))) {
+      var isEditing = editingEl || selectedEl.isContentEditable || e.target.isContentEditable;
+      if (!isEditing && selectedEl !== document.body && selectedEl !== document.documentElement) {
+        var pt = e.touches ? e.touches[0] : e;
+        dragPotential = {
+          startX: pt.clientX,
+          startY: pt.clientY,
+          sourceSec: selectedEl,
           startTime: Date.now()
         };
       }
@@ -1416,14 +1588,18 @@
           sourceSec: dragPotential.sourceSec
         };
         document.body.style.userSelect = 'none';
-        dragState.sourceSec.style.opacity = '0.5';
+        dragState.sourceSec.style.opacity = '0.35';
+        dragState.sourceSec.style.pointerEvents = 'none';
         dragState.sourceSec.classList.add('pd-dragging');
-        dragState.sourceSec.style.transition = 'opacity 0.15s ease';
+        createDragGhost(dragState.sourceSec, pt.clientX, pt.clientY);
+        hideSelectionToolbar();
       }
     }
 
     if (dragState && dragState.active) {
       if (e.cancelable) e.preventDefault();
+      updateDragGhost(pt.clientX, pt.clientY);
+
       // Auto-scroll near edges
       if (pt.clientY < 50) {
         window.scrollBy(0, -12);
@@ -1432,17 +1608,12 @@
       }
 
       var under = document.elementFromPoint(pt.clientX, pt.clientY);
-      if (under && !isInert(under)) {
-        var targetSec = findSection(under);
-        if (targetSec && targetSec !== dragState.sourceSec) {
-          var rect = targetSec.getBoundingClientRect();
-          var midY = rect.top + rect.height / 2;
-          var pos = pt.clientY < midY ? 'before' : 'after';
-          dragState.targetSec = targetSec;
-          dragState.position = pos;
-          showDropIndicator(rect, pos, targetSec);
-          return;
-        }
+      var candidate = findDropCandidate(dragState.sourceSec, under, pt.clientX, pt.clientY);
+      if (candidate) {
+        dragState.targetSec = candidate.target;
+        dragState.position = candidate.position;
+        showDropIndicator(candidate.rect, candidate.position, candidate.target);
+        return;
       }
       hideDropIndicator();
       dragState.targetSec = null;
@@ -1455,24 +1626,31 @@
       e.stopPropagation();
       justFinishedDrag = true;
       document.body.style.userSelect = '';
-      if (dragState.sourceSec) {
-        dragState.sourceSec.style.opacity = '';
-        dragState.sourceSec.classList.remove('pd-dragging');
+
+      var src = dragState.sourceSec;
+      var tgt = dragState.targetSec;
+      var pos = dragState.position;
+
+      if (src) {
+        src.style.opacity = '';
+        src.style.pointerEvents = '';
+        src.classList.remove('pd-dragging');
       }
+      removeDragGhost();
       hideDropIndicator();
 
-      if (dragState.targetSec && dragState.sourceSec) {
-        var src = dragState.sourceSec;
-        var tgt = dragState.targetSec;
-        var pos = dragState.position;
-
+      if (tgt && src) {
         var sourceTag = src.tagName;
         var sourceIndex = tagIndex(src);
+        var sourceId = src.getAttribute ? src.getAttribute('data-pd-id') : null;
         var targetTag = tgt.tagName;
         var targetIndex = tagIndex(tgt);
+        var targetId = tgt.getAttribute ? tgt.getAttribute('data-pd-id') : null;
 
         // Perform DOM reorder in preview
-        if (tgt.parentNode) {
+        if (pos === 'inside') {
+          tgt.appendChild(src);
+        } else if (tgt.parentNode) {
           if (pos === 'before') {
             tgt.parentNode.insertBefore(src, tgt);
           } else {
@@ -1485,12 +1663,24 @@
           type: 'element-reorder',
           sourceTag: sourceTag,
           sourceIndex: sourceIndex,
+          sourceId: sourceId,
           targetTag: targetTag,
           targetIndex: targetIndex,
+          targetId: targetId,
           position: pos
         }, '*');
 
         sendStructureTree();
+
+        setTimeout(function () {
+          selectElement(src);
+          attachSelectionToolbar(src);
+        }, 50);
+      } else if (src) {
+        setTimeout(function () {
+          selectElement(src);
+          attachSelectionToolbar(src);
+        }, 50);
       }
 
       dragState = null;

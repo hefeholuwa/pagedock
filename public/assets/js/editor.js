@@ -1026,39 +1026,88 @@
         hidePopovers();
     }
 
+    function findRangeInCode(html, targetTag, targetIndex, targetId) {
+        if (!html) return null;
+        if (targetId && html.includes(targetId)) {
+            const idPattern = new RegExp(`data-pd-id=["']${targetId}["']`, 'i');
+            const match = idPattern.exec(html);
+            if (match) {
+                const openStart = html.lastIndexOf('<', match.index);
+                if (openStart !== -1) {
+                    const tagMatch = html.slice(openStart).match(/^<([a-zA-Z0-9-]+)/);
+                    if (tagMatch) {
+                        const tag = tagMatch[1];
+                        let count = 0;
+                        const regex = new RegExp(`<${tag}(?=[\\s>/])`, 'gi');
+                        let m;
+                        while ((m = regex.exec(html)) !== null && m.index < openStart) {
+                            count++;
+                        }
+                        const r = findTagRangeInHtml(html, tag, count);
+                        if (r) return r;
+                    }
+                }
+            }
+        }
+        if (targetTag && targetIndex !== undefined && targetIndex !== null) {
+            return findTagRangeInHtml(html, targetTag, targetIndex);
+        }
+        return null;
+    }
+
     function handleElementReorder(payload) {
         if (!cmEditor || !payload) return;
-        const { sourceTag, sourceIndex, targetTag, targetIndex, position } = payload;
+        const { sourceTag, sourceIndex, sourceId, targetTag, targetIndex, targetId, position } = payload;
         const currentCode = getHtmlCode();
 
-        const srcRange = findTagRangeInHtml(currentCode, sourceTag, sourceIndex);
-        const tgtRange = findTagRangeInHtml(currentCode, targetTag, targetIndex);
+        // 1. Record undo snapshot
+        const curHist = state.historyStacks.html || (state.historyStacks.html = []);
+        if (curHist.length === 0 || curHist[curHist.length - 1] !== currentCode) {
+            curHist.push(currentCode);
+        }
 
-        if (!srcRange || !tgtRange) return;
+        // 2. Locate source range
+        const srcRange = findRangeInCode(currentCode, sourceTag, sourceIndex, sourceId);
+        if (!srcRange) return;
 
         const srcOuter = srcRange.outerHTML;
 
-        // Remove source block from currentCode
+        // 3. Remove source block from currentCode
         let codeWithoutSrc = currentCode.slice(0, srcRange.start) + currentCode.slice(srcRange.end);
 
-        // Adjust targetIndex if target is same tag and after source
-        const adjustedTgtIndex = (sourceTag === targetTag && sourceIndex < targetIndex)
-            ? targetIndex - 1
-            : targetIndex;
+        // 4. Locate target range in modified code
+        let reTgtRange = null;
+        if (targetId && codeWithoutSrc.includes(targetId)) {
+            reTgtRange = findRangeInCode(codeWithoutSrc, targetTag, null, targetId);
+        }
+        if (!reTgtRange && targetTag && targetIndex !== undefined && targetIndex !== null) {
+            const adjustedTgtIndex = (sourceTag === targetTag && sourceIndex < targetIndex)
+                ? targetIndex - 1
+                : targetIndex;
+            reTgtRange = findTagRangeInHtml(codeWithoutSrc, targetTag, adjustedTgtIndex);
+        }
 
-        const reTgtRange = findTagRangeInHtml(codeWithoutSrc, targetTag, adjustedTgtIndex);
         if (!reTgtRange) return;
 
         let updatedCode = '';
         if (position === 'before') {
             updatedCode = codeWithoutSrc.slice(0, reTgtRange.start) + srcOuter + '\n\n' + codeWithoutSrc.slice(reTgtRange.start);
+        } else if (position === 'inside') {
+            const closeTag = `</${targetTag.toLowerCase()}>`;
+            const closeIdx = codeWithoutSrc.toLowerCase().lastIndexOf(closeTag, reTgtRange.end);
+            if (closeIdx !== -1 && closeIdx >= reTgtRange.start) {
+                updatedCode = codeWithoutSrc.slice(0, closeIdx) + '\n' + srcOuter + '\n' + codeWithoutSrc.slice(closeIdx);
+            } else {
+                updatedCode = codeWithoutSrc.slice(0, reTgtRange.end) + '\n\n' + srcOuter + codeWithoutSrc.slice(reTgtRange.end);
+            }
         } else {
             updatedCode = codeWithoutSrc.slice(0, reTgtRange.end) + '\n\n' + srcOuter + codeWithoutSrc.slice(reTgtRange.end);
         }
 
         if (updatedCode && updatedCode !== currentCode) {
             updateCodeEditor(updatedCode, false);
-            showToast('[STATUS] Reordered sections');
+            const tagLabel = (sourceTag || 'element').toLowerCase();
+            showToast(`[STATUS] Reordered <${tagLabel}> (Cmd+Z to undo)`);
         }
     }
 
