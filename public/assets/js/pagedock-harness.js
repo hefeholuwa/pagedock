@@ -676,13 +676,14 @@
     dragBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="5" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="15" cy="5" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="15" cy="19" r="1.5"/></svg>';
 
     function handleDragGripStart(e) {
-      e.stopPropagation();
-      var pt = e.touches ? e.touches[0] : e;
+      if (e.cancelable) e.preventDefault();
+      var pt = (e.touches && e.touches[0]) || e;
       dragPotential = {
         startX: pt.clientX,
         startY: pt.clientY,
         sourceSec: el,
-        startTime: Date.now()
+        startTime: Date.now(),
+        isHandle: true
       };
     }
     dragBtn.addEventListener('mousedown', handleDragGripStart);
@@ -1012,15 +1013,16 @@
     dragBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="5" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="15" cy="5" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="15" cy="19" r="1.5"/></svg>';
 
     function handleSelectionDragGripStart(e) {
-      e.stopPropagation();
+      if (e.cancelable) e.preventDefault();
       var target = selectedEl || (dragBtn.closest && findSection(dragBtn));
       if (!target || target === document.body) return;
-      var pt = e.touches ? e.touches[0] : e;
+      var pt = (e.touches && e.touches[0]) || e;
       dragPotential = {
         startX: pt.clientX,
         startY: pt.clientY,
         sourceSec: target,
-        startTime: Date.now()
+        startTime: Date.now(),
+        isHandle: true
       };
     }
     dragBtn.addEventListener('mousedown', handleSelectionDragGripStart);
@@ -1590,39 +1592,65 @@
 
   // --- 5b. Section & Element Drag-and-Drop Reordering ---
   function onPointerDown(e) {
-    if (!aiEnabled || isInert(e.target) || (e.button !== undefined && e.button !== 0)) return;
+    if (!aiEnabled || (e.button !== undefined && e.button !== 0)) return;
     if (editingEl) return;
 
+    // 1. Dedicated Drag Handle (✥) - can be inside [data-pagedock-ui]
     var dragHandle = e.target.closest ? e.target.closest('.pd-tool-drag') : null;
     if (dragHandle) {
+      if (e.cancelable) e.preventDefault();
       var target = selectedEl;
       if (!target) {
         var blockOverlay = dragHandle.closest ? dragHandle.closest('.pd-element-overlay') : null;
         target = blockOverlay ? blockOverlay.parentElement : findSection(dragHandle);
       }
       if (target && target !== document.body && target !== document.documentElement) {
-        var pt = e.touches ? e.touches[0] : e;
+        var pt = (e.touches && e.touches[0]) || e;
         dragPotential = {
           startX: pt.clientX,
           startY: pt.clientY,
           sourceSec: target,
-          startTime: Date.now()
+          startTime: Date.now(),
+          isHandle: true
         };
       }
       return;
     }
 
+    // 2. Ignore clicks on other micro-toolbar buttons or harness UI
+    if (isInert(e.target)) return;
 
+    // 3. Direct Drag on Canvas Element (Canva-style: touch/drag any element or block)
+    var candidateEl = selectedEl && (selectedEl === e.target || selectedEl.contains(e.target))
+      ? selectedEl
+      : e.target;
+
+    // Climb out of tiny inline text tags to nearest meaningful block/element
+    if (candidateEl !== selectedEl && candidateEl.parentElement && ['SPAN', 'I', 'B', 'STRONG', 'EM', 'SMALL'].indexOf(candidateEl.tagName) !== -1) {
+      candidateEl = candidateEl.parentElement;
+    }
+
+    if (candidateEl && candidateEl !== document.body && candidateEl !== document.documentElement && !isInert(candidateEl)) {
+      var pt = (e.touches && e.touches[0]) || e;
+      dragPotential = {
+        startX: pt.clientX,
+        startY: pt.clientY,
+        sourceSec: candidateEl,
+        startTime: Date.now(),
+        isHandle: false
+      };
+    }
   }
 
   function onPointerMove(e) {
-    var pt = e.touches ? e.touches[0] : e;
+    var pt = (e.touches && e.touches[0]) || e;
     if (!pt) return;
 
     if (dragPotential && !dragState) {
       var dx = Math.abs(pt.clientX - dragPotential.startX);
       var dy = Math.abs(pt.clientY - dragPotential.startY);
-      if (dx > 4 || dy > 4) {
+      var threshold = dragPotential.isHandle ? 3 : 8;
+      if (dx > threshold || dy > threshold) {
         dragState = {
           active: true,
           sourceSec: dragPotential.sourceSec
@@ -1648,6 +1676,9 @@
       }
 
       var under = document.elementFromPoint(pt.clientX, pt.clientY);
+      if (under && under.closest && under.closest('svg')) {
+        under = under.closest('svg');
+      }
       var candidate = findDropCandidate(dragState.sourceSec, under, pt.clientX, pt.clientY);
       if (candidate) {
         dragState.targetSec = candidate.target;
@@ -1679,7 +1710,7 @@
       removeDragGhost();
       hideDropIndicator();
 
-      if (tgt && src) {
+      if (tgt && src && tgt !== src && !src.contains(tgt)) {
         var sourceTag = src.tagName;
         var sourceIndex = tagIndex(src);
         var sourceId = src.getAttribute ? src.getAttribute('data-pd-id') : null;
