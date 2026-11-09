@@ -260,7 +260,7 @@ $formatRelativeDate = function($dateString) {
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 <input type="text" id="site-search-input" placeholder="Search deployments by title or slug..." class="site-search-input" aria-label="Search deployments">
                 <button type="button" class="search-clear-btn" id="search-clear-btn" aria-label="Clear search" style="display:none;">&times;</button>
-                <span class="search-shortcut-badge">⌘K</span>
+                <span class="search-shortcut-badge desktop-only">⌘K</span>
             </div>
 
             <!-- Controls Actions Right Group -->
@@ -393,21 +393,21 @@ $formatRelativeDate = function($dateString) {
                         </a>
                     </div>
 
-                    <!-- Card Action Button Toolbar (2-Tier Labeled Grid: Primary View + Clear Utilities) -->
+                    <!-- Card Action Button Toolbar (Dedicated Primary View CTA + 3-Button Utility Row) -->
                     <div class="site-card-actions">
-                        <!-- Primary Row: View Live Site + Analytics -->
+                        <!-- Primary Row: Dedicated Full-Width View Live Site -->
                         <div class="card-actions-row primary-row">
                             <a href="<?= url('s/' . $site['slug']) ?>" target="_blank" class="btn-action btn-action-view" title="View Live Website">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                                 <span>View Live Site</span>
                             </a>
+                        </div>
+                        <!-- Secondary Row: Analytics + Leads + Delete (Balanced Utility Strip) -->
+                        <div class="card-actions-row secondary-row">
                             <a href="<?= url('dashboard/analytics/' . $site['slug']) ?>" class="btn-action btn-action-analytics" title="View Edge Analytics">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                                 <span>Analytics</span>
                             </a>
-                        </div>
-                        <!-- Secondary Row: Leads + Delete (All Clearly Labeled) -->
-                        <div class="card-actions-row secondary-row">
                             <a href="<?= url('dashboard/forms/' . $site['slug']) ?>" class="btn-action btn-action-leads <?= $hasForms ? 'has-leads' : '' ?>" title="View Form Leads Inbox">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                                 <span>Leads<?= $hasForms ? ' (' . (int)$site['forms_count'] . ')' : '' ?></span>
