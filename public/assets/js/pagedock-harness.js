@@ -600,12 +600,7 @@
     delBtn.addEventListener('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
-      window.parent.postMessage({
-        type: 'element-delete',
-        targetId: el.getAttribute('data-pd-id'),
-        targetTag: el.tagName,
-        targetIndex: tagIndex(el)
-      }, '*');
+      deleteElement(el);
     });
 
     toolbar.appendChild(dragBtn);
@@ -644,6 +639,50 @@
       if (all[i] === el) return i;
     }
     return 0;
+  }
+
+  function deleteElement(el) {
+    if (!el || el === document.body || el === document.documentElement) return;
+
+    // Clean up overlays and toolbars before recording HTML and removing
+    var overlays = el.querySelectorAll ? el.querySelectorAll('.pd-element-overlay, [data-pagedock-ui]') : [];
+    for (var o = 0; o < overlays.length; o++) {
+      overlays[o].remove();
+    }
+    el.classList.remove('pd-element-selected', 'pd-has-overlay', 'pd-element-active');
+    el.style.outline = '';
+    el.style.outlineOffset = '';
+
+    var targetTag = el.tagName;
+    var targetIndex = tagIndex(el);
+    var targetId = el.getAttribute ? el.getAttribute('data-pd-id') : null;
+    var targetHtml = el.outerHTML;
+
+    if (el.parentNode) {
+      el.parentNode.removeChild(el);
+    }
+
+    if (selectedEl === el) {
+      selectedEl = null;
+    }
+    if (hoveredEl === el) {
+      hoveredEl = null;
+    }
+    if (editingEl === el) {
+      editingEl = null;
+    }
+
+    clearSectionHighlight();
+    checkEmptyCanvas();
+    sendStructureTree();
+
+    window.parent.postMessage({
+      type: 'element-delete',
+      targetTag: targetTag,
+      targetIndex: targetIndex,
+      targetId: targetId,
+      html: targetHtml
+    }, '*');
   }
 
   function sameTagIndex(el) {
@@ -1017,6 +1056,21 @@
       window.parent.postMessage({ type: 'dismiss-popovers' }, '*');
       return;
     }
+
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      var active = document.activeElement;
+      var isInputOrTextarea = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
+      var isContentEditable = active && (active.isContentEditable || (active.getAttribute && (active.getAttribute('contenteditable') === 'true' || active.getAttribute('contenteditable') === 'plaintext-only')));
+      var isEditing = editingEl || isInputOrTextarea || isContentEditable || (selectedEl && (selectedEl.isContentEditable || (selectedEl.getAttribute && selectedEl.getAttribute('contenteditable') === 'true')));
+
+      if (selectedEl && !isEditing && selectedEl !== document.body && selectedEl !== document.documentElement) {
+        e.preventDefault();
+        e.stopPropagation();
+        deleteElement(selectedEl);
+        return;
+      }
+    }
+
     if (!editingEl) return;
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();

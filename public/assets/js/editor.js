@@ -591,7 +591,7 @@
     function handleElementSelected(payload) {
         if (!state.editMode) return;
         // Never open popovers while any modal overlay is visible
-        const activeModal = document.querySelector('.hh-modal-overlay:not(.hidden)');
+        const activeModal = (document.querySelector ? document.querySelector('.hh-modal-overlay:not(.hidden)') : null);
         if (activeModal) return;
         state.selectedElement = payload;
 
@@ -1103,9 +1103,16 @@
 
     function handleElementDelete(payload) {
         if (!cmEditor || !payload) return;
-        const { targetTag, targetIndex, targetId } = payload;
+        const { targetTag, targetIndex, targetId, html } = payload;
         const currentCode = getHtmlCode();
 
+        // 1. Record undo state snapshot
+        const curHist = state.historyStacks.html || (state.historyStacks.html = []);
+        if (curHist.length === 0 || curHist[curHist.length - 1] !== currentCode) {
+            curHist.push(currentCode);
+        }
+
+        // 2. Identify target range in source code
         let tgtRange = null;
         if (targetId && currentCode.includes(targetId)) {
             const idPattern = new RegExp(`data-pd-id=["']${targetId}["']`, 'i');
@@ -1132,11 +1139,57 @@
             tgtRange = findTagRangeInHtml(currentCode, targetTag, targetIndex);
         }
 
-        if (!tgtRange) return;
+        let updatedCode = null;
+        if (tgtRange) {
+            let startPos = tgtRange.start;
+            let endPos = tgtRange.end;
 
-        const updatedCode = currentCode.slice(0, tgtRange.start) + currentCode.slice(tgtRange.end);
+            // Clean up surrounding whitespace / blank line if element was on its own line
+            const lineStart = currentCode.lastIndexOf('\n', startPos) + 1;
+            const lineEnd = currentCode.indexOf('\n', endPos);
+            const prefix = currentCode.slice(lineStart, startPos);
+            const suffix = lineEnd !== -1 ? currentCode.slice(endPos, lineEnd) : currentCode.slice(endPos);
+
+            if (/^\s*$/.test(prefix) && /^\s*$/.test(suffix)) {
+                startPos = lineStart;
+                endPos = lineEnd !== -1 ? lineEnd + 1 : currentCode.length;
+            }
+
+            updatedCode = currentCode.slice(0, startPos) + currentCode.slice(endPos);
+        } else if (html && currentCode.includes(html)) {
+            updatedCode = currentCode.replace(html, '');
+        } else if (state.selectedElement && state.selectedElement.html && currentCode.includes(state.selectedElement.html)) {
+            updatedCode = currentCode.replace(state.selectedElement.html, '');
+        }
+
+        if (!updatedCode || updatedCode === currentCode) return;
+
+        // 3. Update CodeMirror editor without losing cursor/focus
+        const cursor = cmEditor.getCursor ? cmEditor.getCursor() : null;
+        const scrollInfo = cmEditor.getScrollInfo ? cmEditor.getScrollInfo() : null;
+        const hasFocus = cmEditor.hasFocus ? cmEditor.hasFocus() : false;
+
         updateCodeEditor(updatedCode, false);
-        showToast('[STATUS] Block deleted (Ctrl+Z to undo)');
+
+        if (cursor && cmEditor.setCursor) {
+            const lineCount = cmEditor.lineCount ? cmEditor.lineCount() : 1;
+            const safeLine = Math.min(cursor.line, lineCount - 1);
+            cmEditor.setCursor({ line: safeLine, ch: cursor.ch });
+        }
+        if (scrollInfo && cmEditor.scrollTo) {
+            cmEditor.scrollTo(scrollInfo.left, scrollInfo.top);
+        }
+        if (hasFocus && cmEditor.focus) {
+            cmEditor.focus();
+        }
+
+        // 4. Hide popovers and clear selected state
+        hidePopovers();
+        state.selectedElement = null;
+
+        // 5. Toast notification
+        const tag = (targetTag || (tgtRange && tgtRange.tagName) || 'element').toLowerCase();
+        showToast(`[STATUS] Deleted <${tag}> (Cmd+Z to undo)`);
     }
 
     function handleOpenLibraryInsert(payload) {
