@@ -46,6 +46,15 @@ EXCLUDE_EXTENSIONS = {
     '.db',
 }
 
+# Obsolete remote files that should be deleted if present on the remote host
+OBSOLETE_REMOTE_FILES = [
+    'views/editor.php',
+    'views/studio.php',
+    'public/assets/js/editor.js',
+    'public/assets/js/pagedock-harness.js',
+    'public/assets/css/editor.css',
+]
+
 
 def load_env(env_path):
     config = {}
@@ -206,7 +215,21 @@ def sync_files(ftp_ref, config, root_dir, remote_root, dry_run=False):
                 upload_file_with_retry(ftp_ref, config, target_remote_dir, local_path, filename)
                 uploaded_count += 1
 
-    print(f"\n[SUMMARY] Uploaded: {uploaded_count} files | Skipped (Unchanged): {skipped_count} files.")
+    # Clean up obsolete remote files
+    cleaned_count = 0
+    for obsolete_rel in OBSOLETE_REMOTE_FILES:
+        target_path = f"{remote_root}/{obsolete_rel}"
+        if dry_run:
+            print(f"[DRY-RUN] Would delete obsolete remote file if present: {target_path}")
+        else:
+            try:
+                ftp_ref[0].delete(target_path)
+                print(f"[CLEANUP] Deleted obsolete remote file: {target_path}")
+                cleaned_count += 1
+            except Exception:
+                pass
+
+    print(f"\n[SUMMARY] Uploaded: {uploaded_count} files | Skipped (Unchanged): {skipped_count} files | Cleaned: {cleaned_count} obsolete files.")
 
 
 def main():
