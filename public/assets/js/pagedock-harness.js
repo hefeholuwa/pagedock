@@ -84,13 +84,19 @@
       }
       .pd-selection-overlay {
         position: absolute !important;
+        inset: auto !important;
+        inset-inline-end: auto !important;
+        inset-block-start: auto !important;
+        right: auto !important;
+        bottom: auto !important;
         z-index: 999999 !important;
-        pointer-events: none !important;
+        pointer-events: auto !important;
       }
       .pd-selection-overlay .pd-element-toolbar {
+        display: inline-flex !important;
         opacity: 1 !important;
         transform: translateY(0) !important;
-        pointer-events: all !important;
+        pointer-events: auto !important;
       }
       .pd-element-selected {
         outline: 2px solid #38bdf8 !important;
@@ -998,7 +1004,7 @@
       return selectionToolbarOverlay;
     }
     selectionToolbarOverlay = document.createElement('div');
-    selectionToolbarOverlay.className = 'pd-element-overlay pd-selection-overlay';
+    selectionToolbarOverlay.className = 'pd-selection-overlay';
     selectionToolbarOverlay.setAttribute('data-pagedock-ui', 'selection-toolbar');
 
     var toolbar = document.createElement('div');
@@ -1201,12 +1207,15 @@
       top = rect.top + scrollY - tbHeight - 6;
     }
 
-    overlay.style.position = 'absolute';
-    overlay.style.left = Math.round(left) + 'px';
-    overlay.style.top = Math.round(top) + 'px';
-    overlay.style.zIndex = '999999';
-    overlay.style.visibility = 'visible';
-    overlay.style.pointerEvents = 'all';
+    overlay.style.setProperty('position', 'absolute', 'important');
+    overlay.style.setProperty('left', Math.round(left) + 'px', 'important');
+    overlay.style.setProperty('top', Math.round(top) + 'px', 'important');
+    overlay.style.setProperty('right', 'auto', 'important');
+    overlay.style.setProperty('bottom', 'auto', 'important');
+    overlay.style.setProperty('z-index', '999999', 'important');
+    overlay.style.setProperty('visibility', 'visible', 'important');
+    overlay.style.setProperty('display', 'block', 'important');
+    overlay.style.setProperty('pointer-events', 'auto', 'important');
   }
 
   function attachSelectionToolbar(el) {
@@ -1601,7 +1610,7 @@
       if (e.cancelable) e.preventDefault();
       var target = selectedEl;
       if (!target) {
-        var blockOverlay = dragHandle.closest ? dragHandle.closest('.pd-element-overlay') : null;
+        var blockOverlay = dragHandle.closest ? dragHandle.closest('.pd-element-overlay, .pd-selection-overlay') : null;
         target = blockOverlay ? blockOverlay.parentElement : findSection(dragHandle);
       }
       if (target && target !== document.body && target !== document.documentElement) {
