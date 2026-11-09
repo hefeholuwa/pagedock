@@ -395,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (urlInput) urlInput.value = data.url;
             if (viewLink) viewLink.href = data.url;
-            if (editorLink) editorLink.href = '/editor/' + data.slug;
+            if (editorLink) editorLink.href = '/dashboard';
 
             if (successEl) {
                 successEl.classList.remove('hidden');
@@ -581,8 +581,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST'
             });
             const data = await res.json();
-            if (data.success && data.editor_url) {
-                window.location.href = data.editor_url;
+            if (data.success) {
+                window.location.href = data.url || '/dashboard';
             } else {
                 alert(data.error || 'Failed to initialize template.');
                 if (btnElement) {

@@ -161,7 +161,7 @@ assertTest(str_contains($dashHtml, 'site-search-input'), "Dashboard renders inst
 assertTest(str_contains($dashHtml, $anonSlug), "Dashboard renders the claimed site ({$anonSlug})");
 assertTest(str_contains($dashHtml, "dashboard/forms/{$anonSlug}"), "Dashboard site card links to Forms Inbox");
 assertTest(str_contains($dashHtml, "dashboard/analytics/{$anonSlug}"), "Dashboard site card links to Edge Analytics");
-assertTest(str_contains($dashHtml, "editor/{$anonSlug}"), "Dashboard site card links to Web Editor");
+assertTest(str_contains($dashHtml, "s/{$anonSlug}"), "Dashboard site card links to Live Site");
 
 echo "\n--- 6. Testing User Logout ---\n";
 $ch = curl_init("{$baseUrl}/logout");

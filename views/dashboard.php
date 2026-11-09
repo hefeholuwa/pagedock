@@ -393,25 +393,21 @@ $formatRelativeDate = function($dateString) {
                         </a>
                     </div>
 
-                    <!-- Card Action Button Toolbar (2-Tier Labeled Grid: Primary Builders + Clear Utilities) -->
+                    <!-- Card Action Button Toolbar (2-Tier Labeled Grid: Primary View + Clear Utilities) -->
                     <div class="site-card-actions">
-                        <!-- Primary Row: Visual Studio + Code Editor -->
+                        <!-- Primary Row: View Live Site + Analytics -->
                         <div class="card-actions-row primary-row">
-                            <a href="<?= url('studio/' . $site['slug']) ?>" class="btn-action btn-action-studio" title="Launch Visual Studio Page Builder">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M14 9l3 3-3 3"/></svg>
-                                <span>Studio</span>
+                            <a href="<?= url('s/' . $site['slug']) ?>" target="_blank" class="btn-action btn-action-view" title="View Live Website">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                <span>View Live Site</span>
                             </a>
-                            <a href="<?= url('editor/' . $site['slug']) ?>" class="btn-action btn-action-editor" title="Launch AI &amp; Web Code Editor">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-                                <span>Editor</span>
-                            </a>
-                        </div>
-                        <!-- Secondary Row: Analytics + Leads + Delete (All Clearly Labeled) -->
-                        <div class="card-actions-row secondary-row">
                             <a href="<?= url('dashboard/analytics/' . $site['slug']) ?>" class="btn-action btn-action-analytics" title="View Edge Analytics">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                                 <span>Analytics</span>
                             </a>
+                        </div>
+                        <!-- Secondary Row: Leads + Delete (All Clearly Labeled) -->
+                        <div class="card-actions-row secondary-row">
                             <a href="<?= url('dashboard/forms/' . $site['slug']) ?>" class="btn-action btn-action-leads <?= $hasForms ? 'has-leads' : '' ?>" title="View Form Leads Inbox">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                                 <span>Leads<?= $hasForms ? ' (' . (int)$site['forms_count'] . ')' : '' ?></span>
@@ -515,9 +511,9 @@ $formatRelativeDate = function($dateString) {
                             <!-- Actions -->
                             <td class="td-actions">
                                 <div class="td-actions-group">
-                                    <a href="<?= url('studio/' . $site['slug']) ?>" class="btn-table-action accent" title="Studio Builder">Studio</a>
-                                    <a href="<?= url('editor/' . $site['slug']) ?>" class="btn-table-action" title="AI &amp; Code Editor">Editor</a>
+                                    <a href="<?= url('s/' . $site['slug']) ?>" target="_blank" class="btn-table-action accent" title="View Live Website">View</a>
                                     <a href="<?= url('dashboard/analytics/' . $site['slug']) ?>" class="btn-table-action" title="Metrics">Analytics</a>
+                                    <a href="<?= url('dashboard/forms/' . $site['slug']) ?>" class="btn-table-action" title="Leads">Leads</a>
                                     <button type="button" class="btn-table-action danger delete-site-btn" data-slug="<?= htmlspecialchars($site['slug']) ?>" title="Delete Site">
                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                                     </button>

@@ -227,65 +227,6 @@ class Router {
             return;
         }
 
-        // 5b. AI HTML Editor API Endpoints (1:1 htmlhost.co Protocol)
-        // 5b-1. Check AI Availability & Quotas: GET /api/ai/availability
-        if (!empty($parts) && $parts[0] === 'api' && ($parts[1] ?? '') === 'ai' && ($parts[2] ?? '') === 'availability') {
-            json_response([
-                'available' => true,
-                'quota' => [
-                    'used' => 0,
-                    'limit' => 5,
-                    'remaining' => 5
-                ],
-                'models' => [
-                    ['id' => 'gemini-3.5-flash-lite', 'label' => 'Gemini 3.5 Flash Lite', 'provider' => 'google'],
-                    ['id' => 'claude-3-7-sonnet', 'label' => 'Claude 3.7 Sonnet', 'provider' => 'anthropic'],
-                    ['id' => 'gpt-4.1', 'label' => 'GPT-4.1', 'provider' => 'openai']
-                ]
-            ]);
-            return;
-        }
-
-        // 5b-2. Start / Track AI Task: POST /api/ai/task
-        if (!empty($parts) && $parts[0] === 'api' && ($parts[1] ?? '') === 'ai' && ($parts[2] ?? '') === 'task') {
-            $raw = file_get_contents('php://input');
-            $data = json_decode($raw, true) ?: [];
-            json_response([
-                'success' => true,
-                'taskId' => 'task_' . bin2hex(random_bytes(6)),
-                'status' => 'started',
-                'model' => $data['model'] ?? 'gemini-3.5-flash-lite'
-            ]);
-            return;
-        }
-
-        // 5b-3. Execute AI Generator / Targeted Element Edit: POST /api/ai/builtin
-        if (!empty($parts) && $parts[0] === 'api' && ($parts[1] ?? '') === 'ai' && ($parts[2] ?? '') === 'builtin') {
-            $raw = file_get_contents('php://input');
-            $data = json_decode($raw, true) ?: [];
-            $mode = $data['mode'] ?? 'chat';
-            $instruction = trim($data['instruction'] ?? $data['intent'] ?? '');
-            $elementHtml = $data['elementHtml'] ?? '';
-
-            if ($mode === 'element') {
-                $patched = SiteManager::applyElementAiPatch($elementHtml, $instruction);
-                json_response([
-                    'success' => true,
-                    'html' => $patched,
-                    'summary' => 'Applied: ' . $instruction
-                ]);
-                return;
-            }
-
-            // Whole-page / Chat assistant response
-            json_response([
-                'success' => true,
-                'message' => 'Processed: ' . $instruction,
-                'diffs' => []
-            ]);
-            return;
-        }
-
         // 6. API Delete Site: POST /api/sites/{slug}/delete
         if (!empty($parts) && $parts[0] === 'api' && ($parts[1] ?? '') === 'sites' && ($parts[3] ?? '') === 'delete') {
             $slug = $parts[2] ?? null;
@@ -667,7 +608,6 @@ class Router {
                     'relPath' => $f,
                     'title' => $pageTitle,
                     'url' => url('s/' . $slug . ($cleanRoute ? '/' . $cleanRoute : '')),
-                    'editorUrl' => url('editor/' . $slug . ($f !== 'index.html' ? '?file=' . urlencode($f) : '')),
                     'size' => $size,
                     'formattedSize' => $formattedSize,
                     'isEntry' => ($f === $entryFile || ($f === 'index.html' && !$site['entry_file']))
@@ -709,9 +649,6 @@ class Router {
             }
 
             $res = SiteManager::createPage($slug, $filename, $title, $layout, $sourceFile);
-            if ($res['success']) {
-                $res['editorUrl'] = url('editor/' . $slug . '?file=' . urlencode($res['file']));
-            }
             json_response($res, $res['success'] ? 200 : 400);
             return;
         }
@@ -766,9 +703,6 @@ class Router {
 
             $preferredSlug = $_POST['slug'] ?? null;
             $res = SiteManager::createFromHtml($template['html'], $template['title'], $preferredSlug);
-            if ($res['success']) {
-                $res['editor_url'] = url('editor/' . $res['slug']);
-            }
             json_response($res, $res['success'] ? 200 : 400);
             return;
         }
@@ -799,87 +733,14 @@ class Router {
             return;
         }
 
-        // 7. Editor view: /editor/{slug}
-        if (!empty($parts) && $parts[0] === 'editor') {
-            $slug = $parts[1] ?? null;
-            $site = $slug ? SiteManager::getSite($slug) : null;
-            if (!$site) {
-                render_view('404', ['title' => 'Site Not Found']);
-                return;
+        // 7. Legacy Editor/Studio redirects -> Direct to live site or dashboard
+        if (!empty($parts) && ($parts[0] === 'editor' || $parts[0] === 'studio')) {
+            $slug = $parts[1] ?? '';
+            if ($slug) {
+                header('Location: ' . url('s/' . $slug), true, 302);
+            } else {
+                header('Location: ' . url('dashboard'), true, 302);
             }
-
-            if (!empty($_GET['token']) && is_string($_GET['token'])) {
-                if (!isset($_SESSION['guest_claim_tokens']) || !is_array($_SESSION['guest_claim_tokens'])) {
-                    $_SESSION['guest_claim_tokens'] = [];
-                }
-                if (!in_array($_GET['token'], $_SESSION['guest_claim_tokens'], true)) {
-                    $_SESSION['guest_claim_tokens'][] = $_GET['token'];
-                }
-            }
-
-            $activeFile = $_GET['file'] ?? ($site['entry_file'] ?: 'index.html');
-            $canManage = SiteManager::canManage($site);
-
-            // If visitor can manage and file is HTML, decouple inlined styles/scripts so index.html holds only HTML
-            if ($canManage && (str_ends_with(strtolower($activeFile), '.html') || str_ends_with(strtolower($activeFile), '.htm'))) {
-                SiteManager::decoupleAssets($slug, $activeFile);
-                $site = SiteManager::getSite($slug);
-            }
-
-            $html = SiteManager::getSiteHtml($slug, $activeFile);
-
-            $allHtmlFiles = SharedLayoutManager::findAllHtmlFiles($slug);
-            $sharedReport = SharedLayoutManager::inspectSite($slug);
-
-            render_view('editor', [
-                'site' => $site,
-                'html' => $html,
-                'activeFile' => $activeFile,
-                'htmlFiles' => $allHtmlFiles,
-                'sharedReport' => $sharedReport,
-                'canManage' => $canManage,
-                'title' => 'Editor — ' . htmlspecialchars($site['title'])
-            ], false); // Don't include global header/footer for the full-screen editor
-            return;
-        }
-
-        // 7b. Visual Studio (Elementor-Style Builder): /studio/{slug}
-        if (!empty($parts) && $parts[0] === 'studio') {
-            $slug = $parts[1] ?? null;
-            $site = $slug ? SiteManager::getSite($slug) : null;
-            if (!$site) {
-                render_view('404', ['title' => 'Site Not Found']);
-                return;
-            }
-
-            if (!empty($_GET['token']) && is_string($_GET['token'])) {
-                if (!isset($_SESSION['guest_claim_tokens']) || !is_array($_SESSION['guest_claim_tokens'])) {
-                    $_SESSION['guest_claim_tokens'] = [];
-                }
-                if (!in_array($_GET['token'], $_SESSION['guest_claim_tokens'], true)) {
-                    $_SESSION['guest_claim_tokens'][] = $_GET['token'];
-                }
-            }
-
-            $activeFile = $_GET['file'] ?? ($site['entry_file'] ?: 'index.html');
-            $canManage = SiteManager::canManage($site);
-
-            if ($canManage && (str_ends_with(strtolower($activeFile), '.html') || str_ends_with(strtolower($activeFile), '.htm'))) {
-                SiteManager::decoupleAssets($slug, $activeFile);
-                $site = SiteManager::getSite($slug);
-            }
-
-            $html = SiteManager::getSiteHtml($slug, $activeFile);
-            $allHtmlFiles = SharedLayoutManager::findAllHtmlFiles($slug);
-
-            render_view('studio', [
-                'site' => $site,
-                'html' => $html,
-                'activeFile' => $activeFile,
-                'htmlFiles' => $allHtmlFiles,
-                'canManage' => $canManage,
-                'title' => 'Visual Studio — ' . htmlspecialchars($site['title'])
-            ], false); // Dedicated full-screen studio
             return;
         }
 
@@ -1431,42 +1292,7 @@ class Router {
             </script>
             ';
 
-            // Check if request is an editor preview iframe
-            $isEditorPreview = isset($_GET['preview']) || isset($_GET['t']) || 
-                (!empty($_SERVER['HTTP_REFERER']) && (str_contains($_SERVER['HTTP_REFERER'], '/editor/') || str_contains($_SERVER['HTTP_REFERER'], '/studio/')));
-
-            $harnessScript = '';
-            if ($isEditorPreview) {
-                // 1. Audio Muter & DOM Ready signal in <head>
-                $headHarness = '<script data-htmlhost-ui>
-                (function(){
-                    window.addEventListener("DOMContentLoaded", function(){
-                        try { window.parent.postMessage({ type: "buffer-dom-ready" }, "*"); } catch(e){}
-                    });
-                    try {
-                        var obs = new MutationObserver(function(muts){
-                            muts.forEach(function(m){
-                                m.addedNodes.forEach(function(n){
-                                    if (n.tagName === "AUDIO" || n.tagName === "VIDEO") n.muted = true;
-                                });
-                            });
-                        });
-                        obs.observe(document.documentElement, { childList: true, subtree: true });
-                    } catch(e){}
-                })();
-                </script>
-                <link rel="stylesheet" href="' . asset('assets/css/editor.css') . '">';
-                if (stripos($content, '<head>') !== false) {
-                    $content = str_ireplace('<head>', "<head>\n" . $headHarness, $content);
-                }
-
-                // 2. Visual Inspector & Element Interaction Engine before </body>
-                $harnessUrl = asset('assets/js/pagedock-harness.js');
-                $harnessScript = '<script src="' . $harnessUrl . '"></script>';
-                $badge = ''; // Suppress external badge inside editor preview
-            }
-
-            $injectedPayload = $formScript . $badge . $analyticsBeacon . $harnessScript;
+            $injectedPayload = $formScript . $badge . $analyticsBeacon;
 
             if (stripos($content, '</body>') !== false) {
                 $content = str_ireplace('</body>', $injectedPayload . '</body>', $content);

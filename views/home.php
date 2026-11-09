@@ -161,7 +161,7 @@
                 </div>
                 <div class="action-buttons">
                     <a href="#" id="view-site-link" target="_blank" class="btn-primary">View Live Site &rarr;</a>
-                    <a href="#" id="open-editor-link" class="btn-secondary">Open In-Browser Editor</a>
+                    <a href="<?= url('dashboard') ?>" id="open-editor-link" class="btn-secondary">Manage Deployments</a>
                 </div>
             </div>
         </div>

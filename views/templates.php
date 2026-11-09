@@ -4,7 +4,7 @@
         <h1>HTML Templates<br><span class="accent-text">Ready for vibecoding.</span></h1>
         <p class="templates-subtitle">
             Curated starting points for landing pages, portfolios, dashboards, and more. 
-            Preview a design, customize it in the editor, and publish when ready.
+            Preview a design, deploy it in one click, and share your live link immediately.
         </p>
     </div>
 
