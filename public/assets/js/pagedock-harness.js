@@ -76,10 +76,7 @@
         position: relative !important;
       }
       .pd-element-overlay {
-        position: absolute !important;
-        inset-inline-end: 8px !important;
-        inset-block-start: -14px !important;
-        z-index: 99999 !important;
+        display: none !important;
         pointer-events: none !important;
       }
       .pd-selection-overlay {
@@ -116,10 +113,6 @@
         transition: opacity 0.15s ease, transform 0.15s ease !important;
         transform: translateY(-2px) !important;
       }
-      .pd-has-overlay:hover > .pd-element-overlay .pd-element-toolbar,
-      .pd-element-selected > .pd-element-overlay .pd-element-toolbar,
-      .pd-has-overlay.pd-element-selected > .pd-element-overlay .pd-element-toolbar,
-      .pd-has-overlay.pd-element-active > .pd-element-overlay .pd-element-toolbar,
       .pd-selection-overlay .pd-element-toolbar {
         opacity: 1 !important;
         transform: translateY(0) !important;
@@ -1103,7 +1096,29 @@
       }
     });
 
-    // 6. Duplicate button (📋)
+    // 6. Add Component Below (+)
+    var addBtn = document.createElement('button');
+    addBtn.type = 'button';
+    addBtn.className = 'pd-tool-btn pd-tool-add';
+    addBtn.title = 'Add Component Below';
+    addBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+    addBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (selectedEl) {
+        if (!selectedEl.getAttribute('data-pd-id')) {
+          selectedEl.setAttribute('data-pd-id', 'pd_' + (selectedEl.tagName.toLowerCase()) + '_' + (blockIdCounter++));
+        }
+        window.parent.postMessage({
+          type: 'open-library-insert',
+          targetId: selectedEl.getAttribute('data-pd-id'),
+          targetTag: selectedEl.tagName,
+          targetIndex: tagIndex(selectedEl)
+        }, '*');
+      }
+    });
+
+    // 7. Duplicate button (📋)
     var dupBtn = document.createElement('button');
     dupBtn.type = 'button';
     dupBtn.className = 'pd-tool-btn pd-tool-duplicate';
@@ -1144,7 +1159,7 @@
       }
     });
 
-    // 7. Delete button (🗑️ with red hover highlight)
+    // 8. Delete button (🗑️ with red hover highlight)
     var delBtn = document.createElement('button');
     delBtn.type = 'button';
     delBtn.className = 'pd-tool-btn pd-tool-delete';
@@ -1163,6 +1178,7 @@
     toolbar.appendChild(upBtn);
     toolbar.appendChild(downBtn);
     toolbar.appendChild(aiBtn);
+    toolbar.appendChild(addBtn);
     toolbar.appendChild(dupBtn);
     toolbar.appendChild(delBtn);
     selectionToolbarOverlay.appendChild(toolbar);

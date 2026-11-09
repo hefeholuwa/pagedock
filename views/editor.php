@@ -325,11 +325,16 @@
             <div class="hh-viewport-wrapper" id="hh-viewport-wrapper" style="width: 100%;">
                 
                 <!-- URL Pill & Security Indicator -->
+                <?php
+                $previewSubPath = (!empty($activeFile) && $activeFile !== 'index.html') ? preg_replace('/\.html?$/i', '', ltrim($activeFile, '/')) : '';
+                $previewBaseUrl = url('s/' . $site['slug'] . ($previewSubPath !== '' ? '/' . $previewSubPath : '/'));
+                $previewSrc = $previewBaseUrl . (str_contains($previewBaseUrl, '?') ? '&' : '?') . 'preview=1&t=' . time();
+                ?>
                 <div class="hh-canvas-url-bar desktop-only">
                     <div class="hh-canvas-ssl">
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                     </div>
-                    <span class="hh-canvas-url"><?= url('s/' . $site['slug'] . '/') ?></span>
+                    <span class="hh-canvas-url"><?= htmlspecialchars($previewBaseUrl) ?></span>
                     <span class="hh-canvas-pulse" title="Visual Inspector Active"></span>
                 </div>
 
@@ -337,7 +342,7 @@
                 <div class="hh-iframe-container" id="hh-iframe-container">
                     <iframe 
                         id="preview-iframe" 
-                        src="<?= url('s/' . $site['slug'] . '/') ?>?preview=1&t=<?= time() ?>" 
+                        src="<?= htmlspecialchars($previewSrc) ?>" 
                         sandbox="allow-scripts allow-same-origin allow-popups" 
                         class="hh-preview-frame"
                         frameborder="0"
@@ -651,7 +656,7 @@
         window.PAGEDOCK_CONFIG = {
             slug: '<?= addslashes($site['slug']) ?>',
             saveUrl: '<?= url('api/editor/' . $site['slug']) . $editorTokenQuery ?>',
-            previewUrl: '<?= url('s/' . $site['slug'] . '/') ?>',
+            previewUrl: '<?= addslashes($previewBaseUrl) ?>',
             aiAvailabilityUrl: '<?= url('api/ai/availability') ?>',
             aiTaskUrl: '<?= url('api/ai/task') . $editorTokenQuery ?>',
             aiBuiltinUrl: '<?= url('api/ai/builtin') . $editorTokenQuery ?>',

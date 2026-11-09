@@ -2214,11 +2214,8 @@ body.hh-editor-body {
 }
 
 .pd-element-overlay {
-    position: absolute;
-    inset-inline-end: 8px;
-    inset-block-start: -14px;
-    z-index: 99999;
-    pointer-events: none;
+    display: none !important;
+    pointer-events: none !important;
 }
 
 .pd-selection-overlay {
@@ -2253,10 +2250,6 @@ body.hh-editor-body {
     transform: translateY(-2px);
 }
 
-.pd-has-overlay:hover > .pd-element-overlay .pd-element-toolbar,
-.pd-element-selected > .pd-element-overlay .pd-element-toolbar,
-.pd-has-overlay.pd-element-selected > .pd-element-overlay .pd-element-toolbar,
-.pd-has-overlay.pd-element-active > .pd-element-overlay .pd-element-toolbar,
 .pd-selection-overlay .pd-element-toolbar {
     opacity: 1;
     transform: translateY(0);
