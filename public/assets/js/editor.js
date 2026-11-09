@@ -25,6 +25,7 @@
         slug: window.PAGEDOCK_CONFIG?.slug || '',
         activeFile: window.PAGEDOCK_CONFIG?.activeFile || 'index.html',
         editMode: savedEditMode,  // Visual selection mode on/off
+        autoShowPopover: false,   // Canva-style: Clean canvas by default; open popover only on demand
         aiEdit: savedAiEdit,      // Popover mode: true = AI prompt, false = Direct element edit
         activeTab: 'code',        // 'code' | 'library' | 'structure' | 'shared'
         activeLibView: 'sections',// 'sections' | 'elements'
@@ -524,6 +525,18 @@
                 handleElementReorder(data);
                 break;
 
+            case 'open-ai-popover':
+                if (data.rect) {
+                    positionPopover(data.rect);
+                    showPopoverView('ai');
+                    if (dom.popAiPrompt) dom.popAiPrompt.focus();
+                } else if (state.selectedElement && state.selectedElement.rect) {
+                    positionPopover(state.selectedElement.rect);
+                    showPopoverView('ai');
+                    if (dom.popAiPrompt) dom.popAiPrompt.focus();
+                }
+                break;
+
             case 'element-duplicate':
                 handleElementDuplicate(data);
                 break;
@@ -610,11 +623,12 @@
         if (dom.popDirectSnippet) dom.popDirectSnippet.textContent = snippet || '<' + tag.toLowerCase() + '>';
         if (dom.directTextInput) dom.directTextInput.value = text;
 
-        // 3. Position Popover over element coordinates
-        positionPopover(payload.rect);
-
-        // 4. Show appropriate view (AI Edit or Direct Edit)
-        showPopoverView(state.aiEdit ? 'ai' : 'direct');
+        // 3. In Canva visual mode, the in-canvas bounding box and micro-toolbar handle direct actions.
+        // We only show the floating popover if explicitly configured (autoShowPopover) or requested via ✨ AI button.
+        if (state.autoShowPopover) {
+            positionPopover(payload.rect);
+            showPopoverView(state.aiEdit ? 'ai' : 'direct');
+        }
     }
 
     function positionPopover(rect) {
@@ -1116,6 +1130,12 @@
         const { targetTag, targetIndex, targetId } = payload;
         const currentCode = getHtmlCode();
 
+        // 1. Record undo snapshot
+        const curHist = state.historyStacks.html || (state.historyStacks.html = []);
+        if (curHist.length === 0 || curHist[curHist.length - 1] !== currentCode) {
+            curHist.push(currentCode);
+        }
+
         let tgtRange = null;
         if (targetId && currentCode.includes(targetId)) {
             const idPattern = new RegExp(`data-pd-id=["']${targetId}["']`, 'i');
@@ -1147,7 +1167,8 @@
         const cloneOuter = tgtRange.outerHTML;
         const updatedCode = currentCode.slice(0, tgtRange.end) + '\n\n' + cloneOuter + currentCode.slice(tgtRange.end);
         updateCodeEditor(updatedCode, false);
-        showToast('[STATUS] Duplicated block');
+        const tag = (targetTag || (tgtRange && tgtRange.tagName) || 'block').toLowerCase();
+        showToast(`[STATUS] Duplicated <${tag}> (Cmd+Z to undo)`);
     }
 
     function handleElementDelete(payload) {

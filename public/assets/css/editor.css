@@ -2311,6 +2311,12 @@ body.hh-editor-body {
     color: #f87171;
 }
 
+.pd-tool-btn.pd-tool-ai:hover,
+.pd-tool-btn.pd-tool-ai:active {
+    background: rgba(168, 85, 247, 0.25);
+    color: #c084fc;
+}
+
 /* Animated Live Insertion Slot */
 .pd-drop-slot {
     box-sizing: border-box;

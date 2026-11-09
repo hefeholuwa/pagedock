@@ -567,7 +567,9 @@
   function isInert(el) {
     if (!el || el.nodeType !== 1) return true;
     if (el === document.body || el === document.documentElement) return true;
-    if (el.hasAttribute && el.hasAttribute('data-pagedock-ui')) return true;
+    if (el.hasAttribute && (el.hasAttribute('data-pagedock-ui') || el.hasAttribute('data-htmlhost-ui'))) return true;
+    if (el.closest && (el.closest('[data-pagedock-ui]') || el.closest('[data-htmlhost-ui]'))) return true;
+    if (el.classList && (el.classList.contains('pd-element-overlay') || el.classList.contains('pd-drop-slot') || el.classList.contains('pd-drag-ghost') || el.classList.contains('pd-element-toolbar') || el.classList.contains('pd-tool-btn') || el.classList.contains('pd-selection-overlay'))) return true;
     return false;
   }
 
@@ -800,9 +802,13 @@
   }
 
   function tagIndex(el) {
+    if (!el || !el.tagName) return 0;
     var all = document.getElementsByTagName(el.tagName);
+    var count = 0;
     for (var i = 0; i < all.length; i++) {
-      if (all[i] === el) return i;
+      if (isInert(all[i])) continue;
+      if (all[i] === el) return count;
+      count++;
     }
     return 0;
   }
@@ -1064,7 +1070,32 @@
       }
     });
 
-    // 5. Duplicate button (📋)
+    // 5. AI Prompt button (✨)
+    var aiBtn = document.createElement('button');
+    aiBtn.type = 'button';
+    aiBtn.className = 'pd-tool-btn pd-tool-ai';
+    aiBtn.title = 'Edit with AI (Prompt)';
+    aiBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>';
+    aiBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (selectedEl) {
+        var r = selectedEl.getBoundingClientRect();
+        window.parent.postMessage({
+          type: 'open-ai-popover',
+          rect: {
+            left: r.left,
+            top: r.top,
+            right: r.right,
+            bottom: r.bottom,
+            width: r.width,
+            height: r.height
+          }
+        }, '*');
+      }
+    });
+
+    // 6. Duplicate button (📋)
     var dupBtn = document.createElement('button');
     dupBtn.type = 'button';
     dupBtn.className = 'pd-tool-btn pd-tool-duplicate';
@@ -1073,20 +1104,39 @@
     dupBtn.addEventListener('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
-      if (selectedEl) {
+      if (selectedEl && selectedEl.parentNode) {
         if (!selectedEl.getAttribute('data-pd-id')) {
           selectedEl.setAttribute('data-pd-id', 'pd_' + (selectedEl.tagName.toLowerCase()) + '_' + (blockIdCounter++));
         }
+        var targetId = selectedEl.getAttribute('data-pd-id');
+        var targetTag = selectedEl.tagName;
+        var targetIdx = tagIndex(selectedEl);
+
+        // Immediate DOM clone in preview for instant Canva feel
+        var clone = selectedEl.cloneNode(true);
+        var newId = 'pd_' + (selectedEl.tagName.toLowerCase()) + '_' + (blockIdCounter++);
+        clone.setAttribute('data-pd-id', newId);
+        clone.classList.remove('pd-element-selected', 'pd-has-overlay', 'pd-element-active');
+        clone.style.outline = '';
+        clone.style.outlineOffset = '';
+        var cloneOverlays = clone.querySelectorAll ? clone.querySelectorAll('.pd-element-overlay, [data-pagedock-ui]') : [];
+        for (var co = 0; co < cloneOverlays.length; co++) cloneOverlays[co].remove();
+
+        selectedEl.parentNode.insertBefore(clone, selectedEl.nextSibling);
+
         window.parent.postMessage({
           type: 'element-duplicate',
-          targetId: selectedEl.getAttribute('data-pd-id'),
-          targetTag: selectedEl.tagName,
-          targetIndex: tagIndex(selectedEl)
+          targetId: targetId,
+          targetTag: targetTag,
+          targetIndex: targetIdx
         }, '*');
+
+        sendStructureTree();
+        selectElement(clone);
       }
     });
 
-    // 6. Delete button (🗑️ with red hover highlight)
+    // 7. Delete button (🗑️ with red hover highlight)
     var delBtn = document.createElement('button');
     delBtn.type = 'button';
     delBtn.className = 'pd-tool-btn pd-tool-delete';
@@ -1104,6 +1154,7 @@
     toolbar.appendChild(editBtn);
     toolbar.appendChild(upBtn);
     toolbar.appendChild(downBtn);
+    toolbar.appendChild(aiBtn);
     toolbar.appendChild(dupBtn);
     toolbar.appendChild(delBtn);
     selectionToolbarOverlay.appendChild(toolbar);
@@ -1131,15 +1182,16 @@
     overlay.style.visibility = 'hidden';
 
     var tbHeight = toolbar ? toolbar.offsetHeight || 28 : 28;
-    var tbWidth = toolbar ? toolbar.offsetWidth || 150 : 150;
+    var tbWidth = toolbar ? toolbar.offsetWidth || 180 : 180;
 
-    var left = rect.right + scrollX - tbWidth;
+    // Center toolbar horizontally over selected element (Canva-style)
+    var left = rect.left + scrollX + (rect.width / 2) - (tbWidth / 2);
     var minLeft = scrollX + 8;
     var maxLeft = window.innerWidth + scrollX - tbWidth - 8;
     if (left < minLeft) left = minLeft;
     if (left > maxLeft) left = maxLeft;
 
-    // Position neatly above element; or inside top-right if element is at top of viewport so it doesn't get clipped off-screen
+    // Position neatly above element; or inside top if element is at top of viewport so it doesn't get clipped off-screen
     var top;
     if (rect.top < tbHeight + 8) {
       top = rect.top + scrollY + 6;
@@ -1560,19 +1612,7 @@
       return;
     }
 
-    // Direct drag on selected element
-    if (selectedEl && (e.target === selectedEl || selectedEl.contains(e.target))) {
-      var isEditing = editingEl || selectedEl.isContentEditable || e.target.isContentEditable;
-      if (!isEditing && selectedEl !== document.body && selectedEl !== document.documentElement) {
-        var pt = e.touches ? e.touches[0] : e;
-        dragPotential = {
-          startX: pt.clientX,
-          startY: pt.clientY,
-          sourceSec: selectedEl,
-          startTime: Date.now()
-        };
-      }
-    }
+
   }
 
   function onPointerMove(e) {
