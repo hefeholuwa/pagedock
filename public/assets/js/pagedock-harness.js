@@ -82,6 +82,20 @@
         z-index: 99999 !important;
         pointer-events: none !important;
       }
+      .pd-selection-overlay {
+        position: absolute !important;
+        z-index: 999999 !important;
+        pointer-events: none !important;
+      }
+      .pd-selection-overlay .pd-element-toolbar {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+        pointer-events: all !important;
+      }
+      .pd-element-selected {
+        outline: 2px solid #38bdf8 !important;
+        outline-offset: 2px !important;
+      }
       .pd-element-toolbar {
         display: inline-flex !important;
         align-items: center !important;
@@ -99,7 +113,8 @@
       .pd-has-overlay:hover > .pd-element-overlay .pd-element-toolbar,
       .pd-element-selected > .pd-element-overlay .pd-element-toolbar,
       .pd-has-overlay.pd-element-selected > .pd-element-overlay .pd-element-toolbar,
-      .pd-has-overlay.pd-element-active > .pd-element-overlay .pd-element-toolbar {
+      .pd-has-overlay.pd-element-active > .pd-element-overlay .pd-element-toolbar,
+      .pd-selection-overlay .pd-element-toolbar {
         opacity: 1 !important;
         transform: translateY(0) !important;
       }
@@ -123,6 +138,11 @@
         transition: all 0.12s ease !important;
       }
       .pd-tool-btn:hover, .pd-tool-btn:active {
+        background: #1e293b !important;
+        color: #38bdf8 !important;
+      }
+      .pd-tool-btn.pd-tool-up:hover, .pd-tool-btn.pd-tool-down:hover,
+      .pd-tool-btn.pd-tool-edit:hover, .pd-tool-btn.pd-tool-edit:active {
         background: #1e293b !important;
         color: #38bdf8 !important;
       }
@@ -533,7 +553,19 @@
     dragBtn.addEventListener('mousedown', handleDragGripStart);
     dragBtn.addEventListener('touchstart', handleDragGripStart, { passive: false });
 
-    // 2. Move Up Button
+    // 2. Edit Text Button
+    var editBtn = document.createElement('button');
+    editBtn.type = 'button';
+    editBtn.className = 'pd-tool-btn pd-tool-edit';
+    editBtn.title = 'Edit Text';
+    editBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>';
+    editBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      startTextEdit(el);
+    });
+
+    // 3. Move Up Button
     var upBtn = document.createElement('button');
     upBtn.type = 'button';
     upBtn.className = 'pd-tool-btn pd-tool-up';
@@ -545,7 +577,7 @@
       moveBlockRelative(el, -1);
     });
 
-    // 3. Move Down Button
+    // 4. Move Down Button
     var downBtn = document.createElement('button');
     downBtn.type = 'button';
     downBtn.className = 'pd-tool-btn pd-tool-down';
@@ -557,7 +589,7 @@
       moveBlockRelative(el, 1);
     });
 
-    // 4. Duplicate Block
+    // 5. Duplicate Block
     var dupBtn = document.createElement('button');
     dupBtn.type = 'button';
     dupBtn.className = 'pd-tool-btn pd-tool-duplicate';
@@ -574,7 +606,7 @@
       }, '*');
     });
 
-    // 5. Add Block Below
+    // 6. Add Block Below
     var addBtn = document.createElement('button');
     addBtn.type = 'button';
     addBtn.className = 'pd-tool-btn pd-tool-add';
@@ -591,7 +623,7 @@
       }, '*');
     });
 
-    // 6. Delete Block
+    // 7. Delete Block
     var delBtn = document.createElement('button');
     delBtn.type = 'button';
     delBtn.className = 'pd-tool-btn pd-tool-delete';
@@ -604,6 +636,7 @@
     });
 
     toolbar.appendChild(dragBtn);
+    toolbar.appendChild(editBtn);
     toolbar.appendChild(upBtn);
     toolbar.appendChild(downBtn);
     toolbar.appendChild(dupBtn);
@@ -644,6 +677,11 @@
   function deleteElement(el) {
     if (!el || el === document.body || el === document.documentElement) return;
 
+    if (el.getAttribute && el.getAttribute('data-pd-temp-radius')) {
+      el.style.borderRadius = '';
+      el.removeAttribute('data-pd-temp-radius');
+    }
+
     // Clean up overlays and toolbars before recording HTML and removing
     var overlays = el.querySelectorAll ? el.querySelectorAll('.pd-element-overlay, [data-pagedock-ui]') : [];
     for (var o = 0; o < overlays.length; o++) {
@@ -672,6 +710,7 @@
       editingEl = null;
     }
 
+    hideSelectionToolbar();
     clearSectionHighlight();
     checkEmptyCanvas();
     sendStructureTree();
@@ -812,20 +851,244 @@
     return Object.keys(locked);
   }
 
+  var selectionToolbarOverlay = null;
+
+  function ensureSelectionToolbar() {
+    if (selectionToolbarOverlay && selectionToolbarOverlay.parentNode) {
+      return selectionToolbarOverlay;
+    }
+    selectionToolbarOverlay = document.createElement('div');
+    selectionToolbarOverlay.className = 'pd-element-overlay pd-selection-overlay';
+    selectionToolbarOverlay.setAttribute('data-pagedock-ui', 'selection-toolbar');
+
+    var toolbar = document.createElement('div');
+    toolbar.className = 'pd-element-toolbar';
+    toolbar.setAttribute('data-pagedock-ui', 'toolbar');
+
+    // 1. Move / Drag handle (✥)
+    var dragBtn = document.createElement('button');
+    dragBtn.type = 'button';
+    dragBtn.className = 'pd-tool-btn pd-tool-drag';
+    dragBtn.title = 'Drag to Move';
+    dragBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="5" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="15" cy="5" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="15" cy="19" r="1.5"/></svg>';
+
+    function handleSelectionDragGripStart(e) {
+      e.stopPropagation();
+      var target = selectedEl || (dragBtn.closest && findSection(dragBtn));
+      if (!target || target === document.body) return;
+      var pt = e.touches ? e.touches[0] : e;
+      dragPotential = {
+        startX: pt.clientX,
+        startY: pt.clientY,
+        sourceSec: target,
+        startTime: Date.now()
+      };
+    }
+    dragBtn.addEventListener('mousedown', handleSelectionDragGripStart);
+    dragBtn.addEventListener('touchstart', handleSelectionDragGripStart, { passive: false });
+
+    // 2. Edit Text button (✏️)
+    var editBtn = document.createElement('button');
+    editBtn.type = 'button';
+    editBtn.className = 'pd-tool-btn pd-tool-edit';
+    editBtn.title = 'Edit Text';
+    editBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>';
+    editBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (selectedEl) {
+        startTextEdit(selectedEl);
+      }
+    });
+
+    // 3. Move Up button
+    var upBtn = document.createElement('button');
+    upBtn.type = 'button';
+    upBtn.className = 'pd-tool-btn pd-tool-up';
+    upBtn.title = 'Move Up';
+    upBtn.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>';
+    upBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (selectedEl) {
+        moveBlockRelative(selectedEl, -1);
+        positionSelectionToolbar(selectedEl);
+      }
+    });
+
+    // 4. Move Down button
+    var downBtn = document.createElement('button');
+    downBtn.type = 'button';
+    downBtn.className = 'pd-tool-btn pd-tool-down';
+    downBtn.title = 'Move Down';
+    downBtn.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>';
+    downBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (selectedEl) {
+        moveBlockRelative(selectedEl, 1);
+        positionSelectionToolbar(selectedEl);
+      }
+    });
+
+    // 5. Duplicate button (📋)
+    var dupBtn = document.createElement('button');
+    dupBtn.type = 'button';
+    dupBtn.className = 'pd-tool-btn pd-tool-duplicate';
+    dupBtn.title = 'Duplicate Element';
+    dupBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+    dupBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (selectedEl) {
+        if (!selectedEl.getAttribute('data-pd-id')) {
+          selectedEl.setAttribute('data-pd-id', 'pd_' + (selectedEl.tagName.toLowerCase()) + '_' + (blockIdCounter++));
+        }
+        window.parent.postMessage({
+          type: 'element-duplicate',
+          targetId: selectedEl.getAttribute('data-pd-id'),
+          targetTag: selectedEl.tagName,
+          targetIndex: tagIndex(selectedEl)
+        }, '*');
+      }
+    });
+
+    // 6. Delete button (🗑️ with red hover highlight)
+    var delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.className = 'pd-tool-btn pd-tool-delete';
+    delBtn.title = 'Delete Element (Delete / Backspace)';
+    delBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>';
+    delBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (selectedEl) {
+        deleteElement(selectedEl);
+      }
+    });
+
+    toolbar.appendChild(dragBtn);
+    toolbar.appendChild(editBtn);
+    toolbar.appendChild(upBtn);
+    toolbar.appendChild(downBtn);
+    toolbar.appendChild(dupBtn);
+    toolbar.appendChild(delBtn);
+    selectionToolbarOverlay.appendChild(toolbar);
+
+    (document.body || document.documentElement).appendChild(selectionToolbarOverlay);
+    return selectionToolbarOverlay;
+  }
+
+  function positionSelectionToolbar(el) {
+    if (!el || !document.body || isInert(el)) return;
+    var overlay = ensureSelectionToolbar();
+    var toolbar = overlay.querySelector('.pd-element-toolbar');
+    var editBtn = overlay.querySelector('.pd-tool-edit');
+
+    if (editBtn) {
+      var canEdit = isEditableTextNode(el) || (el.parentElement && isEditableTextNode(el.parentElement));
+      editBtn.style.display = canEdit ? 'inline-flex' : 'none';
+    }
+
+    var rect = el.getBoundingClientRect();
+    var scrollX = window.scrollX || window.pageXOffset || 0;
+    var scrollY = window.scrollY || window.pageYOffset || 0;
+
+    overlay.style.display = 'block';
+    overlay.style.visibility = 'hidden';
+
+    var tbHeight = toolbar ? toolbar.offsetHeight || 28 : 28;
+    var tbWidth = toolbar ? toolbar.offsetWidth || 150 : 150;
+
+    var left = rect.right + scrollX - tbWidth;
+    var minLeft = scrollX + 8;
+    var maxLeft = window.innerWidth + scrollX - tbWidth - 8;
+    if (left < minLeft) left = minLeft;
+    if (left > maxLeft) left = maxLeft;
+
+    // Position neatly above element; or inside top-right if element is at top of viewport so it doesn't get clipped off-screen
+    var top;
+    if (rect.top < tbHeight + 8) {
+      top = rect.top + scrollY + 6;
+    } else {
+      top = rect.top + scrollY - tbHeight - 6;
+    }
+
+    overlay.style.position = 'absolute';
+    overlay.style.left = Math.round(left) + 'px';
+    overlay.style.top = Math.round(top) + 'px';
+    overlay.style.zIndex = '999999';
+    overlay.style.visibility = 'visible';
+    overlay.style.pointerEvents = 'all';
+  }
+
+  function attachSelectionToolbar(el) {
+    if (!el || isInert(el)) {
+      hideSelectionToolbar();
+      return;
+    }
+    positionSelectionToolbar(el);
+  }
+
+  function hideSelectionToolbar() {
+    if (selectionToolbarOverlay) {
+      selectionToolbarOverlay.style.display = 'none';
+    }
+  }
+
+  function removeSelectionToolbar() {
+    hideSelectionToolbar();
+    if (selectionToolbarOverlay && selectionToolbarOverlay.parentNode) {
+      selectionToolbarOverlay.parentNode.removeChild(selectionToolbarOverlay);
+      selectionToolbarOverlay = null;
+    }
+  }
+
+  window.addEventListener('scroll', function () {
+    if (selectedEl) {
+      positionSelectionToolbar(selectedEl);
+    }
+  }, { passive: true });
+
+  window.addEventListener('resize', function () {
+    if (selectedEl) {
+      positionSelectionToolbar(selectedEl);
+    }
+  }, { passive: true });
+
   function selectElement(el) {
     if (selectedEl && selectedEl !== el) {
       selectedEl.style.outline = '';
       selectedEl.style.outlineOffset = '';
       selectedEl.classList.remove('pd-element-selected');
+      if (selectedEl.getAttribute && selectedEl.getAttribute('data-pd-temp-radius')) {
+        selectedEl.style.borderRadius = '';
+        selectedEl.removeAttribute('data-pd-temp-radius');
+      }
       var oldSec = findSection(selectedEl);
       if (oldSec) oldSec.classList.remove('pd-element-selected');
     }
     selectedEl = el;
-    el.style.outline = '2px solid #7dd3fc';
-    el.style.outlineOffset = '-1px';
+    if (!el || isInert(el)) {
+      hideSelectionToolbar();
+      return;
+    }
+    el.style.outline = '2px solid #38bdf8';
+    el.style.outlineOffset = '2px';
     el.classList.add('pd-element-selected');
+
+    try {
+      var comp = window.getComputedStyle(el);
+      if (!el.style.borderRadius && (comp.borderRadius === '0px' || !comp.borderRadius)) {
+        el.style.borderRadius = '4px';
+        el.setAttribute('data-pd-temp-radius', '1');
+      }
+    } catch (e) {}
+
     var curSec = findSection(el);
     if (curSec) curSec.classList.add('pd-element-selected');
+
+    attachSelectionToolbar(el);
   }
 
   function postSelected(el) {
@@ -979,6 +1242,20 @@
 
     // 2. If edit mode is disabled or clicked on background/inert area, dismiss popover
     if (!aiEnabled || isInert(e.target)) {
+      if (e.target === document.body || e.target === document.documentElement) {
+        if (selectedEl) {
+          selectedEl.style.outline = '';
+          selectedEl.style.outlineOffset = '';
+          selectedEl.classList.remove('pd-element-selected');
+          if (selectedEl.getAttribute && selectedEl.getAttribute('data-pd-temp-radius')) {
+            selectedEl.style.borderRadius = '';
+            selectedEl.removeAttribute('data-pd-temp-radius');
+          }
+          selectedEl = null;
+        }
+        hideSelectionToolbar();
+        clearSectionHighlight();
+      }
       window.parent.postMessage({ type: 'dismiss-popovers' }, '*');
       return;
     }
@@ -988,6 +1265,32 @@
     e.stopPropagation();
     postSelected(e.target);
   }, true);
+
+  function startTextEdit(el) {
+    if (!el || !aiEnabled || isInert(el)) return;
+    if (!isEditableTextNode(el) && el.parentElement && isEditableTextNode(el.parentElement)) {
+      el = el.parentElement;
+    }
+    if (!isEditableTextNode(el)) return;
+    if (editingEl === el) return;
+    if (editingEl) endTextEdit(true);
+
+    window.parent.postMessage({ type: 'text-edit-start' }, '*');
+    editingEl = el;
+    editingOriginalText = (el.textContent || '');
+    el.setAttribute('contenteditable', 'plaintext-only');
+    el.style.outline = '2px solid #38bdf8';
+    el.style.outlineOffset = '2px';
+    el.focus();
+    try {
+      var range = document.createRange();
+      range.selectNodeContents(el);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    } catch (x) {}
+    selectElement(el);
+  }
 
   function endTextEdit(commit) {
     if (!editingEl) return;
@@ -1020,19 +1323,9 @@
       el = el.parentElement;
     }
     if (!isEditableTextNode(el)) return;
-    if (editingEl === el) return;
     e.preventDefault();
     e.stopPropagation();
-    if (editingEl) endTextEdit(true);
-
-    window.parent.postMessage({ type: 'text-edit-start' }, '*');
-    editingEl = el;
-    editingOriginalText = (el.textContent || '');
-    el.setAttribute('contenteditable', 'plaintext-only');
-    el.style.outline = '2px solid #38bdf8';
-    el.style.outlineOffset = '2px';
-    el.focus();
-    selectElement(el);
+    startTextEdit(el);
   }, true);
 
   document.addEventListener('keydown', function (e) {
@@ -1045,6 +1338,11 @@
       if (selectedEl) {
         selectedEl.style.outline = '';
         selectedEl.style.outlineOffset = '';
+        selectedEl.classList.remove('pd-element-selected');
+        if (selectedEl.getAttribute && selectedEl.getAttribute('data-pd-temp-radius')) {
+          selectedEl.style.borderRadius = '';
+          selectedEl.removeAttribute('data-pd-temp-radius');
+        }
         selectedEl = null;
       }
       if (hoveredEl) {
@@ -1053,6 +1351,7 @@
         hoveredEl = null;
       }
       clearSectionHighlight();
+      hideSelectionToolbar();
       window.parent.postMessage({ type: 'dismiss-popovers' }, '*');
       return;
     }

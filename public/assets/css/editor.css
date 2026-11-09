@@ -2221,6 +2221,23 @@ body.hh-editor-body {
     pointer-events: none;
 }
 
+.pd-selection-overlay {
+    position: absolute !important;
+    z-index: 999999 !important;
+    pointer-events: none !important;
+}
+
+.pd-selection-overlay .pd-element-toolbar {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    pointer-events: all !important;
+}
+
+.pd-element-selected {
+    outline: 2px solid #38bdf8 !important;
+    outline-offset: 2px !important;
+}
+
 .pd-element-toolbar {
     display: inline-flex;
     align-items: center;
@@ -2239,7 +2256,8 @@ body.hh-editor-body {
 .pd-has-overlay:hover > .pd-element-overlay .pd-element-toolbar,
 .pd-element-selected > .pd-element-overlay .pd-element-toolbar,
 .pd-has-overlay.pd-element-selected > .pd-element-overlay .pd-element-toolbar,
-.pd-has-overlay.pd-element-active > .pd-element-overlay .pd-element-toolbar {
+.pd-has-overlay.pd-element-active > .pd-element-overlay .pd-element-toolbar,
+.pd-selection-overlay .pd-element-toolbar {
     opacity: 1;
     transform: translateY(0);
 }
@@ -2271,7 +2289,9 @@ body.hh-editor-body {
 }
 
 .pd-tool-btn.pd-tool-up:hover,
-.pd-tool-btn.pd-tool-down:hover {
+.pd-tool-btn.pd-tool-down:hover,
+.pd-tool-btn.pd-tool-edit:hover,
+.pd-tool-btn.pd-tool-edit:active {
     background: #1e293b;
     color: #38bdf8;
 }
