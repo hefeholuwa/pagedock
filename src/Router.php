@@ -5,10 +5,6 @@ class Router {
         $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
-        if (defined('DATA_DIR')) {
-            @file_put_contents(DATA_DIR . '/router_debug.log', date('Y-m-d H:i:s') . " {$method} {$uri} Accept: " . substr($_SERVER['HTTP_ACCEPT'] ?? '', 0, 40) . "\n", FILE_APPEND);
-        }
-
         // Trim slashes
         $path = trim($uri, '/');
         $parts = $path === '' ? [] : explode('/', $path);
