@@ -652,12 +652,81 @@ document.addEventListener('DOMContentLoaded', () => {
         return { serialized, elementHtml: target.outerHTML };
     }
 
-    function insertHtmlSnippet(snippetHtml) {
+    function adaptSnippetToTokens(rawSnippet, tokens) {
+        let html = String(rawSnippet || '');
+        if (!tokens || typeof tokens !== 'object') return html;
+        if (tokens.accent && /^#[0-9a-fA-F]{6}$/.test(tokens.accent)) {
+            html = html.replace(/#047857/gi, tokens.accent);
+        }
+        if (tokens.buttonClass) {
+            const safeClass = String(tokens.buttonClass).replace(/"/g, '').trim();
+            if (safeClass) {
+                html = html.replace(/<(a|button)\b([^>]*style="[^"]*background:[^"]*"[^>]*)>/gi, (full, tag, rest) => {
+                    if (/\bclass=/i.test(rest)) return full;
+                    return `<${tag} class="${safeClass}"${rest}>`;
+                });
+            }
+        }
+        return html;
+    }
+
+    function insertSnippetAtSlot(snippetHtml, containerTag, containerTagIndex, insertIndex, tokens) {
+        const adapted = adaptSnippetToTokens(snippetHtml, tokens);
         const rawHtml = getActiveHtmlContent();
         const parser = new DOMParser();
         const doc = parser.parseFromString(rawHtml || '<!DOCTYPE html><html><head></head><body></body></html>', 'text/html');
         const temp = doc.createElement('template');
-        temp.innerHTML = (snippetHtml || '').trim();
+        temp.innerHTML = adapted.trim();
+        const node = temp.content.firstElementChild;
+        if (!node) return;
+
+        const list = doc.getElementsByTagName(containerTag || 'BODY');
+        const parent = list[containerTagIndex || 0] || doc.body;
+        const children = Array.from(parent.children).filter(c => !/^(SCRIPT|STYLE|META|LINK|TITLE|BASE)$/i.test(c.tagName));
+        if (typeof insertIndex === 'number' && insertIndex >= 0 && insertIndex < children.length) {
+            parent.insertBefore(node, children[insertIndex]);
+        } else {
+            parent.appendChild(node);
+        }
+
+        const serialized = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+        updateActiveHtmlContent(serialized, true);
+    }
+
+    function reorderChildInSource(parentTag, parentTagIndex, fromIndex, toIndex, shouldRerender = false) {
+        const rawHtml = getActiveHtmlContent();
+        if (!rawHtml) return;
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(rawHtml, 'text/html');
+        const list = doc.getElementsByTagName(parentTag || 'BODY');
+        const parent = list[parentTagIndex || 0];
+        if (!parent) return;
+
+        const children = Array.from(parent.children).filter(c => !/^(SCRIPT|STYLE|META|LINK|TITLE|BASE)$/i.test(c.tagName));
+        if (fromIndex < 0 || fromIndex >= children.length || toIndex < 0 || toIndex >= children.length || fromIndex === toIndex) {
+            return;
+        }
+        const moving = children[fromIndex];
+        moving.remove();
+        const remaining = Array.from(parent.children).filter(c => !/^(SCRIPT|STYLE|META|LINK|TITLE|BASE)$/i.test(c.tagName));
+        if (toIndex >= remaining.length) {
+            parent.appendChild(moving);
+        } else {
+            parent.insertBefore(moving, remaining[toIndex]);
+        }
+
+        const hasDoctype = /^\s*<!doctype/i.test(rawHtml);
+        const serialized = (hasDoctype ? '<!DOCTYPE html>\n' : '') + doc.documentElement.outerHTML;
+        updateActiveHtmlContent(serialized, shouldRerender);
+    }
+
+    function insertHtmlSnippet(snippetHtml, tokens = null) {
+        const adapted = adaptSnippetToTokens(snippetHtml, tokens);
+        const rawHtml = getActiveHtmlContent();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(rawHtml || '<!DOCTYPE html><html><head></head><body></body></html>', 'text/html');
+        const temp = doc.createElement('template');
+        temp.innerHTML = adapted.trim();
         const node = temp.content.firstElementChild;
         if (!node) return;
 
@@ -688,6 +757,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const libItemsContainer = document.getElementById('library-items-container');
     let currentLibMode = 'sections';
     let currentLibCategory = 'All';
+    let activeLibraryDrag = null;
 
     function renderLibraryPanel() {
         if (!libItemsContainer || !libCategoriesEl) return;
@@ -727,14 +797,28 @@ document.addEventListener('DOMContentLoaded', () => {
         filtered.forEach(item => {
             const card = document.createElement('div');
             card.className = 'library-card';
+            card.draggable = true;
             const cat = item[catField] || 'Component';
             card.innerHTML = `
                 <div>
                     <div class="library-card-cat">${cat}</div>
                     <div class="library-card-title">${item.name}</div>
                 </div>
-                <button type="button" class="library-card-btn">+ Insert</button>
+                <button type="button" class="library-card-btn">+ Insert or Drag</button>
             `;
+            card.addEventListener('dragstart', (e) => {
+                const kind = currentLibMode === 'sections' ? 'section' : 'element';
+                activeLibraryDrag = { item, kind };
+                if (e.dataTransfer) {
+                    e.dataTransfer.effectAllowed = 'copy';
+                    e.dataTransfer.setData('text/plain', item.id);
+                    e.dataTransfer.setData(kind === 'section' ? 'application/x-pagedock-section' : 'application/x-pagedock-element', item.id);
+                }
+                postToIframe({ type: 'library-drag', active: true, name: item.name, kind });
+            });
+            card.addEventListener('dragend', () => {
+                postToIframe({ type: 'library-drag', active: false });
+            });
             card.addEventListener('click', () => {
                 insertHtmlSnippet(item.html);
                 showToast(`Inserted ${item.name}`);
@@ -758,10 +842,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderLibraryPanel();
 
-    // 12. Structure Tree Panel
+    // 12. Structure Tree Panel (with Drag-to-Reorder & Sibling Move Actions)
     const structureTreeContainer = document.getElementById('structure-tree-container');
     const btnRefreshStructure = document.getElementById('btn-refresh-structure');
     const btnUnhideAll = document.getElementById('btn-unhide-all');
+    let structureDragNode = null;
 
     function renderStructureTree(rootNode) {
         if (!structureTreeContainer) return;
@@ -776,6 +861,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (node.tag !== 'BODY') {
                 const row = document.createElement('div');
                 row.className = 'structure-node';
+                row.draggable = (node.siblingCount || 1) > 1;
                 if (selectedElement && selectedElement.tag === node.tag && selectedElement.tagIndex === node.tagIndex) {
                     row.classList.add('selected');
                 }
@@ -797,6 +883,91 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 row.appendChild(left);
+
+                if ((node.siblingCount || 1) > 1 && node.parentTag) {
+                    const actions = document.createElement('div');
+                    actions.className = 'structure-actions';
+
+                    const upBtn = document.createElement('button');
+                    upBtn.type = 'button';
+                    upBtn.className = 'structure-mini-btn';
+                    upBtn.textContent = 'Up';
+                    upBtn.title = 'Move Up';
+                    upBtn.disabled = node.childIndex === 0;
+                    upBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (node.childIndex > 0) {
+                            reorderChildInSource(node.parentTag, node.parentTagIndex, node.childIndex, node.childIndex - 1, true);
+                        }
+                    });
+
+                    const downBtn = document.createElement('button');
+                    downBtn.type = 'button';
+                    downBtn.className = 'structure-mini-btn';
+                    downBtn.textContent = 'Down';
+                    downBtn.title = 'Move Down';
+                    downBtn.disabled = node.childIndex >= (node.siblingCount - 1);
+                    downBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (node.childIndex < node.siblingCount - 1) {
+                            reorderChildInSource(node.parentTag, node.parentTagIndex, node.childIndex, node.childIndex + 1, true);
+                        }
+                    });
+
+                    actions.appendChild(upBtn);
+                    actions.appendChild(downBtn);
+                    row.appendChild(actions);
+                }
+
+                row.addEventListener('dragstart', (e) => {
+                    structureDragNode = node;
+                    row.classList.add('dragging');
+                    if (e.dataTransfer) {
+                        e.dataTransfer.effectAllowed = 'move';
+                        e.dataTransfer.setData('text/plain', `${node.tag}:${node.tagIndex}`);
+                    }
+                });
+
+                row.addEventListener('dragend', () => {
+                    structureDragNode = null;
+                    row.classList.remove('dragging');
+                    structureTreeContainer.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(el => {
+                        el.classList.remove('drag-over-top', 'drag-over-bottom');
+                    });
+                });
+
+                row.addEventListener('dragover', (e) => {
+                    if (!structureDragNode || structureDragNode.parentTag !== node.parentTag || structureDragNode.parentTagIndex !== node.parentTagIndex) {
+                        return;
+                    }
+                    if (structureDragNode.childIndex === node.childIndex) return;
+                    e.preventDefault();
+                    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+                    const rect = row.getBoundingClientRect();
+                    const isTop = (e.clientY - rect.top) < rect.height / 2;
+                    row.classList.toggle('drag-over-top', isTop);
+                    row.classList.toggle('drag-over-bottom', !isTop);
+                });
+
+                row.addEventListener('dragleave', () => {
+                    row.classList.remove('drag-over-top', 'drag-over-bottom');
+                });
+
+                row.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    row.classList.remove('drag-over-top', 'drag-over-bottom');
+                    if (!structureDragNode || structureDragNode.parentTag !== node.parentTag || structureDragNode.parentTagIndex !== node.parentTagIndex) {
+                        return;
+                    }
+                    const fromIdx = structureDragNode.childIndex;
+                    let toIdx = node.childIndex;
+                    if (fromIdx !== toIdx) {
+                        reorderChildInSource(node.parentTag, node.parentTagIndex, fromIdx, toIdx, true);
+                        showToast(`Reordered <${structureDragNode.tag.toLowerCase()}>`);
+                    }
+                    structureDragNode = null;
+                });
 
                 row.addEventListener('click', () => {
                     postToIframe({ type: 'select-element', tag: node.tag, tagIndex: node.tagIndex });
@@ -1502,6 +1673,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     deTextInput.value = d.text || '';
                 }
                 showToast('Updated text in place');
+                break;
+
+            case 'element-reorder':
+                reorderChildInSource(d.parentTag, d.parentTagIndex, d.fromIndex, d.toIndex, false);
+                showToast(`Reordered <${(d.childTag || 'element').toLowerCase()}>`);
+                break;
+
+            case 'library-drop':
+                if (activeLibraryDrag && activeLibraryDrag.item) {
+                    insertSnippetAtSlot(
+                        activeLibraryDrag.item.html,
+                        d.containerTag,
+                        d.containerTagIndex,
+                        d.insertIndex,
+                        d.tokens
+                    );
+                    showToast(`Dropped ${activeLibraryDrag.item.name}`);
+                    activeLibraryDrag = null;
+                }
                 break;
 
             case 'page-structure':

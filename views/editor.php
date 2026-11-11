@@ -671,7 +671,10 @@ $claimToken = $site['claim_token'];
             justify-content: space-between;
             gap: 8px;
             transition: all 0.14s ease;
-            cursor: pointer;
+            cursor: grab;
+        }
+        .library-card:active {
+            cursor: grabbing;
         }
         .library-card:hover {
             border-color: var(--studio-accent);
@@ -713,6 +716,19 @@ $claimToken = $site['claim_token'];
             cursor: pointer;
             border: 1px solid transparent;
             gap: 6px;
+            transition: border-color 0.1s ease, background 0.1s ease;
+        }
+        .structure-node[draggable="true"] {
+            cursor: grab;
+        }
+        .structure-node.dragging {
+            opacity: 0.45;
+        }
+        .structure-node.drag-over-top {
+            border-top: 2px solid var(--studio-accent);
+        }
+        .structure-node.drag-over-bottom {
+            border-bottom: 2px solid var(--studio-accent);
         }
         .structure-node:hover {
             background: var(--studio-bg);

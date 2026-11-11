@@ -90,8 +90,16 @@ foreach (['copy', 'cut', 'paste-after', 'paste-inside', 'paste-style', 'duplicat
 }
 
 // 6. Verify Injected Preview Harness (pagedock-preview-harness.js)
-foreach (['data-pagedock-ui', 'element-selected', 'element-context-menu', 'element-reorder', 'element-text-edit', 'page-structure', 'begin-text-edit', 'patch-element', 'live-patch', 'select-element', 'hover-element', 'reveal-element', 'hide-elements', 'form-preview-submit', 'iframe-key'] as $msgType) {
+foreach (['data-pagedock-ui', 'element-selected', 'element-context-menu', 'element-reorder', 'element-text-edit', 'page-structure', 'begin-text-edit', 'patch-element', 'live-patch', 'select-element', 'hover-element', 'reveal-element', 'hide-elements', 'form-preview-submit', 'iframe-key', 'library-drag', 'library-drop'] as $msgType) {
     assertEditorTest("Preview harness implements '$msgType'", str_contains($harnessJs, $msgType));
+}
+
+// 6b. Verify Drag-and-Drop Engine (Canvas Reorder + Library Drop + Structure Tree Drag + Token Adaptation)
+foreach (['function mkGhost', 'function mkInd', 'function isRow', 'function calcDrop', 'function posInd', 'function edgeScroll', 'function canHold', 'function findDropTarget', 'function showLibDropInd', 'function pageTokens', "addEventListener('pointerdown'", "addEventListener('pointermove'", "addEventListener('pointerup'"] as $fnSig) {
+    assertEditorTest("Preview harness implements drag-and-drop primitive '$fnSig'", str_contains($harnessJs, $fnSig));
+}
+foreach (['function reorderChildInSource', 'function adaptSnippetToTokens', 'function insertSnippetAtSlot', "case 'element-reorder':", "case 'library-drop':", 'card.draggable = true', 'row.draggable ='] as $edSig) {
+    assertEditorTest("Editor controller implements drag-and-drop handler '$edSig'", str_contains($editorJs, $edSig));
 }
 
 // 7. Verify Deterministic Developer Tools & Component Library (editor-tools.js)
