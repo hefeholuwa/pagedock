@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let editModeEnabled = true;
     let currentViewport = 'desktop';
     let scaleToFit = true;
-    let currentLayout = window.innerWidth <= 768 ? 'code' : 'split';
+    let currentLayout = window.innerWidth <= 768 ? 'preview' : 'split';
     let userPickedLayout = false;
     let activePanelTab = 'code';
 
@@ -105,6 +105,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateUndoRedoButtons() {
         if (btnUndo) btnUndo.disabled = undoStack.length === 0;
         if (btnRedo) btnRedo.disabled = redoStack.length === 0;
+        const btnMobileUndo = document.getElementById('btn-mobile-undo');
+        const btnMobileRedo = document.getElementById('btn-mobile-redo');
+        if (btnMobileUndo) btnMobileUndo.disabled = undoStack.length === 0;
+        if (btnMobileRedo) btnMobileRedo.disabled = redoStack.length === 0;
     }
 
     function pushUndoSnapshot(file = activeFile, content = getCurrentContent()) {
@@ -321,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
             view.classList.toggle('active', view.getAttribute('data-panel-view') === tabName);
         });
         if (currentLayout === 'preview') {
-            applyLayoutMode('split');
+            applyLayoutMode(window.innerWidth <= 768 ? 'code' : 'split');
         }
         if (tabName === 'code' && editor) {
             setTimeout(() => editor.resize(), 30);
@@ -367,7 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('resize', () => {
         if (window.innerWidth <= 768 && currentLayout === 'split') {
-            applyLayoutMode('code');
+            applyLayoutMode('preview');
         } else if (window.innerWidth > 768 && !userPickedLayout && currentLayout !== 'split') {
             applyLayoutMode('split');
         } else {
@@ -1098,6 +1102,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 toolsDropdownMenu.classList.remove('open');
             }
         });
+
+        // Mobile Quick Action Handlers inside Tools Menu
+        const btnMobileUndo = document.getElementById('btn-mobile-undo');
+        const btnMobileRedo = document.getElementById('btn-mobile-redo');
+        const btnMobileMedia = document.getElementById('btn-mobile-media');
+        const btnMobileHistory = document.getElementById('btn-mobile-history');
+        const btnMobileViewLive = document.getElementById('btn-mobile-view-live');
+        const btnMobileShortcuts = document.getElementById('btn-mobile-shortcuts');
+
+        if (btnMobileUndo) {
+            btnMobileUndo.addEventListener('click', () => {
+                toolsDropdownMenu.classList.remove('open');
+                if (btnUndo && !btnUndo.disabled) btnUndo.click();
+            });
+        }
+        if (btnMobileRedo) {
+            btnMobileRedo.addEventListener('click', () => {
+                toolsDropdownMenu.classList.remove('open');
+                if (btnRedo && !btnRedo.disabled) btnRedo.click();
+            });
+        }
+        if (btnMobileMedia) {
+            btnMobileMedia.addEventListener('click', () => {
+                toolsDropdownMenu.classList.remove('open');
+                if (btnMediaModal) btnMediaModal.click();
+            });
+        }
+        if (btnMobileHistory) {
+            btnMobileHistory.addEventListener('click', () => {
+                toolsDropdownMenu.classList.remove('open');
+                if (btnHistoryModal) btnHistoryModal.click();
+            });
+        }
+        if (btnMobileViewLive) {
+            btnMobileViewLive.addEventListener('click', () => {
+                toolsDropdownMenu.classList.remove('open');
+                window.open(liveUrl, '_blank', 'noopener');
+            });
+        }
+        if (btnMobileShortcuts) {
+            btnMobileShortcuts.addEventListener('click', () => {
+                toolsDropdownMenu.classList.remove('open');
+                if (btnShortcutsModal) btnShortcutsModal.click();
+            });
+        }
     }
 
     // 15. Direct Element Edit Popover (#direct-element-popover)
@@ -1158,6 +1207,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let popStartX = 0, popStartY = 0, popOrigLeft = 0, popOrigTop = 0;
 
         deDragHandle.addEventListener('mousedown', (e) => {
+            if (window.innerWidth <= 768) return;
             if (e.target.closest('button')) return;
             draggingPopover = true;
             const r = dePopover.getBoundingClientRect();
@@ -1243,6 +1293,13 @@ document.addEventListener('DOMContentLoaded', () => {
             deAlignBtns.forEach(b => {
                 b.classList.toggle('active', b.getAttribute('data-de-align') === payload.computedStyles.textAlign);
             });
+        }
+
+        if (window.innerWidth <= 768) {
+            dePopover.style.left = '';
+            dePopover.style.top = '';
+            dePopover.style.right = '';
+            dePopover.style.bottom = '';
         }
 
         dePopover.classList.add('open');

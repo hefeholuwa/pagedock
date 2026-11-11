@@ -245,6 +245,9 @@ $claimToken = $site['claim_token'];
         .tools-dropdown-menu.open {
             display: block;
         }
+        .tools-mobile-section {
+            display: none;
+        }
         .tools-dropdown-header {
             padding: 6px 10px 4px;
             font-size: 10.5px;
@@ -1355,43 +1358,257 @@ $claimToken = $site['claim_token'];
 
         @media (max-width: 768px) {
             .studio-header {
-                height: 52px;
-                padding: 0 10px;
+                height: 50px;
+                padding: 0 8px;
                 gap: 6px;
-                grid-template-columns: auto 1fr auto;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .studio-nav-left {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                flex-shrink: 0;
             }
             .studio-back-btn span { display: none; }
-            .studio-back-btn { padding: 7px 9px; }
-            .site-meta-badge { display: none; }
-            .layout-btn[data-layout="split"] { display: none; }
-            .btn-open-site span { display: none; }
-            .btn-open-site { padding: 7px 10px; }
-            .btn-publish { padding: 7px 14px; font-size: 12.5px; }
-            .studio-resizer { display: none !important; }
+            .studio-back-btn {
+                padding: 6px 9px;
+                font-size: 12px;
+            }
+            .site-meta-badge {
+                padding: 0;
+                border: none;
+                background: transparent;
+                max-width: none;
+            }
+            .site-meta-title,
+            .site-meta-slug {
+                display: none !important;
+            }
+            .toolbar-btn-group {
+                display: none !important;
+            }
+
+            .studio-nav-center {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 5px;
+                flex: 1;
+                min-width: 0;
+            }
+            .layout-switcher {
+                padding: 2px;
+                gap: 2px;
+            }
+            .layout-btn[data-layout="split"] {
+                display: none !important;
+            }
+            .layout-btn {
+                padding: 4px 8px;
+                font-size: 11px;
+                gap: 4px;
+            }
+            .layout-btn svg {
+                width: 12px;
+                height: 12px;
+            }
+
+            #btn-edit-mode {
+                padding: 5px 8px;
+                min-width: 28px;
+                height: 28px;
+                justify-content: center;
+                gap: 0;
+            }
+            #edit-mode-label {
+                display: none !important;
+            }
+
+            .studio-nav-right {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 5px;
+                flex-shrink: 0;
+            }
+            #btn-media-modal,
+            #btn-history-modal,
+            #btn-shortcuts-modal,
+            .btn-open-site {
+                display: none !important;
+            }
+            #btn-tools-menu {
+                padding: 5px 8px;
+                height: 28px;
+            }
+            .btn-publish {
+                padding: 6px 11px;
+                font-size: 12px;
+                gap: 4px;
+                flex-shrink: 0;
+            }
+
+            /* Tools dropdown as full mobile overlay sheet */
+            .tools-dropdown-menu {
+                position: fixed;
+                top: 54px;
+                left: 10px;
+                right: 10px;
+                width: auto;
+                max-height: calc(100dvh - 68px);
+                z-index: 120;
+            }
+            .tools-mobile-section {
+                display: block;
+                border-bottom: 1px solid var(--studio-border);
+                margin-bottom: 6px;
+                padding-bottom: 6px;
+            }
+
+            /* Workspace & Pane Layout */
+            .studio-resizer {
+                display: none !important;
+            }
             .editor-pane,
             .preview-pane {
                 width: 100% !important;
                 min-width: 0 !important;
             }
+
+            /* Left panel touch optimizations */
+            .left-panel-tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                flex-shrink: 0;
+            }
+            .left-panel-tabs::-webkit-scrollbar {
+                display: none;
+            }
+            .panel-tab-btn {
+                padding: 9px 12px;
+                font-size: 12px;
+            }
+            .file-tabs-strip {
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            .file-tabs-strip::-webkit-scrollbar {
+                display: none;
+            }
+            #ace-editor-container {
+                font-size: 12.5px;
+            }
+
+            /* Preview canvas optimizations */
             .preview-toolbar {
+                height: 38px;
                 padding: 0 8px;
                 overflow-x: auto;
+                gap: 6px;
             }
-            .viewport-btn span { display: none; }
-            .viewport-btn { padding: 5px 10px; }
+            .viewport-btn span {
+                display: none;
+            }
+            .viewport-btn {
+                padding: 4px 8px;
+            }
+            #btn-scale-toggle {
+                display: none !important;
+            }
+            #btn-refresh-preview span {
+                display: none;
+            }
+            #btn-refresh-preview {
+                padding: 4px 8px;
+            }
+            .preview-stage {
+                padding: 0 !important;
+                background: #ffffff;
+            }
+            .preview-scale-host {
+                width: 100% !important;
+                height: 100% !important;
+            }
+            .preview-wrapper {
+                width: 100% !important;
+                height: 100% !important;
+                max-width: 100% !important;
+                transform: none !important;
+                border: none !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+            }
+            .device-bezel-top {
+                display: none !important;
+            }
+            .preview-iframe {
+                width: 100% !important;
+                height: 100% !important;
+                border-radius: 0 !important;
+            }
+
+            /* Bottom-sheet direct inspector popover */
             .direct-element-popover {
+                position: fixed !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                top: auto !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                max-height: 72dvh !important;
+                border-radius: 18px 18px 0 0 !important;
+                box-shadow: 0 -12px 40px rgba(11, 20, 17, 0.28) !important;
+                border: 1px solid var(--studio-border-strong) !important;
+                border-bottom: none !important;
+                z-index: 1000 !important;
+            }
+            .studio-toast {
                 left: 12px;
                 right: 12px;
                 bottom: 12px;
-                top: auto;
-                width: auto;
-                max-height: 68dvh;
-            }
-            .studio-toast {
-                left: 16px;
-                right: 16px;
-                bottom: 16px;
                 justify-content: center;
+                font-size: 12px;
+                padding: 9px 14px;
+            }
+            .studio-modal-backdrop {
+                padding: 10px;
+            }
+            .studio-modal {
+                max-height: 92dvh;
+                border-radius: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .studio-header {
+                padding: 0 6px;
+                gap: 4px;
+            }
+            .layout-btn span {
+                display: none;
+            }
+            .layout-btn {
+                padding: 5px 8px;
+            }
+            .btn-publish {
+                padding: 6px 9px;
+                font-size: 11.5px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .btn-publish span {
+                display: none;
+            }
+            .btn-publish {
+                padding: 6px 8px;
             }
         }
     </style>
@@ -1450,6 +1667,31 @@ $claimToken = $site['claim_token'];
                     <span class="hide-tablet">Tools</span>
                 </button>
                 <div id="tools-dropdown-menu" class="tools-dropdown-menu" role="menu">
+                    <div class="tools-mobile-section" id="tools-mobile-actions">
+                        <div class="tools-dropdown-header">Site &amp; Workspace Actions</div>
+                        <div class="tools-mobile-row" style="display:flex;gap:6px;padding:4px 8px 8px;">
+                            <button type="button" class="toolbar-pill-btn" id="btn-mobile-undo" style="flex:1;justify-content:center;padding:5px 8px;font-size:11.5px;">Undo</button>
+                            <button type="button" class="toolbar-pill-btn" id="btn-mobile-redo" style="flex:1;justify-content:center;padding:5px 8px;font-size:11.5px;">Redo</button>
+                        </div>
+                        <div class="tools-mobile-grid">
+                            <button type="button" class="tool-menu-item" id="btn-mobile-media">
+                                <span class="tool-menu-item-title">Media Library</span>
+                                <span class="tool-menu-item-desc">Browse &amp; upload site images</span>
+                            </button>
+                            <button type="button" class="tool-menu-item" id="btn-mobile-history">
+                                <span class="tool-menu-item-title">Version History</span>
+                                <span class="tool-menu-item-desc">Rollback to earlier snapshot</span>
+                            </button>
+                            <button type="button" class="tool-menu-item" id="btn-mobile-view-live">
+                                <span class="tool-menu-item-title">View Live Site</span>
+                                <span class="tool-menu-item-desc">Open live site in new tab</span>
+                            </button>
+                            <button type="button" class="tool-menu-item" id="btn-mobile-shortcuts">
+                                <span class="tool-menu-item-title">Keyboard Shortcuts</span>
+                                <span class="tool-menu-item-desc">Editor hotkey cheat sheet</span>
+                            </button>
+                        </div>
+                    </div>
                     <div class="tools-dropdown-header">Code &amp; SEO Utilities</div>
                     <div id="tools-menu-items"></div>
                 </div>
