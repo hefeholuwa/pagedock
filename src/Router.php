@@ -68,6 +68,20 @@ class Router {
             return;
         }
 
+        // 0d. Layer 3b Safety Net: If a stray root-relative asset request arrives at /{asset} with an /s/{slug} Referer
+        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        if ($ext && in_array($ext, ['css', 'js', 'png', 'jpg', 'jpeg', 'svg', 'webp', 'gif', 'ico', 'woff', 'woff2', 'ttf', 'json', 'map'], true)) {
+            $publicCandidate = realpath(PUBLIC_DIR . '/' . $path);
+            if (!$publicCandidate || !is_file($publicCandidate)) {
+                $referer = $_SERVER['HTTP_REFERER'] ?? '';
+                if ($referer && preg_match('#/s/([a-zA-Z0-9_-]+)#', $referer, $refMatch)) {
+                    $refSlug = $refMatch[1];
+                    self::serveSiteFile($refSlug, $path);
+                    return;
+                }
+            }
+        }
+
         // 1. Serving Hosted Static Sites: /s/{slug} or /s/{slug}/{filepath}
         if (!empty($parts) && $parts[0] === 's') {
             $slug = $parts[1] ?? null;
@@ -77,12 +91,14 @@ class Router {
                 return;
             }
 
-            // Layer 3 Safety Net: If a stray relative request for style.css / script.js arrives at /s/{asset}
-            if (in_array($slug, ['style.css', 'script.js'], true)) {
+            // Layer 3 Safety Net: If a stray relative request arrives at /s/{asset} or /s/{subpath}
+            $slugExt = strtolower(pathinfo($slug, PATHINFO_EXTENSION));
+            if ($slugExt && in_array($slugExt, ['css', 'js', 'png', 'jpg', 'jpeg', 'svg', 'webp', 'gif', 'ico', 'woff', 'woff2', 'ttf', 'json', 'map'], true)) {
                 $referer = $_SERVER['HTTP_REFERER'] ?? '';
                 if ($referer && preg_match('#/s/([a-zA-Z0-9_-]+)#', $referer, $refMatch)) {
                     $refSlug = $refMatch[1];
-                    self::serveSiteFile($refSlug, $slug);
+                    $strayPath = implode('/', array_slice($parts, 1));
+                    self::serveSiteFile($refSlug, $strayPath);
                     return;
                 }
             }
@@ -1369,16 +1385,16 @@ class Router {
                 $editUrl = url('editor/' . $slug);
                 $claim = $res['claim_token'] ?? '';
                 $action = !empty($res['updated']) ? 'Updated' : 'Published';
-                echo "\n✨ {$action} to PageDock successfully!\n\n";
-                echo "🌐 Live URL:    {$url}\n";
-                echo "✏️  Edit Online: {$editUrl}\n";
+                echo "\n[SUCCESS] {$action} to PageDock successfully!\n\n";
+                echo "Live URL:    {$url}\n";
+                echo "Edit Online: {$editUrl}\n";
                 if ($claim) {
-                    echo "🔑 Claim Token: {$claim}\n";
+                    echo "Claim Token: {$claim}\n";
                 }
                 echo "\nTo deploy updates:\n";
                 echo "  curl -F \"file=@dist.zip\" -H \"X-Claim-Token: {$claim}\" " . url('api/deploy') . "?slug={$slug}\n\n";
             } else {
-                echo "\n❌ Deployment Failed: " . ($res['error'] ?? 'Unknown error') . "\n\n";
+                echo "\n[ERROR] Deployment Failed: " . ($res['error'] ?? 'Unknown error') . "\n\n";
             }
             exit;
         }
@@ -1402,6 +1418,11 @@ class Router {
             http_response_code(404);
             echo "<h1>Site files missing</h1>";
             return;
+        }
+
+        // Auto-heal sites where files were nested inside a folder or contain OS junk
+        if (!file_exists($siteDir . '/index.html') && !file_exists($siteDir . '/index.htm')) {
+            SiteManager::normalizeExtractedSite($siteDir);
         }
 
         $trimmedSubpath = trim($subpath, '/');
@@ -1466,6 +1487,12 @@ class Router {
             $candidate = realpath($siteDir . '/' . $entry);
             if ($candidate && str_starts_with($candidate, $siteDir) && is_file($candidate)) {
                 $fileToServe = $candidate;
+            } elseif (file_exists($siteDir . '/index.html')) {
+                $fileToServe = realpath($siteDir . '/index.html');
+            } elseif (file_exists($siteDir . '/index.htm')) {
+                $fileToServe = realpath($siteDir . '/index.htm');
+            } else {
+                $fileToServe = self::findFileCaseInsensitive($siteDir, $entry);
             }
         } else {
             // A. Direct file exists (e.g. style.css, script.js, image.png)
@@ -1487,6 +1514,38 @@ class Router {
                     $fileToServe = $folderCandidate;
                 }
             }
+            // D. Relative to entry file directory (if entry file is in a subfolder e.g. dist/index.html)
+            if (!$fileToServe && !empty($site['entry_file'])) {
+                $entryDir = dirname($site['entry_file']);
+                if ($entryDir !== '.' && $entryDir !== '') {
+                    $subCandidate = realpath($siteDir . '/' . $entryDir . '/' . $trimmedSubpath);
+                    if ($subCandidate && str_starts_with($subCandidate, $siteDir) && is_file($subCandidate)) {
+                        $fileToServe = $subCandidate;
+                    }
+                }
+            }
+            // E. Case-insensitive lookup (vital for Linux / cPanel hosting)
+            if (!$fileToServe) {
+                $ciCandidate = self::findFileCaseInsensitive($siteDir, $trimmedSubpath);
+                if ($ciCandidate) {
+                    $fileToServe = $ciCandidate;
+                }
+            }
+            // F. Common subfolder search (e.g. requested 'style.css' but file is in 'css/style.css' or 'assets/style.css')
+            if (!$fileToServe && !str_contains($trimmedSubpath, '/')) {
+                foreach (['css', 'assets', 'assets/css', 'js', 'assets/js', 'img', 'images', 'assets/img'] as $commonDir) {
+                    $nested = realpath($siteDir . '/' . $commonDir . '/' . $trimmedSubpath);
+                    if ($nested && str_starts_with($nested, $siteDir) && is_file($nested)) {
+                        $fileToServe = $nested;
+                        break;
+                    }
+                    $ciNested = self::findFileCaseInsensitive($siteDir, $commonDir . '/' . $trimmedSubpath);
+                    if ($ciNested) {
+                        $fileToServe = $ciNested;
+                        break;
+                    }
+                }
+            }
         }
 
         // 5. Fallback: Render custom 404.html or default 404
@@ -1497,6 +1556,30 @@ class Router {
         }
 
         self::outputFile($fileToServe, $site);
+    }
+
+    /**
+     * Case-insensitive file finder for Linux hosts
+     */
+    private static function findFileCaseInsensitive(string $dir, string $relative): ?string {
+        $parts = explode('/', trim($relative, '/'));
+        $current = $dir;
+        foreach ($parts as $part) {
+            if (!is_dir($current)) return null;
+            $entries = scandir($current);
+            $found = false;
+            $lowerPart = strtolower($part);
+            foreach ($entries as $e) {
+                if (strtolower($e) === $lowerPart) {
+                    $current .= '/' . $e;
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) return null;
+        }
+        $real = realpath($current);
+        return ($real && str_starts_with($real, $dir) && is_file($real)) ? $real : null;
     }
 
     /**
@@ -1551,7 +1634,9 @@ class Router {
 
             // Layer 4 Grounding: ensure relative links (style.css, script.js, images/) resolve to the site directory
             $siteBase = url('s/' . $site['slug'] . '/');
-            if (!preg_match('/<base\b[^>]*>/i', $content)) {
+            if (preg_match('/<base\b[^>]*>/i', $content)) {
+                $content = preg_replace('/<base\b[^>]*>/i', "<base href=\"{$siteBase}\">", $content, 1);
+            } else {
                 if (stripos($content, '<head>') !== false) {
                     $content = str_ireplace('<head>', "<head>\n    <base href=\"{$siteBase}\">", $content);
                 } elseif (stripos($content, '<head') !== false) {
@@ -1560,6 +1645,25 @@ class Router {
                     $content = "<base href=\"{$siteBase}\">\n" . $content;
                 }
             }
+
+            // Rewrite root-relative asset URLs (e.g. href="/style.css" or src="/script.js") to site-relative URLs
+            $content = preg_replace_callback(
+                '/\b(href|src)=(["\'])\/([^\/"\'][^"\']*)\2/i',
+                function ($m) use ($siteBase) {
+                    $attr = $m[1];
+                    $quote = $m[2];
+                    $relPath = $m[3];
+                    if (str_starts_with($relPath, '__pd/') || 
+                        str_starts_with($relPath, '__hh/') || 
+                        str_starts_with($relPath, 'f/') || 
+                        str_starts_with($relPath, 's/') || 
+                        str_starts_with($relPath, 'api/')) {
+                        return $m[0];
+                    }
+                    return "{$attr}={$quote}{$siteBase}{$relPath}{$quote}";
+                },
+                $content
+            );
 
             // Outbound Link Hygiene: add rel="nofollow ugc" to external links on unverified sites
             $content = preg_replace_callback('/<a\s+([^>]*href=["\'](https?:\/\/[^"\']+)["\'][^>]*)>/i', function($matches) {

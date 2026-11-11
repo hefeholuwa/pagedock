@@ -139,6 +139,7 @@ class SiteManager {
                 $zip->extractTo($siteDir);
                 $zip->close();
 
+                self::normalizeExtractedSite($siteDir);
                 $stats = self::scanDirStats($siteDir);
                 $version = VersionManager::createSnapshot((int)$existing['id'], $existing['slug'], 'CLI/cURL ZIP deployment update');
 
@@ -259,22 +260,11 @@ class SiteManager {
         $zip->extractTo($siteDir);
         $zip->close();
 
-        // If files were nested inside a single root folder in the zip, flatten it if needed
-        $files = scandir($siteDir);
-        $cleanFiles = array_diff($files, ['.', '..']);
-        if (count($cleanFiles) === 1) {
-            $onlyItem = $siteDir . '/' . reset($cleanFiles);
-            if (is_dir($onlyItem)) {
-                // Move contents up one level
-                $subItems = scandir($onlyItem);
-                foreach ($subItems as $sub) {
-                    if ($sub !== '.' && $sub !== '..') {
-                        rename($onlyItem . '/' . $sub, $siteDir . '/' . $sub);
-                    }
-                }
-                rmdir($onlyItem);
-            }
-        }
+        // Normalize extracted site: purge OS junk, unwrap enclosing folder or build artifacts
+        self::normalizeExtractedSite($siteDir);
+        $stats = self::scanDirStats($siteDir);
+        $fileCount = $stats['count'];
+        $totalBytes = $stats['bytes'];
 
         // Determine entry file
         $entryFile = 'index.html';
@@ -282,8 +272,13 @@ class SiteManager {
             $entryFile = 'index.html';
         } elseif (file_exists($siteDir . '/index.htm')) {
             $entryFile = 'index.htm';
-        } elseif ($firstHtmlFile && file_exists($siteDir . '/' . $firstHtmlFile)) {
-            $entryFile = $firstHtmlFile;
+        } else {
+            $foundHtml = self::findFirstHtmlFile($siteDir);
+            if ($foundHtml) {
+                $entryFile = $foundHtml;
+            } elseif ($firstHtmlFile && file_exists($siteDir . '/' . $firstHtmlFile)) {
+                $entryFile = $firstHtmlFile;
+            }
         }
 
         $claimToken = 'pd_claim_' . bin2hex(random_bytes(16));
@@ -969,6 +964,92 @@ class SiteManager {
             $deleted++;
         }
         return $deleted;
+    }
+
+    /**
+     * Clean OS metadata artifacts and unwrap nested root directories
+     */
+    public static function normalizeExtractedSite(string $siteDir): void {
+        if (!is_dir($siteDir)) return;
+
+        // 1. Remove __MACOSX, .DS_Store, Thumbs.db recursively
+        self::purgeOsJunk($siteDir);
+
+        // 2. Loop to unwrap any single enclosing root directory (e.g. site/ or dist/ or build/)
+        for ($depth = 0; $depth < 5; $depth++) {
+            $items = scandir($siteDir);
+            $cleanItems = array_values(array_diff($items, ['.', '..']));
+
+            // If there's only 1 item in the site directory and it is a directory, move its contents up
+            if (count($cleanItems) === 1 && is_dir($siteDir . '/' . $cleanItems[0])) {
+                $subDir = $siteDir . '/' . $cleanItems[0];
+                $subFiles = scandir($subDir);
+                foreach ($subFiles as $sf) {
+                    if ($sf !== '.' && $sf !== '..') {
+                        rename($subDir . '/' . $sf, $siteDir . '/' . $sf);
+                    }
+                }
+                @rmdir($subDir);
+                self::purgeOsJunk($siteDir);
+                continue;
+            }
+
+            // Also check if index.html is missing at root, but exists inside a common build folder
+            if (!file_exists($siteDir . '/index.html') && !file_exists($siteDir . '/index.htm')) {
+                foreach (['dist', 'build', 'public', 'out', 'html'] as $knownSub) {
+                    $candidateDir = $siteDir . '/' . $knownSub;
+                    if (is_dir($candidateDir) && (file_exists($candidateDir . '/index.html') || file_exists($candidateDir . '/index.htm'))) {
+                        $subFiles = scandir($candidateDir);
+                        foreach ($subFiles as $sf) {
+                            if ($sf !== '.' && $sf !== '..') {
+                                if (!file_exists($siteDir . '/' . $sf)) {
+                                    rename($candidateDir . '/' . $sf, $siteDir . '/' . $sf);
+                                }
+                            }
+                        }
+                        self::recursiveRmdir($candidateDir);
+                        break;
+                    }
+                }
+            }
+            break;
+        }
+    }
+
+    private static function purgeOsJunk(string $dir): void {
+        if (!is_dir($dir)) return;
+        $items = scandir($dir);
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..') continue;
+            $full = $dir . '/' . $item;
+            if ($item === '__MACOSX' || $item === '.DS_Store' || $item === 'Thumbs.db' || str_starts_with($item, '._')) {
+                if (is_dir($full)) {
+                    self::recursiveRmdir($full);
+                } else {
+                    @unlink($full);
+                }
+            } elseif (is_dir($full)) {
+                self::purgeOsJunk($full);
+            }
+        }
+    }
+
+    public static function findFirstHtmlFile(string $dir): ?string {
+        if (!is_dir($dir)) return null;
+        $iter = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::LEAVES_ONLY
+        );
+        foreach ($iter as $file) {
+            if ($file->isFile()) {
+                $ext = strtolower($file->getExtension());
+                if ($ext === 'html' || $ext === 'htm') {
+                    $rel = substr($file->getPathname(), strlen($dir) + 1);
+                    return str_replace('\\', '/', $rel);
+                }
+            }
+        }
+        return null;
     }
 
     private static function recursiveRmdir(string $dir): void {

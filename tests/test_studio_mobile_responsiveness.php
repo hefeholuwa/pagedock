@@ -71,3 +71,4 @@ assertStudioTest('views/editor.php has ZERO emojis', !preg_match($emojiRegex, $e
 assertStudioTest('public/assets/js/editor.js has ZERO emojis', !preg_match($emojiRegex, $editorJs));
 
 echo "\n[SUCCESS] ALL STUDIO MOBILE RESPONSIVENESS TESTS PASSED!\n";
+
