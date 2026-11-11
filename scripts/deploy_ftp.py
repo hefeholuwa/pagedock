@@ -36,6 +36,9 @@ EXCLUDE_FILES = {
     'overflow_repro.png',
     'package.json',
     'package-lock.json',
+    'Dockerfile',
+    'docker-entrypoint.sh',
+    '.dockerignore',
 }
 
 EXCLUDE_EXTENSIONS = {

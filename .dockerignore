@@ -1,0 +1,11 @@
+.git
+.agents
+.gemini
+tests
+graphify-out
+__pycache__
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+.env
+overflow_repro.png
