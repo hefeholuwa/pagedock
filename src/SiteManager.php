@@ -56,8 +56,9 @@ class SiteManager {
         file_put_contents($filePath, $html);
 
         $size = filesize($filePath);
-        $claimToken = bin2hex(random_bytes(16));
+        $claimToken = 'pd_claim_' . bin2hex(random_bytes(16));
         $userId = Auth::id();
+        $expiresAt = $userId ? null : date('Y-m-d H:i:s', time() + (48 * 3600));
 
         // Extract <title> if not provided
         if (!$title && preg_match('/<title>(.*?)<\/title>/is', $html, $matches)) {
@@ -67,10 +68,10 @@ class SiteManager {
 
         $db = Database::getConnection();
         $stmt = $db->prepare("
-            INSERT INTO sites (user_id, claim_token, slug, title, entry_file, file_count, total_size_bytes)
-            VALUES (?, ?, ?, ?, ?, 1, ?)
+            INSERT INTO sites (user_id, claim_token, slug, title, entry_file, file_count, total_size_bytes, expires_at)
+            VALUES (?, ?, ?, ?, ?, 1, ?, ?)
         ");
-        $stmt->execute([$userId, $claimToken, $slug, $title, $entryFile, $size]);
+        $stmt->execute([$userId, $claimToken, $slug, $title, $entryFile, $size, $expiresAt]);
         $siteId = (int)$db->lastInsertId();
 
         // Automatically decouple inlined styles/scripts into physical files
@@ -90,8 +91,114 @@ class SiteManager {
             'title' => $title,
             'claim_token' => $claimToken,
             'version' => $version,
+            'file_count' => 1,
             'url' => url('s/' . $slug)
         ];
+    }
+
+    /**
+     * Scan directory file count and byte size recursively
+     */
+    public static function scanDirStats(string $dir): array {
+        $count = 0;
+        $bytes = 0;
+        if (!is_dir($dir)) return ['count' => 0, 'bytes' => 0];
+        $iter = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::LEAVES_ONLY
+        );
+        foreach ($iter as $file) {
+            if ($file->isFile()) {
+                $count++;
+                $bytes += $file->getSize();
+            }
+        }
+        return ['count' => $count, 'bytes' => $bytes];
+    }
+
+    /**
+     * Deploy or update a site from a ZIP archive
+     * Surge / Redoost pattern: updates if authorized, rejects if slug claimed, creates if new
+     */
+    public static function deployFromZip(string $zipFilePath, ?string $title = null, ?string $preferredSlug = null): array {
+        if ($preferredSlug) {
+            $existing = self::getSite($preferredSlug);
+            if ($existing) {
+                if (!self::canManage($existing)) {
+                    return [
+                        'success' => false,
+                        'error' => "Slug '{$preferredSlug}' is already claimed. Provide valid X-Claim-Token or choose another slug.",
+                        'status_code' => 403
+                    ];
+                }
+                $siteDir = SITES_DIR . '/' . $existing['slug'];
+                $zip = new ZipArchive();
+                if ($zip->open($zipFilePath) !== true) {
+                    return ['success' => false, 'error' => 'Failed to open uploaded ZIP file.', 'status_code' => 400];
+                }
+                $zip->extractTo($siteDir);
+                $zip->close();
+
+                $stats = self::scanDirStats($siteDir);
+                $version = VersionManager::createSnapshot((int)$existing['id'], $existing['slug'], 'CLI/cURL ZIP deployment update');
+
+                $db = Database::getConnection();
+                $stmt = $db->prepare("UPDATE sites SET file_count = ?, total_size_bytes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
+                $stmt->execute([$stats['count'], $stats['bytes'], $existing['id']]);
+
+                return [
+                    'success' => true,
+                    'slug' => $existing['slug'],
+                    'title' => $existing['title'],
+                    'claim_token' => $existing['claim_token'],
+                    'version' => $version,
+                    'file_count' => $stats['count'],
+                    'url' => url('s/' . $existing['slug']),
+                    'updated' => true
+                ];
+            }
+        }
+        return self::createFromZip($zipFilePath, $title, $preferredSlug);
+    }
+
+    /**
+     * Deploy or update a site from raw HTML
+     */
+    public static function deployFromHtml(string $html, ?string $title = null, ?string $preferredSlug = null): array {
+        if ($preferredSlug) {
+            $existing = self::getSite($preferredSlug);
+            if ($existing) {
+                if (!self::canManage($existing)) {
+                    return [
+                        'success' => false,
+                        'error' => "Slug '{$preferredSlug}' is already claimed. Provide valid X-Claim-Token or choose another slug.",
+                        'status_code' => 403
+                    ];
+                }
+                $siteDir = SITES_DIR . '/' . $existing['slug'];
+                $entryFile = $existing['entry_file'] ?: 'index.html';
+                file_put_contents($siteDir . '/' . $entryFile, $html);
+
+                $stats = self::scanDirStats($siteDir);
+                $version = VersionManager::createSnapshot((int)$existing['id'], $existing['slug'], 'CLI/cURL HTML deployment update');
+
+                $db = Database::getConnection();
+                $stmt = $db->prepare("UPDATE sites SET file_count = ?, total_size_bytes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
+                $stmt->execute([$stats['count'], $stats['bytes'], $existing['id']]);
+
+                return [
+                    'success' => true,
+                    'slug' => $existing['slug'],
+                    'title' => $existing['title'],
+                    'claim_token' => $existing['claim_token'],
+                    'version' => $version,
+                    'file_count' => $stats['count'],
+                    'url' => url('s/' . $existing['slug']),
+                    'updated' => true
+                ];
+            }
+        }
+        return self::createFromHtml($html, $title, $preferredSlug);
     }
 
     /**
@@ -179,16 +286,17 @@ class SiteManager {
             $entryFile = $firstHtmlFile;
         }
 
-        $claimToken = bin2hex(random_bytes(16));
+        $claimToken = 'pd_claim_' . bin2hex(random_bytes(16));
         $userId = Auth::id();
+        $expiresAt = $userId ? null : date('Y-m-d H:i:s', time() + (48 * 3600));
         $title = $title ?: 'Project ' . strtoupper($slug);
 
         $db = Database::getConnection();
         $stmt = $db->prepare("
-            INSERT INTO sites (user_id, claim_token, slug, title, entry_file, file_count, total_size_bytes)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO sites (user_id, claim_token, slug, title, entry_file, file_count, total_size_bytes, expires_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ");
-        $stmt->execute([$userId, $claimToken, $slug, $title, $entryFile, $fileCount, $totalBytes]);
+        $stmt->execute([$userId, $claimToken, $slug, $title, $entryFile, $fileCount, $totalBytes, $expiresAt]);
         $siteId = (int)$db->lastInsertId();
 
         // Create immutable v1 snapshot
@@ -204,6 +312,7 @@ class SiteManager {
             'title' => $title,
             'claim_token' => $claimToken,
             'version' => $version,
+            'file_count' => $fileCount,
             'url' => url('s/' . $slug)
         ];
     }
@@ -234,6 +343,37 @@ class SiteManager {
             return file_get_contents($targetPath);
         }
         return null;
+    }
+
+    /**
+     * Get list of all relative file paths in a site
+     */
+    public static function getSiteFileList(string $slug): array {
+        $site = self::getSite($slug);
+        if (!$site) return [];
+        $siteDir = realpath(SITES_DIR . '/' . $slug);
+        if (!$siteDir || !is_dir($siteDir)) return [];
+
+        $files = [];
+        $iter = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($siteDir, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::LEAVES_ONLY
+        );
+        foreach ($iter as $file) {
+            if ($file->isFile()) {
+                $rel = str_replace('\\', '/', substr($file->getPathname(), strlen($siteDir) + 1));
+                if (!str_starts_with($rel, '.') && !str_starts_with($rel, '__MACOSX')) {
+                    $files[] = $rel;
+                }
+            }
+        }
+        sort($files);
+        // Keep index.html at top if present
+        if (($idx = array_search('index.html', $files)) !== false && $idx > 0) {
+            array_splice($files, $idx, 1);
+            array_unshift($files, 'index.html');
+        }
+        return $files;
     }
 
     /**
@@ -629,7 +769,8 @@ class SiteManager {
             return true;
         }
 
-        if (isset($_GET['token']) && $_GET['token'] === $site['claim_token']) {
+        $token = $_SERVER['HTTP_X_CLAIM_TOKEN'] ?? $_POST['claim_token'] ?? $_GET['token'] ?? null;
+        if ($token && hash_equals($site['claim_token'], (string)$token)) {
             return true;
         }
 
@@ -761,6 +902,73 @@ class SiteManager {
         }
 
         return ['success' => true];
+    }
+
+    /**
+     * Claim an anonymous/guest site to a registered user account
+     * Clears expires_at and assigns user_id
+     */
+    public static function claimSite(string $claimToken, int $userId): array {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("SELECT * FROM sites WHERE claim_token = ?");
+        $stmt->execute([$claimToken]);
+        $site = $stmt->fetch();
+        if (!$site) {
+            return ['success' => false, 'error' => 'Invalid or expired claim token.'];
+        }
+        if ($site['user_id'] && (int)$site['user_id'] !== $userId) {
+            return ['success' => false, 'error' => 'This site has already been claimed by another account.'];
+        }
+
+        $stmt = $db->prepare("UPDATE sites SET user_id = ?, expires_at = NULL, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
+        $stmt->execute([$userId, $site['id']]);
+
+        return [
+            'success' => true,
+            'slug' => $site['slug'],
+            'title' => $site['title'],
+            'claimed' => true
+        ];
+    }
+
+    /**
+     * Claim all guest sites in session when a user signs in or registers
+     */
+    public static function claimSessionSites(int $userId): int {
+        $tokens = Auth::getActiveGuestTokens();
+        if (empty($tokens)) return 0;
+
+        $db = Database::getConnection();
+        $claimed = 0;
+        foreach (array_unique($tokens) as $token) {
+            $stmt = $db->prepare("UPDATE sites SET user_id = ?, expires_at = NULL, updated_at = CURRENT_TIMESTAMP WHERE claim_token = ? AND user_id IS NULL");
+            $stmt->execute([$userId, $token]);
+            if ($stmt->rowCount() > 0) {
+                $claimed++;
+            }
+        }
+        $_SESSION['guest_claim_tokens'] = [];
+        return $claimed;
+    }
+
+    /**
+     * Auto-prune expired guest sites
+     */
+    public static function cleanupExpiredSites(): int {
+        $db = Database::getConnection();
+        $stmt = $db->query("SELECT id, slug FROM sites WHERE expires_at IS NOT NULL AND expires_at < CURRENT_TIMESTAMP");
+        $expired = $stmt ? $stmt->fetchAll() : [];
+        $deleted = 0;
+        foreach ($expired as $site) {
+            $siteDir = SITES_DIR . '/' . $site['slug'];
+            $delStmt = $db->prepare("DELETE FROM sites WHERE id = ?");
+            $delStmt->execute([$site['id']]);
+            if (is_dir($siteDir)) {
+                self::recursiveRmdir($siteDir);
+            }
+            $deleted++;
+        }
+        return $deleted;
     }
 
     private static function recursiveRmdir(string $dir): void {

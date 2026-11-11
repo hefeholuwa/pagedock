@@ -1,10 +1,10 @@
 <div class="templates-header">
     <div class="templates-hero">
-        <span class="badge">Curated Design Systems</span>
-        <h1>HTML Templates<br><span class="accent-text">Ready for vibecoding.</span></h1>
+        <span class="badge">Ready-Made Website Templates</span>
+        <h1>Pick a design.<br><span class="accent-text">Go live in one click.</span></h1>
         <p class="templates-subtitle">
-            Curated starting points for landing pages, portfolios, dashboards, and more. 
-            Preview a design, deploy it in one click, and share your live link immediately.
+            Clean, mobile-ready starting points for small businesses, portfolios, restaurants, clinics, and product launches.
+            Preview any layout and make it yours immediately.
         </p>
     </div>
 

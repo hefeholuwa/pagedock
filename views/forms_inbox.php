@@ -30,7 +30,7 @@
         </div>
         <div class="inbox-stat-card">
             <span class="stat-num"><?= $stats['spam'] ?></span>
-            <span class="stat-label">Honeypot Trapped (Spam)</span>
+            <span class="stat-label">Blocked Spam</span>
         </div>
         <div class="inbox-stat-card">
             <span class="stat-num"><?= $stats['total'] ?></span>

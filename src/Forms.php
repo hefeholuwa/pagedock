@@ -69,13 +69,183 @@ class Forms {
      * Detect honeypot field population
      */
     public static function isHoneypotTriggered(array $data): bool {
-        if (isset($data['_pd_hp']) && trim((string)$data['_pd_hp']) !== '') {
-            return true;
-        }
-        if (isset($data['_hh_hp']) && trim((string)$data['_hh_hp']) !== '') {
-            return true;
+        $traps = ['_pd_hp', '_hh_hp', '_gotcha', '_honeypot', 'honeypot'];
+        foreach ($traps as $trap) {
+            if (isset($data[$trap]) && trim((string)$data[$trap]) !== '') {
+                return true;
+            }
         }
         return false;
+    }
+
+    /**
+     * Three-layer spam defense inspired by sen-ltd/contact-form:
+     * 1. Honeypots (_pd_hp, _gotcha, _honeypot)
+     * 2. Time Gate (_pd_ts render timestamp check)
+     * 3. IP Rate Limiting (max 15 submissions / hour / site)
+     */
+    public static function checkSpamDefense(array $data, int $siteId, string $ip): array {
+        // 1. Honeypot traps
+        if (self::isHoneypotTriggered($data)) {
+            return ['is_spam' => true, 'reason' => 'honeypot_filled'];
+        }
+
+        // 2. Time Gate (at least 2 seconds between render and submit)
+        $ts = $data['_pd_ts'] ?? $data['_ts'] ?? null;
+        if ($ts !== null && is_numeric($ts)) {
+            $now = time();
+            $delta = $now - (int)$ts;
+            if ($delta < 0 && abs($delta) > 60) {
+                return ['is_spam' => true, 'reason' => 'timestamp_in_future'];
+            }
+            if ($delta >= 0 && $delta < 2) {
+                return ['is_spam' => true, 'reason' => 'submitted_too_fast'];
+            }
+        }
+
+        // 3. IP Rate Limiting
+        try {
+            $db = Database::getConnection();
+            $stmt = $db->prepare("
+                SELECT COUNT(*) FROM form_submissions 
+                WHERE site_id = ? AND ip_address = ? AND created_at >= datetime('now', '-1 hour')
+            ");
+            $stmt->execute([$siteId, $ip]);
+            $count = (int)$stmt->fetchColumn();
+            if ($count >= 15) {
+                return ['is_spam' => true, 'reason' => 'rate_limited'];
+            }
+        } catch (\Throwable $e) {
+            // fail-open on rate-limit check failure
+        }
+
+        return ['is_spam' => false, 'reason' => null];
+    }
+
+    /**
+     * Multi-channel webhook dispatcher inspired by dsforms (Generic, Slack, Discord)
+     */
+    public static function dispatchWebhook(array $site, string $formName, array $fields, int $subId, int $isSpam): bool {
+        $url = trim((string)($site['webhook_url'] ?? ''));
+        if ($url === '' || $isSpam === 1) {
+            return false;
+        }
+
+        $format = strtolower(trim((string)($site['webhook_format'] ?? 'generic')));
+        $payload = [];
+
+        if ($format === 'discord') {
+            $embedFields = [];
+            $i = 0;
+            foreach ($fields as $k => $v) {
+                if ($i++ >= 25) break;
+                $val = is_array($v) ? json_encode($v, JSON_UNESCAPED_UNICODE) : (string)$v;
+                if (strlen($val) > 1024) $val = substr($val, 0, 1021) . '...';
+                $embedFields[] = [
+                    'name' => (string)$k,
+                    'value' => $val !== '' ? $val : '(empty)',
+                    'inline' => strlen($val) <= 60
+                ];
+            }
+            $payload = [
+                'username' => 'PageDock Forms',
+                'embeds' => [
+                    [
+                        'title' => "New Submission: {$formName}",
+                        'color' => 5793266, // Indigo
+                        'timestamp' => gmdate('c'),
+                        'footer' => ['text' => "PageDock • " . ($site['slug'] ?? 'Site')],
+                        'fields' => $embedFields
+                    ]
+                ]
+            ];
+        } elseif ($format === 'slack') {
+            $blocks = [
+                [
+                    'type' => 'header',
+                    'text' => [
+                        'type' => 'plain_text',
+                        'text' => "New Submission: {$formName}"
+                    ]
+                ]
+            ];
+            $shortPairs = [];
+            foreach ($fields as $k => $v) {
+                $val = is_array($v) ? json_encode($v, JSON_UNESCAPED_UNICODE) : (string)$v;
+                $shortPairs[] = [
+                    'type' => 'mrkdwn',
+                    'text' => "*{$k}*\n{$val}"
+                ];
+            }
+            for ($i = 0; $i < count($shortPairs); $i += 10) {
+                $chunk = array_slice($shortPairs, $i, 10);
+                $blocks[] = [
+                    'type' => 'section',
+                    'fields' => $chunk
+                ];
+            }
+            $blocks[] = [
+                'type' => 'context',
+                'elements' => [
+                    [
+                        'type' => 'mrkdwn',
+                        'text' => "via PageDock • " . ($site['slug'] ?? 'Site') . " • " . date('Y-m-d H:i')
+                    ]
+                ]
+            ];
+            $payload = [
+                'text' => "New submission: {$formName}",
+                'blocks' => $blocks
+            ];
+        } else {
+            // Generic JSON payload
+            $payload = [
+                'event' => 'form_submission',
+                'form_name' => $formName,
+                'site' => $site['slug'] ?? '',
+                'submission_id' => $subId,
+                'submitted_at' => gmdate('c'),
+                'fields' => $fields
+            ];
+        }
+
+        return self::curlSend($url, $payload, 3);
+    }
+
+    /**
+     * Non-blocking cURL sender with tight timeout
+     */
+    public static function curlSend(string $url, array $payload, int $timeoutSeconds = 3): bool {
+        if (!function_exists('curl_init') || empty($url)) {
+            return false;
+        }
+        $json = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        if ($json === false) return false;
+
+        $ch = curl_init($url);
+        if ($ch === false) return false;
+
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $json,
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+                'User-Agent: PageDock-Forms/1.0',
+                'Accept: application/json, text/plain, */*'
+            ],
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => $timeoutSeconds,
+            CURLOPT_CONNECTTIMEOUT => $timeoutSeconds,
+            CURLOPT_FOLLOWLOCATION => false,
+        ]);
+
+        $res = curl_exec($ch);
+        $status = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if (PHP_VERSION_ID < 80500) {
+            @curl_close($ch);
+        }
+
+        return $status >= 200 && $status < 300;
     }
 
     /**
@@ -142,8 +312,11 @@ class Forms {
             ];
         }
 
-        // 2. Check Honeypot Anti-Spam Trap
-        $isSpam = self::isHoneypotTriggered($postData) ? 1 : 0;
+        // 2. Check Spam Defense (Honeypots, Time Gate, IP Rate Limiting)
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $defense = self::checkSpamDefense($postData, (int)$site['id'], $ip);
+        $isSpam = $defense['is_spam'] ? 1 : 0;
+        $spamReason = $defense['reason'];
 
         // 3. Extract and sanitize control fields
         $formName = !empty($postData['_form']) ? trim((string)$postData['_form']) : 'Contact';
@@ -169,6 +342,11 @@ class Forms {
             $cleanedData['_form'],
             $cleanedData['_pd_hp'],
             $cleanedData['_hh_hp'],
+            $cleanedData['_gotcha'],
+            $cleanedData['_honeypot'],
+            $cleanedData['honeypot'],
+            $cleanedData['_pd_ts'],
+            $cleanedData['_ts'],
             $cleanedData['_site'],
             $cleanedData['slug']
         );
@@ -182,14 +360,18 @@ class Forms {
             ];
         }
 
-        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
         $ua = $_SERVER['HTTP_USER_AGENT'] ?? null;
         $json = json_encode($cleanedData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
         $db = Database::getConnection();
-        $stmt = $db->prepare("INSERT INTO form_submissions (site_id, form_name, is_spam, data_json, ip_address, user_agent) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$site['id'], $formName, $isSpam, $json, $ip, $ua]);
+        $stmt = $db->prepare("INSERT INTO form_submissions (site_id, form_name, is_spam, spam_reason, data_json, ip_address, user_agent) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$site['id'], $formName, $isSpam, $spamReason, $json, $ip, $ua]);
         $subId = (int)$db->lastInsertId();
+
+        // 4. Asynchronously dispatch webhook (Slack, Discord, Generic) for valid submissions
+        if (!$isSpam) {
+            self::dispatchWebhook($site, $formName, $cleanedData, $subId, $isSpam);
+        }
 
         // If honeypot caught a bot, return success response so the bot doesn't adapt, but keep it in spam
         return [
@@ -198,7 +380,8 @@ class Forms {
             'message' => $successMsg,
             'redirect' => $redirectUrl,
             'submission_id' => $subId,
-            'is_spam' => (bool)$isSpam
+            'is_spam' => (bool)$isSpam,
+            'spam_reason' => $spamReason
         ];
     }
 

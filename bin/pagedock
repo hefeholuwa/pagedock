@@ -1,0 +1,8 @@
+#!/usr/bin/env node
+
+/**
+ * PageDock CLI Wrapper
+ */
+
+import '../packages/pagedock-cli/bin/pagedock.js';
+

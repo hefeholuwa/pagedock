@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
@@ -8,13 +8,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= asset('assets/css/style.css') ?>">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23C7F547%22/><text y=%2265%22 font-size=%2260%22 font-weight=%22bold%22 x=%2222%22 fill=%22black%22>P</text></svg>">
+    <link rel="stylesheet" href="<?= asset('assets/css/home.css') ?>">
+    <link rel="icon" type="image/svg+xml" href="<?= asset('favicon.svg') ?>">
+    <link rel="shortcut icon" href="<?= asset('favicon.svg') ?>">
 </head>
-<body>
+<body<?= !empty($bodyClass) ? ' class="' . htmlspecialchars($bodyClass) . '"' : '' ?>>
     <header class="navbar">
         <div class="nav-container">
             <a href="<?= url() ?>" class="logo">
-                <span class="logo-box">P</span>
+                <span class="logo-box" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 12C16 10.3431 17.3431 9 19 9H35.5C44.0604 9 51 15.9396 51 24.5C51 33.0604 44.0604 40 35.5 40H25V51C25 52.6569 23.6569 54 22 54H19C17.3431 54 16 52.6569 16 51V12ZM25 18V31H35C38.5899 31 41.5 28.0899 41.5 24.5C41.5 20.9101 38.5899 18 35 18H25Z" fill="currentColor"/>
+                        <rect x="30" y="45" width="20" height="9" rx="4.5" fill="currentColor" fill-opacity="0.65"/>
+                    </svg>
+                </span>
                 <span class="logo-text">Page<span class="accent-text">Dock</span></span>
             </a>
 
@@ -27,7 +34,7 @@
                     <?php $currentUser = Auth::user(); ?>
                     <a href="<?= url('dashboard') ?>" class="nav-item">Dashboard</a>
                     <span class="nav-user-pill" style="font-size:12px; color:var(--fg-muted); display:flex; align-items:center; gap:6px;">
-                        <span style="width:22px; height:22px; border-radius:50%; background:var(--accent); color:#000; font-weight:800; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">
+                        <span style="width:22px; height:22px; border-radius:50%; background:var(--accent); color:#ffffff; font-weight:800; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">
                             <?= strtoupper(substr(($currentUser['name'] ?? '') ?: ($currentUser['email'] ?? 'U'), 0, 1)) ?>
                         </span>
                         <span class="desktop-only"><?= htmlspecialchars(($currentUser['name'] ?? '') ?: explode('@', $currentUser['email'] ?? '')[0]) ?></span>
@@ -55,7 +62,7 @@
         <!-- Mobile Drawer -->
         <div class="mobile-nav-drawer hidden" id="mobile-nav-drawer">
             <a href="<?= url() ?>" class="mobile-nav-link">Product</a>
-            <a href="<?= url('templates') ?>" class="mobile-nav-link">HTML Templates</a>
+            <a href="<?= url('templates') ?>" class="mobile-nav-link">Templates</a>
             <a href="<?= url('docs') ?>" class="mobile-nav-link">Docs</a>
             <?php if (Auth::check()): ?>
                 <a href="<?= url('dashboard') ?>" class="mobile-nav-link">Dashboard</a>

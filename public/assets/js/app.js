@@ -84,6 +84,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (dropzone && fileInput) {
         dropzone.addEventListener('click', () => fileInput.click());
+        dropzone.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                fileInput.click();
+            }
+        });
 
         ['dragenter', 'dragover'].forEach(eventName => {
             dropzone.addEventListener(eventName, (e) => {
@@ -300,14 +306,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const demoBtn = document.getElementById('launch-demo-btn');
     if (demoBtn) {
         demoBtn.addEventListener('click', async () => {
-            showDeployStatus('Crafting sample portfolio template...');
+            showDeployStatus('Launching your sample business landing page...');
             
             const demoHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alex Rivera — Senior Developer</title>
+    <title>Lumina Studio — Creative & Business Services</title>
     <style>
         :root { --accent: #C7F547; --bg: #0d0f12; --card: #15181e; --text: #f0f2f5; --sub: #8b949e; }
         * { box-sizing: border-box; margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -328,24 +334,25 @@ document.addEventListener('DOMContentLoaded', () => {
 <body>
     <div class="container">
         <header>
-            <span class="tag">Available for hire</span>
-            <h1>Alex Rivera</h1>
-            <p class="bio">Building high-performance web experiences, APIs, and developer tools. Hosted effortlessly on PageDock.</p>
+            <span class="tag">Open for New Clients</span>
+            <h1>Lumina Creative Studio</h1>
+            <p class="bio">Helping modern businesses grow with clean branding, social media campaigns, and high-converting landing pages.</p>
         </header>
 
         <section class="card">
-            <h2>Recent Projects</h2>
-            <p style="color:var(--sub); margin-bottom: 12px;">• <strong>HyperScale</strong> — Distributed Redis cache orchestrator</p>
-            <p style="color:var(--sub); margin-bottom: 12px;">• <strong>Zenith UI</strong> — Accessible web design tokens library</p>
+            <h2>Our Services</h2>
+            <p style="color:var(--sub); margin-bottom: 12px;">• <strong>Brand Identity & Design</strong> — Stand out with a memorable look and feel</p>
+            <p style="color:var(--sub); margin-bottom: 12px;">• <strong>Landing Page Setup</strong> — Turn your social media visitors into paying customers</p>
         </section>
 
         <section class="card">
-            <h2>Get in touch</h2>
-            <form action="/api/forms/demo" method="POST">
-                <input type="text" name="name" placeholder="Your Name" required>
-                <input type="email" name="email" placeholder="Your Email" required>
-                <textarea name="message" rows="4" placeholder="Let's build something..." required></textarea>
-                <button type="submit">Send Message Directly</button>
+            <h2>Request a Free Quote</h2>
+            <form action="/__pd/form" method="POST">
+                <input type="hidden" name="_form" value="Quote Request">
+                <input type="text" name="name" placeholder="Your Full Name" required>
+                <input type="email" name="email" placeholder="Your Email Address" required>
+                <textarea name="message" rows="4" placeholder="Tell us what you need help with..." required></textarea>
+                <button type="submit">Send Inquiry</button>
             </form>
         </section>
     </div>
@@ -354,7 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const formData = new FormData();
             formData.append('html', demoHtml);
-            formData.append('title', 'Developer Portfolio Demo');
+            formData.append('title', 'Lumina Creative Studio');
 
             try {
                 const res = await fetch('/api/paste', {
@@ -612,13 +619,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const presets = {
         waitlist: {
-            title: 'SaaS Waitlist',
+            title: 'Business Launch Waitlist',
             html: `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aero — The Future of Cloud Sync</title>
+  <title>Glow Skincare — Coming Soon</title>
   <style>
     :root { --accent: #C7F547; --bg: #090a0d; --card: #13161f; --text: #f8fafc; --muted: #94a3b8; }
     * { box-sizing: border-box; margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -633,25 +640,25 @@ document.addEventListener('DOMContentLoaded', () => {
   </style>
 </head>
 <body>
-  <span class="badge">Early Beta Access</span>
-  <h1>Sync Everything.<br>Never Wait.</h1>
-  <p>Autonomous edge state sync for modern engineering teams. Join 1,400+ developers on the waitlist.</p>
+  <span class="badge">Launching This Month</span>
+  <h1>Natural Skincare,<br>Made Fresh for You.</h1>
+  <p>Join our VIP list to get 20% off your first order on launch day plus a free sample kit.</p>
   <form action="/__pd/form" method="POST">
-    <input type="hidden" name="_form" value="Early Waitlist">
-    <input type="email" name="email" placeholder="you@company.com" required>
-    <button type="submit">Join Waitlist</button>
+    <input type="hidden" name="_form" value="VIP Launch Waitlist">
+    <input type="email" name="email" placeholder="Enter your email address" required>
+    <button type="submit">Get 20% Off</button>
   </form>
 </body>
 </html>`
         },
         portfolio: {
-            title: 'Developer Portfolio',
+            title: 'Service & Bio Page',
             html: `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Devon Vance — Systems Architect</title>
+  <title>Tunde Bakare — Business Consultant</title>
   <style>
     :root { --accent: #C7F547; --bg: #0b0d12; --card: #151822; --text: #f3f4f6; --muted: #8b949e; }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -669,14 +676,14 @@ document.addEventListener('DOMContentLoaded', () => {
 </head>
 <body>
   <div class="container">
-    <span class="tag">Available for Q4 Engagements</span>
-    <h1>Devon Vance</h1>
-    <p class="lead">Staff Infrastructure Engineer building resilient distributed databases, edge proxies, and developer tools.</p>
+    <span class="tag">Open for Consultations</span>
+    <h1>Tunde Bakare</h1>
+    <p class="lead">Helping small businesses and retail brands grow their sales, streamline operations, and win loyal customers.</p>
     <div class="card">
-      <h2>Selected Works</h2>
+      <h2>How We Can Work Together</h2>
       <ul>
-        <li><strong>VectorProxy</strong> &mdash; 10M req/sec Redis-compatible gateway</li>
-        <li><strong>StaticEdge</strong> &mdash; Distributed micro-host with 0ms build pipeline</li>
+        <li><strong>1-on-1 Strategy Session</strong> &mdash; 60-minute business growth audit and action plan</li>
+        <li><strong>Staff Sales Training</strong> &mdash; Practical customer service &amp; closing workshop</li>
       </ul>
     </div>
   </div>
@@ -684,13 +691,13 @@ document.addEventListener('DOMContentLoaded', () => {
 </html>`
         },
         docs: {
-            title: 'Mini Documentation',
+            title: 'Quick Info & FAQ Page',
             html: `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>API Quickstart Guide</title>
+  <title>Delivery & Store Information</title>
   <style>
     :root { --accent: #C7F547; --bg: #090a0d; --card: #13161f; --text: #f8fafc; --muted: #94a3b8; }
     * { box-sizing: border-box; margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -698,16 +705,18 @@ document.addEventListener('DOMContentLoaded', () => {
     .doc-wrap { max-width: 740px; margin: 0 auto; }
     h1 { font-size: 32px; font-weight: 800; margin-bottom: 12px; }
     p { color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
-    pre { background: #040507; border: 1px solid #222630; padding: 16px; border-radius: 8px; font-family: ui-monospace, monospace; font-size: 13px; color: #a5b4fc; overflow-x: auto; margin-bottom: 24px; }
+    .info-box { background: #13161f; border: 1px solid #222630; padding: 20px; border-radius: 10px; font-size: 15px; color: #f8fafc; margin-bottom: 24px; line-height: 1.7; }
   </style>
 </head>
 <body>
   <div class="doc-wrap">
-    <h1>API Quickstart</h1>
-    <p>Install the sovereign client library and authenticate via your bearer token.</p>
-    <pre>npm install @pagedock/sdk
-export PAGEDOCK_KEY=pd_live_99f2b8a0
-pagedock deploy ./public</pre>
+    <h1>Store Hours &amp; Delivery Guide</h1>
+    <p>Everything you need to know about ordering, same-day delivery, and store pickup.</p>
+    <div class="info-box">
+      <strong>Opening Hours:</strong> Monday &ndash; Saturday, 9:00 AM to 6:00 PM<br>
+      <strong>Same-Day Delivery:</strong> Available for all orders placed before 2:00 PM<br>
+      <strong>Customer Support:</strong> Call or WhatsApp +234 800 000 0000
+    </div>
   </div>
 </body>
 </html>`
@@ -756,13 +765,13 @@ pagedock deploy ./public</pre>
             if (mockPreviewContainer) {
                 if (mode === 'desktop') {
                     mockPreviewContainer.style.maxWidth = '100%';
-                    if (previewViewportLabel) previewViewportLabel.textContent = '1440px \u00D7 900px';
+                    if (previewViewportLabel) previewViewportLabel.textContent = 'Laptop View';
                 } else if (mode === 'tablet') {
                     mockPreviewContainer.style.maxWidth = '460px';
-                    if (previewViewportLabel) previewViewportLabel.textContent = '768px \u00D7 1024px';
+                    if (previewViewportLabel) previewViewportLabel.textContent = 'Tablet View';
                 } else if (mode === 'mobile') {
                     mockPreviewContainer.style.maxWidth = '320px';
-                    if (previewViewportLabel) previewViewportLabel.textContent = '375px \u00D7 812px';
+                    if (previewViewportLabel) previewViewportLabel.textContent = 'Phone View';
                 }
             }
         });
@@ -830,65 +839,57 @@ pagedock deploy ./public</pre>
 
     const showcaseFiles = {
         html: {
-            url: 'https://pagedock.freedev.app/s/acme-studio',
-            tag: 'Live Sandbox',
-            title: 'Next-Generation UI Systems',
-            desc: 'Zero-build client-side previews with live responsive viewport toggles and built-in form capture.',
-            actionHtml: '<input type="email" placeholder="you@domain.com" class="mock-input" value="lead@venture.com" readonly><button type="button" class="mock-btn">Claim Access &rarr;</button>',
-            code: `<div class="code-line"><span class="line-num">1</span><span class="code-text"><span class="tok-comment">&lt;!-- pd:shared header --&gt;</span></span></div>
+            url: 'https://pagedock.freedev.app/s/lumina-studio',
+            tag: 'Live Page Preview',
+            title: 'Grow Your Business With a Great Landing Page',
+            desc: 'See every text and color edit immediately, test on phone and laptop screens, and collect customer inquiries automatically.',
+            actionHtml: '<input type="email" placeholder="Enter your email address" class="mock-input" value="hello@mybusiness.com" readonly><button type="button" class="mock-btn">Get Free Quote &rarr;</button>',
+            code: `<div class="code-line"><span class="line-num">1</span><span class="code-text"><span class="tok-comment">&lt;!-- Top Navigation Bar --&gt;</span></span></div>
 <div class="code-line"><span class="line-num">2</span><span class="code-text"><span class="tok-tag">&lt;header</span> <span class="tok-attr">class</span>=<span class="tok-str">"navbar"</span><span class="tok-tag">&gt;</span></span></div>
-<div class="code-line"><span class="line-num">3</span><span class="code-text">&nbsp;&nbsp;<span class="tok-tag">&lt;a</span> <span class="tok-attr">href</span>=<span class="tok-str">"/"</span> <span class="tok-attr">class</span>=<span class="tok-str">"brand"</span><span class="tok-tag">&gt;</span>Studio<span class="tok-tag">&lt;/a&gt;</span></span></div>
-<div class="code-line"><span class="line-num">4</span><span class="code-text">&nbsp;&nbsp;<span class="tok-tag">&lt;span</span> <span class="tok-attr">class</span>=<span class="tok-str">"pill"</span><span class="tok-tag">&gt;</span>VIP Waitlist<span class="tok-tag">&lt;/span&gt;</span></span></div>
+<div class="code-line"><span class="line-num">3</span><span class="code-text">&nbsp;&nbsp;<span class="tok-tag">&lt;a</span> <span class="tok-attr">href</span>=<span class="tok-str">"/"</span> <span class="tok-attr">class</span>=<span class="tok-str">"brand"</span><span class="tok-tag">&gt;</span>Lumina Studio<span class="tok-tag">&lt;/a&gt;</span></span></div>
+<div class="code-line"><span class="line-num">4</span><span class="code-text">&nbsp;&nbsp;<span class="tok-tag">&lt;span</span> <span class="tok-attr">class</span>=<span class="tok-str">"pill"</span><span class="tok-tag">&gt;</span>Open for Bookings<span class="tok-tag">&lt;/span&gt;</span></span></div>
 <div class="code-line"><span class="line-num">5</span><span class="code-text"><span class="tok-tag">&lt;/header&gt;</span></span></div>
-<div class="code-line"><span class="line-num">6</span><span class="code-text"><span class="tok-comment">&lt;!-- /pd:shared header --&gt;</span></span></div>
-<div class="code-line"><span class="line-num">7</span><span class="code-text"></span></div>
+<div class="code-line"><span class="line-num">6</span><span class="code-text"></span></div>
+<div class="code-line"><span class="line-num">7</span><span class="code-text"><span class="tok-comment">&lt;!-- Main Headline &amp; Customer Inquiry Form --&gt;</span></span></div>
 <div class="code-line"><span class="line-num">8</span><span class="code-text"><span class="tok-tag">&lt;main</span> <span class="tok-attr">class</span>=<span class="tok-str">"hero"</span><span class="tok-tag">&gt;</span></span></div>
-<div class="code-line"><span class="line-num">9</span><span class="code-text">&nbsp;&nbsp;<span class="tok-tag">&lt;h1&gt;</span>Next-Generation UI Systems<span class="tok-tag">&lt;/h1&gt;</span></span></div>
+<div class="code-line"><span class="line-num">9</span><span class="code-text">&nbsp;&nbsp;<span class="tok-tag">&lt;h1&gt;</span>Grow Your Business With a Great Landing Page<span class="tok-tag">&lt;/h1&gt;</span></span></div>
 <div class="code-line"><span class="line-num">10</span><span class="code-text">&nbsp;&nbsp;<span class="tok-tag">&lt;form</span> <span class="tok-attr">action</span>=<span class="tok-str">"/__pd/form"</span> <span class="tok-attr">method</span>=<span class="tok-str">"POST"</span><span class="tok-tag">&gt;</span></span></div>
-<div class="code-line"><span class="line-num">11</span><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;<span class="tok-tag">&lt;input</span> <span class="tok-attr">type</span>=<span class="tok-str">"hidden"</span> <span class="tok-attr">name</span>=<span class="tok-str">"_form"</span> <span class="tok-attr">value</span>=<span class="tok-str">"VIP Waitlist"</span><span class="tok-tag">&gt;</span></span></div>
-<div class="code-line"><span class="line-num">12</span><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;<span class="tok-tag">&lt;input</span> <span class="tok-attr">type</span>=<span class="tok-str">"email"</span> <span class="tok-attr">name</span>=<span class="tok-str">"email"</span> <span class="tok-attr">placeholder</span>=<span class="tok-str">"you@domain.com"</span> <span class="tok-attr">required</span><span class="tok-tag">&gt;</span></span></div>
-<div class="code-line"><span class="line-num">13</span><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;<span class="tok-tag">&lt;button</span> <span class="tok-attr">type</span>=<span class="tok-str">"submit"</span><span class="tok-tag">&gt;</span>Claim Access &amp;rarr;<span class="tok-tag">&lt;/button&gt;</span></span></div>
+<div class="code-line"><span class="line-num">11</span><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;<span class="tok-tag">&lt;input</span> <span class="tok-attr">type</span>=<span class="tok-str">"hidden"</span> <span class="tok-attr">name</span>=<span class="tok-str">"_form"</span> <span class="tok-attr">value</span>=<span class="tok-str">"Customer Inquiry"</span><span class="tok-tag">&gt;</span></span></div>
+<div class="code-line"><span class="line-num">12</span><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;<span class="tok-tag">&lt;input</span> <span class="tok-attr">type</span>=<span class="tok-str">"email"</span> <span class="tok-attr">name</span>=<span class="tok-str">"email"</span> <span class="tok-attr">placeholder</span>=<span class="tok-str">"Enter your email address"</span> <span class="tok-attr">required</span><span class="tok-tag">&gt;</span></span></div>
+<div class="code-line"><span class="line-num">13</span><span class="code-text">&nbsp;&nbsp;&nbsp;&nbsp;<span class="tok-tag">&lt;button</span> <span class="tok-attr">type</span>=<span class="tok-str">"submit"</span><span class="tok-tag">&gt;</span>Get Free Quote &amp;rarr;<span class="tok-tag">&lt;/button&gt;</span></span></div>
 <div class="code-line"><span class="line-num">14</span><span class="code-text">&nbsp;&nbsp;<span class="tok-tag">&lt;/form&gt;</span></span></div>
 <div class="code-line"><span class="line-num">15</span><span class="code-text"><span class="tok-tag">&lt;/main&gt;</span></span></div>`
         },
         css: {
-            url: 'https://pagedock.freedev.app/s/acme-studio/style.css',
-            tag: 'Live CSS Tokens Active',
-            title: 'Design Tokens & Variables',
-            desc: 'CSS modifications apply at 60 FPS without losing form state, scroll position, or DOM focus.',
-            actionHtml: '<div style="display:flex; gap:10px; align-items:center; background:rgba(199,245,71,0.08); padding:8px 12px; border-radius:6px; border:1px solid rgba(199,245,71,0.25);"><span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent);"></span><span style="font-family:var(--font-mono); font-size:11px; color:var(--accent); font-weight:600;">--accent: #C7F547 (Live Hot-Reload Active)</span></div>',
-            code: `<div class="code-line"><span class="line-num">1</span><span class="code-text"><span class="tok-comment">/* PageDock Modern Design Tokens */</span></span></div>
+            url: 'https://pagedock.freedev.app/s/lumina-studio',
+            tag: 'Brand Colors & Fonts',
+            title: 'Match Your Brand Style Instantly',
+            desc: 'Change your button colors, background theme, and font style with an instant side-by-side preview.',
+            actionHtml: '<div style="display:flex; gap:10px; align-items:center; background:#e8f5ef; padding:8px 12px; border-radius:6px; border:1px solid #bfe3d2;"><span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:#047857;"></span><span style="font-family:var(--font-mono); font-size:11px; color:#065f46; font-weight:600;">Brand Color: #047857 (Updated Live)</span></div>',
+            code: `<div class="code-line"><span class="line-num">1</span><span class="code-text"><span class="tok-comment">/* Brand Colors &amp; Fonts */</span></span></div>
 <div class="code-line"><span class="line-num">2</span><span class="code-text"><span class="tok-tag">:root</span> {</span></div>
-<div class="code-line"><span class="line-num">3</span><span class="code-text">&nbsp;&nbsp;<span class="tok-attr">--bg</span>: <span class="tok-str">#07080a</span>;</span></div>
-<div class="code-line"><span class="line-num">4</span><span class="code-text">&nbsp;&nbsp;<span class="tok-attr">--accent</span>: <span class="tok-str">#C7F547</span>;</span></div>
-<div class="code-line"><span class="line-num">5</span><span class="code-text">&nbsp;&nbsp;<span class="tok-attr">--accent-glow</span>: <span class="tok-str">rgba(199, 245, 71, 0.35)</span>;</span></div>
-<div class="code-line"><span class="line-num">6</span><span class="code-text">&nbsp;&nbsp;<span class="tok-attr">--radius</span>: <span class="tok-str">10px</span>;</span></div>
-<div class="code-line"><span class="line-num">7</span><span class="code-text">&nbsp;&nbsp;<span class="tok-attr">--font</span>: <span class="tok-str">'Plus Jakarta Sans', sans-serif</span>;</span></div>
-<div class="code-line"><span class="line-num">8</span><span class="code-text">}</span></div>
-<div class="code-line"><span class="line-num">9</span><span class="code-text"></span></div>
-<div class="code-line"><span class="line-num">10</span><span class="code-text"><span class="tok-tag">.mock-btn</span> {</span></div>
-<div class="code-line"><span class="line-num">11</span><span class="code-text">&nbsp;&nbsp;<span class="tok-attr">background</span>: <span class="tok-str">var(--accent)</span>;</span></div>
-<div class="code-line"><span class="line-num">12</span><span class="code-text">&nbsp;&nbsp;<span class="tok-attr">box-shadow</span>: <span class="tok-str">0 0 24px var(--accent-glow)</span>;</span></div>
-<div class="code-line"><span class="line-num">13</span><span class="code-text">&nbsp;&nbsp;<span class="tok-attr">transition</span>: <span class="tok-str">transform 0.15s ease</span>;</span></div>
-<div class="code-line"><span class="line-num">14</span><span class="code-text">}</span></div>`
+<div class="code-line"><span class="line-num">3</span><span class="code-text">&nbsp;&nbsp;<span class="tok-attr">--background</span>: <span class="tok-str">#ffffff</span>;</span></div>
+<div class="code-line"><span class="line-num">4</span><span class="code-text">&nbsp;&nbsp;<span class="tok-attr">--brand-color</span>: <span class="tok-str">#047857</span>;</span></div>
+<div class="code-line"><span class="line-num">5</span><span class="code-text">&nbsp;&nbsp;<span class="tok-attr">--button-radius</span>: <span class="tok-str">999px</span>;</span></div>
+<div class="code-line"><span class="line-num">6</span><span class="code-text">&nbsp;&nbsp;<span class="tok-attr">--font</span>: <span class="tok-str">'Plus Jakarta Sans', sans-serif</span>;</span></div>
+<div class="code-line"><span class="line-num">7</span><span class="code-text">}</span></div>
+<div class="code-line"><span class="line-num">8</span><span class="code-text"></span></div>
+<div class="code-line"><span class="line-num">9</span><span class="code-text"><span class="tok-tag">.quote-button</span> {</span></div>
+<div class="code-line"><span class="line-num">10</span><span class="code-text">&nbsp;&nbsp;<span class="tok-attr">background</span>: <span class="tok-str">var(--brand-color)</span>;</span></div>
+<div class="code-line"><span class="line-num">11</span><span class="code-text">&nbsp;&nbsp;<span class="tok-attr">border-radius</span>: <span class="tok-str">var(--button-radius)</span>;</span></div>
+<div class="code-line"><span class="line-num">12</span><span class="code-text">}</span></div>`
         },
         redirects: {
-            url: 'https://pagedock.freedev.app/s/acme-studio/old-path \u2192 /about (301)',
-            tag: '301 Canonical Rewrite Active',
-            title: 'Netlify-Compatible Routing',
-            desc: 'Seamless clean URLs, folder index resolution, and custom wildcard proxy redirects.',
-            actionHtml: '<div style="font-family:var(--font-mono); font-size:11px; color:#34d399; background:rgba(52,211,153,0.1); padding:8px 12px; border-radius:6px; border:1px solid rgba(52,211,153,0.2);">&check; HTTP/1.1 301 Moved Permanently &rarr; /about</div>',
-            code: `<div class="code-line"><span class="line-num">1</span><span class="code-text"><span class="tok-comment"># PageDock _redirects Configuration</span></span></div>
-<div class="code-line"><span class="line-num">2</span><span class="code-text"><span class="tok-comment"># Canonical 301 Path Rewrites</span></span></div>
-<div class="code-line"><span class="line-num">3</span><span class="code-text"><span class="tok-tag">/old-about</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tok-str">/about</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tok-attr">301</span></span></div>
-<div class="code-line"><span class="line-num">4</span><span class="code-text"><span class="tok-tag">/temp-promo</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tok-str">/special</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tok-attr">302</span></span></div>
-<div class="code-line"><span class="line-num">5</span><span class="code-text"></span></div>
-<div class="code-line"><span class="line-num">6</span><span class="code-text"><span class="tok-comment"># Wildcard &amp; Splat Proxy Routing</span></span></div>
-<div class="code-line"><span class="line-num">7</span><span class="code-text"><span class="tok-tag">/blog/*</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tok-str">/articles/:splat</span>&nbsp;&nbsp;&nbsp;<span class="tok-attr">301</span></span></div>
-<div class="code-line"><span class="line-num">8</span><span class="code-text"><span class="tok-tag">/api/v1/*</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tok-str">https://api.io/:splat</span> <span class="tok-attr">200!</span></span></div>
-<div class="code-line"><span class="line-num">9</span><span class="code-text"></span></div>
-<div class="code-line"><span class="line-num">10</span><span class="code-text"><span class="tok-comment"># Single Page App (SPA) Fallback</span></span></div>
-<div class="code-line"><span class="line-num">11</span><span class="code-text"><span class="tok-tag">/*</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tok-str">/index.html</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tok-attr">200</span></span></div>`
+            url: 'https://pagedock.freedev.app/s/lumina-studio/promo \u2192 /special-offer',
+            tag: 'Clean Custom Links',
+            title: 'Easy Short Links for Promotions',
+            desc: 'Send customers from short promo links (like /promo or /whatsapp) straight to your special offer page.',
+            actionHtml: '<div style="font-family:var(--font-mono); font-size:11px; color:#065f46; background:#e8f5ef; padding:8px 12px; border-radius:6px; border:1px solid #bfe3d2;">&check; Visitors to /promo automatically open /special-offer</div>',
+            code: `<div class="code-line"><span class="line-num">1</span><span class="code-text"><span class="tok-comment"># Easy Custom Link Forwarding</span></span></div>
+<div class="code-line"><span class="line-num">2</span><span class="code-text"><span class="tok-comment"># Forward old or short promo links to the right page</span></span></div>
+<div class="code-line"><span class="line-num">3</span><span class="code-text"><span class="tok-tag">/promo</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tok-str">/special-offer</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tok-attr">301</span></span></div>
+<div class="code-line"><span class="line-num">4</span><span class="code-text"><span class="tok-tag">/book</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tok-str">/contact</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tok-attr">301</span></span></div>
+<div class="code-line"><span class="line-num">5</span><span class="code-text"><span class="tok-tag">/catalog</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tok-str">/products</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tok-attr">301</span></span></div>`
         }
     };
 
@@ -909,4 +910,19 @@ pagedock deploy ./public</pre>
             if (showcasePreviewAction) showcasePreviewAction.innerHTML = fileData.actionHtml;
         });
     });
+
+    // 11. Scroll-Reveal Observer for [data-reveal] elements
+    const revealEls = document.querySelectorAll('[data-reveal]');
+    if (revealEls.length > 0 && 'IntersectionObserver' in window) {
+        document.documentElement.classList.add('reveal-ready');
+        const revealObserver = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    obs.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12, rootMargin: '0px 0px -32px 0px' });
+        revealEls.forEach(el => revealObserver.observe(el));
+    }
 });

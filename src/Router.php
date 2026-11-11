@@ -9,6 +9,17 @@ class Router {
         $path = trim($uri, '/');
         $parts = $path === '' ? [] : explode('/', $path);
 
+        // 0. Favicon handler (/favicon.svg & /favicon.ico)
+        if ($path === 'favicon.svg' || $path === 'favicon.ico') {
+            $favPath = PUBLIC_DIR . '/favicon.svg';
+            if (is_file($favPath)) {
+                header('Content-Type: image/svg+xml; charset=utf-8');
+                header('Cache-Control: public, max-age=86400');
+                readfile($favPath);
+                return;
+            }
+        }
+
         // 1. Serving Hosted Static Sites: /s/{slug} or /s/{slug}/{filepath}
         if (!empty($parts) && $parts[0] === 's') {
             $slug = $parts[1] ?? null;
@@ -44,9 +55,64 @@ class Router {
             return;
         }
 
-        // 2a. HTMLHost Universal Form Endpoint: POST /__pd/form
-        if ($path === '__pd/form' && $method === 'POST') {
+        // 2a. CORS Pre-Flight for Forms & API
+        if (($path === '__pd/form' || $path === '__hh/form' || (!empty($parts) && ($parts[0] === 'f' || $parts[0] === 'api'))) && $method === 'OPTIONS') {
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+            header('Access-Control-Allow-Headers: Content-Type, Accept, Authorization, X-Requested-With');
+            header('Access-Control-Max-Age: 86400');
+            exit;
+        }
+
+        // 2a-1. Clean Form Endpoint: POST /f/{slug}
+        if (!empty($parts) && $parts[0] === 'f' && isset($parts[1]) && $method === 'POST') {
+            $slug = $parts[1];
+            $data = $_POST;
+            if (empty($data)) {
+                $raw = file_get_contents('php://input');
+                $data = json_decode($raw, true) ?: [];
+            }
+
+            $res = Forms::submit($slug, $data);
+            $statusCode = $res['status_code'] ?? ($res['success'] ? 200 : 400);
+
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Headers: Content-Type, Accept');
+
+            if (isset($_POST['_redirect']) && !empty($res['redirect'])) {
+                redirect($res['redirect']);
+                return;
+            }
+
+            $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+            $isJson = str_contains($accept, 'application/json') || (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
+            if ($isJson || empty($_POST)) {
+                json_response($res, $statusCode);
+                return;
+            }
+
+            // Standard HTML fallback page
+            if ($res['success']) {
+                echo "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>Message Sent — PageDock</title><style>body{background:#0d0f12;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;} .box{background:#15181e;border:1px solid #232730;padding:40px;border-radius:12px;text-align:center;max-width:440px;} h1{color:#C7F547;font-size:22px;margin-bottom:12px;} p{color:#8b949e;font-size:15px;} a{color:#C7F547;text-decoration:none;font-weight:600;display:inline-block;margin-top:20px;}</style></head><body><div class='box'><h1>" . htmlspecialchars($res['message']) . "</h1><p>Your response has been securely recorded.</p><p><a href='javascript:history.back()'>&larr; Return to website</a></p></div></body></html>";
+                return;
+            }
+            http_response_code($statusCode);
+            echo "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>Submission Error — PageDock</title><style>body{background:#0d0f12;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;} .box{background:#15181e;border:1px solid #e5484d;padding:40px;border-radius:12px;text-align:center;max-width:440px;} h1{color:#e5484d;font-size:22px;margin-bottom:12px;} p{color:#8b949e;font-size:15px;} a{color:#e5484d;text-decoration:none;font-weight:600;display:inline-block;margin-top:20px;}</style></head><body><div class='box'><h1>Submission Error</h1><p>" . htmlspecialchars($res['error']) . "</p><p><a href='javascript:history.back()'>&larr; Go back and correct</a></p></div></body></html>";
+            return;
+        }
+
+        // 2a-2. Universal Form Endpoint: POST /__pd/form or /__hh/form (HTMLHost legacy alias)
+        if (($path === '__pd/form' || $path === '__hh/form') && $method === 'POST') {
+            header('Access-Control-Allow-Origin: *');
             self::handleUniversalForm();
+            return;
+        }
+
+        // 2a-3. Form Endpoint Developer Guide & Status: GET /__pd/form, /__hh/form, /f, or /f/{slug}
+        if (($path === '__pd/form' || $path === '__hh/form' || $path === 'f' || (!empty($parts) && $parts[0] === 'f')) && $method === 'GET') {
+            header('Access-Control-Allow-Origin: *');
+            $targetSlug = (!empty($parts) && $parts[0] === 'f' && isset($parts[1])) ? $parts[1] : null;
+            self::renderFormEndpointGuide($path, $targetSlug);
             return;
         }
 
@@ -192,6 +258,12 @@ class Router {
             return;
         }
 
+        // 2f. Surge / Redoost Unified cURL & Agent Deploy Endpoint: POST/PUT /api/deploy
+        if ($path === 'api/deploy' && ($method === 'POST' || $method === 'PUT')) {
+            self::handleApiDeploy();
+            return;
+        }
+
         // 3. API Upload: POST /api/upload
         if ($path === 'api/upload' && $method === 'POST') {
             self::handleApiUpload();
@@ -272,6 +344,37 @@ class Router {
             }
             $res = VersionManager::restoreVersion($site, $versionNum);
             json_response($res, $res['success'] ? 200 : 400);
+            return;
+        }
+
+        // 6c-3. Get Specific File Content: GET /api/sites/{slug}/file?path=...
+        if (!empty($parts) && $parts[0] === 'api' && ($parts[1] ?? '') === 'sites' && ($parts[3] ?? '') === 'file' && $method === 'GET') {
+            $slug = $parts[2] ?? '';
+            $site = SiteManager::getSite($slug);
+            if (!$site || !SiteManager::canManage($site)) {
+                json_response(['success' => false, 'error' => 'Unauthorized or site not found'], 403);
+                return;
+            }
+            $relPath = $_GET['path'] ?? 'index.html';
+            $content = SiteManager::getSiteHtml($slug, $relPath);
+            if ($content === null) {
+                json_response(['success' => false, 'error' => 'File not found'], 404);
+                return;
+            }
+            json_response(['success' => true, 'path' => $relPath, 'content' => $content]);
+            return;
+        }
+
+        // 6c-4. List All Site Files: GET /api/sites/{slug}/files
+        if (!empty($parts) && $parts[0] === 'api' && ($parts[1] ?? '') === 'sites' && ($parts[3] ?? '') === 'files' && $method === 'GET') {
+            $slug = $parts[2] ?? '';
+            $site = SiteManager::getSite($slug);
+            if (!$site || !SiteManager::canManage($site)) {
+                json_response(['success' => false, 'error' => 'Unauthorized or site not found'], 403);
+                return;
+            }
+            $files = SiteManager::getSiteFileList($slug);
+            json_response(['success' => true, 'slug' => $slug, 'files' => $files]);
             return;
         }
 
@@ -733,14 +836,32 @@ class Router {
             return;
         }
 
-        // 7. Legacy Editor/Studio redirects -> Direct to live site or dashboard
+        // 7. Studio & Responsive Canvas: /editor/{slug}
         if (!empty($parts) && ($parts[0] === 'editor' || $parts[0] === 'studio')) {
             $slug = $parts[1] ?? '';
-            if ($slug) {
-                header('Location: ' . url('s/' . $slug), true, 302);
-            } else {
-                header('Location: ' . url('dashboard'), true, 302);
+            if (!$slug) {
+                redirect('dashboard');
+                return;
             }
+            $site = SiteManager::getSite($slug);
+            if (!$site) {
+                render_view('404', ['title' => 'Site Not Found']);
+                return;
+            }
+            if (!SiteManager::canManage($site)) {
+                redirect('login?redirect=editor/' . $slug);
+                return;
+            }
+            $files = SiteManager::getSiteFileList($slug);
+            $initialFile = $files[0] ?? 'index.html';
+            $initialContent = SiteManager::getSiteHtml($slug, $initialFile) ?? '';
+            render_view('editor', [
+                'site' => $site,
+                'files' => $files,
+                'initialFile' => $initialFile,
+                'initialContent' => $initialContent,
+                'title' => 'Studio — ' . ($site['title'] ?: $site['slug'])
+            ], false);
             return;
         }
 
@@ -826,6 +947,26 @@ class Router {
             return;
         }
 
+        // 8c. Claim Site Endpoint: /claim?token=...
+        if ($path === 'claim' || (!empty($parts) && $parts[0] === 'claim')) {
+            $token = $_REQUEST['token'] ?? null;
+            if (!$token) {
+                redirect('dashboard');
+                return;
+            }
+            if (!Auth::check()) {
+                redirect('login?redirect=' . urlencode('claim?token=' . $token));
+                return;
+            }
+            $res = SiteManager::claimSite($token, Auth::id());
+            if ($res['success']) {
+                redirect('dashboard?claimed=' . urlencode($res['slug']));
+            } else {
+                redirect('dashboard?error=' . urlencode($res['error']));
+            }
+            return;
+        }
+
         // 9. Auth Routes
         if ($path === 'login') {
             if (Auth::check()) {
@@ -905,7 +1046,8 @@ class Router {
         // 11. Home page / Default
         if ($path === '') {
             render_view('home', [
-                'title' => 'PageDock — Host your HTML. Get a link.'
+                'title' => 'PageDock — Put your business online in seconds',
+                'bodyClass' => 'page-home'
             ]);
             return;
         }
@@ -961,6 +1103,34 @@ class Router {
     }
 
     /**
+     * Render Developer Endpoint Guide & Status for GET requests on form endpoints
+     */
+    private static function renderFormEndpointGuide(string $endpoint, ?string $targetSlug = null): void {
+        $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+        $isJson = str_contains($accept, 'application/json') || (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') || (isset($_GET['format']) && $_GET['format'] === 'json');
+
+        if ($isJson) {
+            json_response([
+                'status' => 'operational',
+                'service' => 'PageDock Zero-Backend Form Engine',
+                'endpoint' => '/' . ltrim($endpoint, '/'),
+                'method' => 'POST',
+                'target_slug' => $targetSlug,
+                'aliases' => ['/__pd/form', '/__hh/form', '/f/{slug}'],
+                'description' => 'Endpoint active and ready to receive HTTP POST form submissions.',
+                'docs' => url('docs#forms')
+            ]);
+            return;
+        }
+
+        render_view('form_guide', [
+            'endpoint' => '/' . ltrim($endpoint, '/'),
+            'targetSlug' => $targetSlug,
+            'title' => 'Form Engine Endpoint — PageDock'
+        ]);
+    }
+
+    /**
      * Handle file or zip upload
      */
     private static function handleApiUpload(): void {
@@ -999,6 +1169,90 @@ class Router {
         } else {
             json_response(['success' => false, 'error' => 'Unsupported file type. Please upload .html or .zip.'], 400);
         }
+    }
+
+    /**
+     * Unified cURL & Agent Deployment Endpoint: POST /api/deploy
+     * Synthesized from sintaxi/surge & whyredfire/redoost
+     */
+    private static function handleApiDeploy(): void {
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: POST, PUT, OPTIONS');
+        header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Project-Slug, X-Claim-Token, X-Title');
+
+        $ua = strtolower($_SERVER['HTTP_USER_AGENT'] ?? '');
+        $isCurl = str_contains($ua, 'curl') || str_contains($ua, 'httpie') || str_contains($ua, 'wget');
+
+        $preferredSlug = $_POST['slug'] ?? $_GET['slug'] ?? $_SERVER['HTTP_X_PROJECT_SLUG'] ?? null;
+        $title = $_POST['title'] ?? $_GET['title'] ?? $_SERVER['HTTP_X_TITLE'] ?? null;
+        $res = null;
+
+        if (!empty($_FILES['file']['tmp_name'])) {
+            $file = $_FILES['file'];
+            if ($file['error'] !== UPLOAD_ERR_OK) {
+                self::renderDeployResponse(['success' => false, 'error' => 'File upload failed with error code ' . $file['error']], 400, $isCurl);
+                return;
+            }
+
+            $origName = strtolower($file['name']);
+            if (str_ends_with($origName, '.zip')) {
+                $res = SiteManager::deployFromZip($file['tmp_name'], $title, $preferredSlug);
+            } else {
+                $content = file_get_contents($file['tmp_name']);
+                $res = SiteManager::deployFromHtml($content, $title, $preferredSlug);
+            }
+        } else {
+            $rawBody = file_get_contents('php://input');
+            if (empty($rawBody)) {
+                self::renderDeployResponse([
+                    'success' => false,
+                    'error' => 'No files or body provided. Example: curl -F "file=@site.zip" ' . url('api/deploy')
+                ], 400, $isCurl);
+                return;
+            }
+
+            $jsonData = json_decode($rawBody, true);
+            if (is_array($jsonData) && !empty($jsonData['html'])) {
+                $res = SiteManager::deployFromHtml($jsonData['html'], $jsonData['title'] ?? $title, $jsonData['slug'] ?? $preferredSlug);
+            } elseif (str_starts_with($rawBody, "PK\x03\x04") || str_starts_with($rawBody, "PK\x05\x06")) {
+                $tmpZip = tempnam(sys_get_temp_dir(), 'pd_deploy_') . '.zip';
+                file_put_contents($tmpZip, $rawBody);
+                $res = SiteManager::deployFromZip($tmpZip, $title, $preferredSlug);
+                @unlink($tmpZip);
+            } else {
+                $res = SiteManager::deployFromHtml($rawBody, $title, $preferredSlug);
+            }
+        }
+
+        $status = ($res && !empty($res['success'])) ? 200 : ($res['status_code'] ?? 400);
+        self::renderDeployResponse($res ?: ['success' => false, 'error' => 'Deployment processing failed.'], $status, $isCurl);
+    }
+
+    private static function renderDeployResponse(array $res, int $statusCode, bool $isCurl): void {
+        http_response_code($statusCode);
+        if ($isCurl) {
+            header('Content-Type: text/plain; charset=utf-8');
+            if (!empty($res['success'])) {
+                $slug = $res['slug'] ?? '';
+                $url = $res['url'] ?? url('s/' . $slug);
+                $editUrl = url('editor/' . $slug);
+                $claim = $res['claim_token'] ?? '';
+                $action = !empty($res['updated']) ? 'Updated' : 'Published';
+                echo "\n✨ {$action} to PageDock successfully!\n\n";
+                echo "🌐 Live URL:    {$url}\n";
+                echo "✏️  Edit Online: {$editUrl}\n";
+                if ($claim) {
+                    echo "🔑 Claim Token: {$claim}\n";
+                }
+                echo "\nTo deploy updates:\n";
+                echo "  curl -F \"file=@dist.zip\" -H \"X-Claim-Token: {$claim}\" " . url('api/deploy') . "?slug={$slug}\n\n";
+            } else {
+                echo "\n❌ Deployment Failed: " . ($res['error'] ?? 'Unknown error') . "\n\n";
+            }
+            exit;
+        }
+
+        json_response($res, $statusCode);
     }
 
     /**
@@ -1199,7 +1453,7 @@ class Router {
                 <script>
                 (function(){
                     document.addEventListener("DOMContentLoaded", function(){
-                        var forms = document.querySelectorAll("form[action*=\"/__pd/form\"], form[action*=\"/api/forms\"], form[data-pd-form]");
+                        var forms = document.querySelectorAll("form[action*=\"/__pd/form\"], form[action*=\"/__hh/form\"], form[action*=\"/f/\"], form[action*=\"/api/forms\"], form[data-pd-form]");
                         forms.forEach(function(f){
                             if (!f.querySelector("input[name=\"_pd_hp\"]")) {
                                 var hp = document.createElement("div");
@@ -1207,6 +1461,13 @@ class Router {
                                 hp.style.cssText = "position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden";
                                 hp.innerHTML = "<label>Leave this field empty <input type=\"text\" name=\"_pd_hp\" tabindex=\"-1\" autocomplete=\"off\"></label>";
                                 f.appendChild(hp);
+                            }
+                            if (!f.querySelector("input[name=\"_pd_ts\"]")) {
+                                var ts = document.createElement("input");
+                                ts.type = "hidden";
+                                ts.name = "_pd_ts";
+                                ts.value = Math.floor(Date.now() / 1000);
+                                f.appendChild(ts);
                             }
                             f.addEventListener("submit", function(e){
                                 if (e.defaultPrevented) return;

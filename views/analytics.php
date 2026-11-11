@@ -2,13 +2,13 @@
     <div class="inbox-breadcrumb">
         <a href="<?= url('dashboard') ?>">&larr; Back to Dashboard</a>
         <span class="sep">/</span>
-        <span class="current">Cookieless Analytics</span>
+        <span class="current">Site Analytics</span>
     </div>
 
     <div class="dashboard-header">
         <div>
             <h1><?= htmlspecialchars($site['title'] ?: 'Untitled Site') ?> &mdash; Analytics</h1>
-            <p class="text-muted">Cookieless edge analytics for <a href="<?= url('s/' . $site['slug']) ?>" target="_blank" class="accent-text"><?= url('s/' . $site['slug']) ?> &rarr;</a></p>
+            <p class="text-muted">Privacy-friendly visitor stats for <a href="<?= url('s/' . $site['slug']) ?>" target="_blank" class="accent-text"><?= url('s/' . $site['slug']) ?> &rarr;</a></p>
         </div>
         <div class="analytics-range-selector">
             <a href="<?= url('dashboard/analytics/' . $site['slug'] . '?days=7') ?>" class="range-btn <?= $days === 7 ? 'active' : '' ?>">Last 7 Days</a>

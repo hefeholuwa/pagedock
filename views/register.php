@@ -1,16 +1,16 @@
 <div class="auth-wrapper">
     <div class="auth-card">
         <div class="auth-header">
-            <h2>Create an account</h2>
-            <p class="text-muted">Start hosting static HTML with zero friction.</p>
+            <h2>Create your free account</h2>
+            <p class="text-muted">Keep all your websites, custom links, and lead inquiries in one place.</p>
         </div>
 
         <?php 
         $activeClaimTokens = Auth::getActiveGuestTokens();
         if (!empty($activeClaimTokens)): 
         ?>
-            <div class="alert alert-info" style="background:rgba(199,245,71,0.08); border:1px solid rgba(199,245,71,0.3); color:#C7F547; border-radius:8px; padding:12px; margin-bottom:16px; font-size:13px;">
-                You have <strong><?= count($activeClaimTokens) ?> deployed site(s)</strong> waiting in this session. Create your account to claim and manage them permanently!
+            <div class="alert alert-info" style="background:var(--accent-soft); border:1px solid #bfe3d2; color:var(--accent-hover); border-radius:12px; padding:12px 14px; margin-bottom:16px; font-size:13px;">
+                You have <strong><?= count($activeClaimTokens) ?> website(s)</strong> waiting in this session. Create your account to save and manage them permanently!
             </div>
         <?php endif; ?>
 

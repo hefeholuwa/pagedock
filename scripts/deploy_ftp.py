@@ -48,9 +48,7 @@ EXCLUDE_EXTENSIONS = {
 
 # Obsolete remote files that should be deleted if present on the remote host
 OBSOLETE_REMOTE_FILES = [
-    'views/editor.php',
     'views/studio.php',
-    'public/assets/js/editor.js',
     'public/assets/js/pagedock-harness.js',
     'public/assets/css/editor.css',
 ]

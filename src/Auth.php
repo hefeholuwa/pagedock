@@ -120,7 +120,7 @@ class Auth {
             $in = str_repeat('?,', count($tokens) - 1) . '?';
             $params = array_merge([$userId], $tokens);
 
-            $stmt = $db->prepare("UPDATE sites SET user_id = ? WHERE user_id IS NULL AND claim_token IN ($in)");
+            $stmt = $db->prepare("UPDATE sites SET user_id = ?, expires_at = NULL WHERE user_id IS NULL AND claim_token IN ($in)");
             $stmt->execute($params);
             
             $_SESSION['guest_claim_tokens'] = [];

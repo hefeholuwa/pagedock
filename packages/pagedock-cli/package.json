@@ -1,0 +1,29 @@
+{
+  "name": "pagedock-cli",
+  "version": "0.1.0",
+  "description": "PageDock Official CLI — Instant terminal deployment for static websites",
+  "type": "module",
+  "bin": {
+    "pagedock": "./bin/pagedock.js",
+    "pagedock-cli": "./bin/pagedock.js"
+  },
+  "files": [
+    "bin",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node tests/test_cli.js"
+  },
+  "keywords": [
+    "pagedock",
+    "cli",
+    "deploy",
+    "static-hosting",
+    "surge",
+    "vercel",
+    "jamstack"
+  ],
+  "author": "PageDock Team",
+  "license": "MIT"
+}
+

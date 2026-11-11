@@ -60,6 +60,8 @@ class Database {
             expires_at DATETIME NULL,
             views_count INTEGER DEFAULT 0,
             current_version INTEGER DEFAULT 1,
+            webhook_url TEXT DEFAULT NULL,
+            webhook_format TEXT DEFAULT 'generic',
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
@@ -157,6 +159,16 @@ class Database {
         $siteCols = self::$instance->query("PRAGMA table_info(sites)")->fetchAll(PDO::FETCH_COLUMN, 1);
         if (!in_array('current_version', $siteCols)) {
             self::$instance->exec("ALTER TABLE sites ADD COLUMN current_version INTEGER DEFAULT 1");
+        }
+        if (!in_array('webhook_url', $siteCols)) {
+            self::$instance->exec("ALTER TABLE sites ADD COLUMN webhook_url TEXT DEFAULT NULL");
+        }
+        if (!in_array('webhook_format', $siteCols)) {
+            self::$instance->exec("ALTER TABLE sites ADD COLUMN webhook_format TEXT DEFAULT 'generic'");
+        }
+
+        if (!in_array('spam_reason', $cols)) {
+            self::$instance->exec("ALTER TABLE form_submissions ADD COLUMN spam_reason TEXT DEFAULT NULL");
         }
 
         self::$instance->exec("

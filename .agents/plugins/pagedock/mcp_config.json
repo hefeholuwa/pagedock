@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "pagedock": {
+      "command": "node",
+      "args": [
+        "/Users/user/Desktop/pagedock/packages/pagedock-mcp/src/index.js"
+      ],
+      "env": {
+        "PAGEDOCK_BASE_URL": "http://localhost:8080"
+      }
+    }
+  }
+}
+

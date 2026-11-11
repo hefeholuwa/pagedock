@@ -51,17 +51,17 @@ $formatRelativeDate = function($dateString) {
             </span>
         </div>
         <div class="workspace-scope-right">
-            <span class="edge-status-pill" title="Global Edge Anycast Network Status">
+            <span class="edge-status-pill" title="Hosting Network Status">
                 <span class="edge-pulse-dot"></span>
-                <span>Edge Fleet: <strong>12/12 POPs Active</strong></span>
+                <span>Network Status: <strong>All Systems Online</strong></span>
             </span>
-            <span class="latency-pill" title="P99 Edge Roundtrip Time">
+            <span class="latency-pill" title="Fast Page Loading">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                <span>~24ms TTFB</span>
+                <span>Instant Load</span>
             </span>
-            <span class="ssl-status-pill" title="Automated TLS 1.3 Encryption">
+            <span class="ssl-status-pill" title="Automatic HTTPS Encryption">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                <span>Auto-HTTPS Live</span>
+                <span>SSL Padlock Active</span>
             </span>
         </div>
     </div>
@@ -82,12 +82,12 @@ $formatRelativeDate = function($dateString) {
                     <div class="user-email-row">
                         <span class="user-email"><?= htmlspecialchars($user['email'] ?? '') ?></span>
                         <span class="meta-dot">&bull;</span>
-                        <span class="user-role-label">Sovereign Developer</span>
+                        <span class="user-role-label">Workspace Owner</span>
                     </div>
                     <!-- Storage & Quota Progress Indicator -->
-                    <div class="storage-meter-container" title="Storage Quota Usage">
+                    <div class="storage-meter-container" title="Storage Space Used">
                         <div class="storage-meter-labels">
-                            <span class="storage-lbl">Storage Quota</span>
+                            <span class="storage-lbl">Storage Used</span>
                             <span class="storage-val"><strong><?= $formattedTotalBytes ?></strong> / 50 MB (<?= $storagePercent ?>%)</span>
                         </div>
                         <div class="storage-meter-track" role="progressbar" aria-valuenow="<?= $storagePercent ?>" aria-valuemin="0" aria-valuemax="100">
@@ -101,38 +101,38 @@ $formatRelativeDate = function($dateString) {
             <div class="user-kpi-summary">
                 <div class="kpi-mini-box">
                     <div class="kpi-box-header">
-                        <span class="kpi-mini-lbl">Hosted Sites</span>
+                        <span class="kpi-mini-lbl">Live Websites</span>
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                     </div>
                     <span class="kpi-mini-val"><?= $totalSites ?></span>
-                    <span class="kpi-mini-hint">0ms Cold Starts</span>
+                    <span class="kpi-mini-hint">Always online</span>
                 </div>
 
                 <div class="kpi-mini-box">
                     <div class="kpi-box-header">
-                        <span class="kpi-mini-lbl">Page Views</span>
+                        <span class="kpi-mini-lbl">Total Visits</span>
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                     </div>
                     <span class="kpi-mini-val"><?= number_format($totalViews) ?></span>
-                    <span class="kpi-mini-hint">Cookieless Tracking</span>
+                    <span class="kpi-mini-hint">Privacy-first stats</span>
                 </div>
 
                 <div class="kpi-mini-box">
                     <div class="kpi-box-header">
-                        <span class="kpi-mini-lbl">Leads Captured</span>
+                        <span class="kpi-mini-lbl">Customer Leads</span>
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                     </div>
                     <span class="kpi-mini-val"><?= number_format($totalForms) ?></span>
-                    <span class="kpi-mini-hint">Universal Form Engine</span>
+                    <span class="kpi-mini-hint">Built-in forms</span>
                 </div>
 
                 <div class="kpi-mini-box">
                     <div class="kpi-box-header">
-                        <span class="kpi-mini-lbl">Fleet Uptime</span>
+                        <span class="kpi-mini-lbl">Reliability</span>
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                     </div>
                     <span class="kpi-mini-val highlight-green">99.99%</span>
-                    <span class="kpi-mini-hint">Zero Build Latency</span>
+                    <span class="kpi-mini-hint">No setup needed</span>
                 </div>
             </div>
         </div>
@@ -142,19 +142,19 @@ $formatRelativeDate = function($dateString) {
     <div class="dashboard-header">
         <div class="dashboard-title-group">
             <div class="dashboard-title-row">
-                <h1>Hosted Deployments</h1>
+                <h1>My Websites</h1>
                 <span class="dashboard-count-badge"><?= $totalSites ?></span>
             </div>
-            <p class="text-muted">Manage, edit, and inspect live edge analytics and leads across your sovereign domains.</p>
+            <p class="text-muted">Edit your pages, check visitor traffic, and view customer form messages in one place.</p>
         </div>
         <div class="dashboard-header-actions">
-            <a href="<?= url('templates') ?>" class="btn-secondary" title="Browse Sovereign Starter Blueprints">
+            <a href="<?= url('templates') ?>" class="btn-secondary" title="Browse Ready-Made Templates">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
                 <span>Templates</span>
             </a>
-            <button type="button" class="btn-primary" id="open-fast-deploy-btn" title="Deploy New Sovereign Site">
+            <button type="button" class="btn-primary" id="open-fast-deploy-btn" title="Launch New Website">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                <span>Deploy New Site</span>
+                <span>New Website</span>
             </button>
         </div>
     </div>
@@ -165,10 +165,10 @@ $formatRelativeDate = function($dateString) {
             <div class="launchpad-banner">
                 <div class="launchpad-badge">
                     <span class="pulse-dot"></span>
-                    <span>Zero-Friction Activation</span>
+                    <span>Quick Start</span>
                 </div>
-                <h2>Deploy Your First Sovereign Website</h2>
-                <p>Choose your preferred deployment workflow below to launch on the global edge in under 400 milliseconds.</p>
+                <h2>Launch Your First Website</h2>
+                <p>Choose how you want to start below and get a shareable live web link in seconds.</p>
             </div>
 
             <div class="launchpad-grid">
@@ -179,13 +179,13 @@ $formatRelativeDate = function($dateString) {
                         <div class="launchpad-icon-box accent">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                         </div>
-                        <span class="launchpad-card-tag">Fastest Path</span>
+                        <span class="launchpad-card-tag">Fastest</span>
                     </div>
-                    <h3>Drag &amp; Drop Archive or HTML</h3>
-                    <p>Drop a single <code>index.html</code> file or a complete 50MB ZIP folder. Zero build setup, unpacked in memory, instant live URL.</p>
+                    <h3>Upload Your Page or ZIP</h3>
+                    <p>Drop a single <code>index.html</code> file or a zipped website folder up to 50MB. No setup needed—your link goes live right away.</p>
                     <div class="launchpad-card-footer">
                         <a href="<?= url() ?>" class="btn-primary w-full">
-                            <span>Open Deployment Dock</span>
+                            <span>Upload &amp; Publish</span>
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                         </a>
                     </div>
@@ -199,20 +199,20 @@ $formatRelativeDate = function($dateString) {
                         </div>
                         <span class="launchpad-card-tag">Ready-Made</span>
                     </div>
-                    <h3>Pre-Built Sovereign Starters</h3>
-                    <p>Clone a battle-tested template configured with form capture, dark aesthetics, and clean relative asset grounding.</p>
+                    <h3>Start From a Template</h3>
+                    <p>Pick a ready-made design for your business, product launch, or portfolio with working contact forms already built in.</p>
                     <div class="blueprint-pills-list">
                         <a href="<?= url('templates') ?>" class="blueprint-mini-pill">
-                            <span class="pill-title">Developer Portfolio</span>
-                            <span class="pill-meta">Terminal &bull; Showcase</span>
+                            <span class="pill-title">Business Landing Page</span>
+                            <span class="pill-meta">Modern &bull; Mobile Ready</span>
                         </a>
                         <a href="<?= url('templates') ?>" class="blueprint-mini-pill">
-                            <span class="pill-title">SaaS Waitlist</span>
-                            <span class="pill-meta">Lead Capture &bull; Dark UI</span>
+                            <span class="pill-title">Product Waitlist</span>
+                            <span class="pill-meta">Lead Capture &bull; Clean</span>
                         </a>
                         <a href="<?= url('templates') ?>" class="blueprint-mini-pill">
-                            <span class="pill-title">API Documentation</span>
-                            <span class="pill-meta">Markdown &bull; Sidebar</span>
+                            <span class="pill-title">Personal Portfolio</span>
+                            <span class="pill-meta">Showcase &bull; Fast</span>
                         </a>
                     </div>
                     <div class="launchpad-card-footer">
@@ -229,10 +229,10 @@ $formatRelativeDate = function($dateString) {
                         <div class="launchpad-icon-box">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
                         </div>
-                        <span class="launchpad-card-tag">Dev Tooling</span>
+                        <span class="launchpad-card-tag">For Builders</span>
                     </div>
-                    <h3>Terminal &amp; Agent Deployment</h3>
-                    <p>Deploy directly from your command line or connect your AI coding agent via Model Context Protocol (MCP).</p>
+                    <h3>Publish From Terminal or AI</h3>
+                    <p>Ship sites directly from your command line or let your AI coding assistant publish for you automatically.</p>
                     <div class="cli-terminal-preview" onclick="copyCliCommand(this)" title="Click to copy command">
                         <div class="terminal-dots">
                             <span class="term-dot red"></span>
@@ -241,11 +241,11 @@ $formatRelativeDate = function($dateString) {
                             <span class="term-copied-badge">Copied!</span>
                         </div>
                         <code><span class="cli-prompt">$</span> npx pagedock-cli deploy ./dist</code>
-                        <div class="cli-subtext">Instant SHA-256 upload &middot; zero config</div>
+                        <div class="cli-subtext">Instant upload &middot; zero config</div>
                     </div>
                     <div class="launchpad-card-footer">
                         <a href="<?= url('docs') ?>" class="btn-ghost w-full">
-                            <span>Explore Developer Specs</span>
+                            <span>Read Guides &amp; Docs</span>
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                         </a>
                     </div>
@@ -395,11 +395,15 @@ $formatRelativeDate = function($dateString) {
 
                     <!-- Card Action Button Toolbar (Dedicated Primary View CTA + 3-Button Utility Row) -->
                     <div class="site-card-actions">
-                        <!-- Primary Row: Dedicated Full-Width View Live Site -->
+                        <!-- Primary Row: Open Studio + View Live Site -->
                         <div class="card-actions-row primary-row">
+                            <a href="<?= url('editor/' . $site['slug']) ?>" class="btn-action btn-action-edit" title="Open Studio & Code Editor">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                                <span>Studio</span>
+                            </a>
                             <a href="<?= url('s/' . $site['slug']) ?>" target="_blank" class="btn-action btn-action-view" title="View Live Website">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                                <span>View Live Site</span>
+                                <span>Live</span>
                             </a>
                         </div>
                         <!-- Secondary Row: Analytics + Leads + Delete (Balanced Utility Strip) -->
@@ -511,6 +515,7 @@ $formatRelativeDate = function($dateString) {
                             <!-- Actions -->
                             <td class="td-actions">
                                 <div class="td-actions-group">
+                                    <a href="<?= url('editor/' . $site['slug']) ?>" class="btn-table-action" title="Open Studio & Editor">Studio</a>
                                     <a href="<?= url('s/' . $site['slug']) ?>" target="_blank" class="btn-table-action accent" title="View Live Website">View</a>
                                     <a href="<?= url('dashboard/analytics/' . $site['slug']) ?>" class="btn-table-action" title="Metrics">Analytics</a>
                                     <a href="<?= url('dashboard/forms/' . $site['slug']) ?>" class="btn-table-action" title="Leads">Leads</a>
@@ -537,8 +542,8 @@ $formatRelativeDate = function($dateString) {
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                 </div>
                 <div>
-                    <h2 id="modal-deploy-title">Deploy Sovereign Site</h2>
-                    <p class="modal-sub">Choose your ingestion workflow for instant zero-cold-start edge publication.</p>
+                    <h2 id="modal-deploy-title">Launch a New Website</h2>
+                    <p class="modal-sub">Upload your files, paste HTML, or pick a template to publish right away.</p>
                 </div>
             </div>
             <button type="button" class="modal-close-btn" onclick="closeFastDeployModal()" aria-label="Close modal">&times;</button>
@@ -546,8 +551,8 @@ $formatRelativeDate = function($dateString) {
 
         <div class="modal-tabs-header">
             <button type="button" class="modal-tab-trigger active" onclick="switchModalTab('upload', this)">Upload ZIP / Files</button>
-            <button type="button" class="modal-tab-trigger" onclick="switchModalTab('paste', this)">Paste Raw HTML</button>
-            <button type="button" class="modal-tab-trigger" onclick="switchModalTab('template', this)">Starter Blueprints</button>
+            <button type="button" class="modal-tab-trigger" onclick="switchModalTab('paste', this)">Paste HTML</button>
+            <button type="button" class="modal-tab-trigger" onclick="switchModalTab('template', this)">Templates</button>
         </div>
 
         <div class="modal-tab-content active" id="modal-tab-upload">
@@ -557,13 +562,13 @@ $formatRelativeDate = function($dateString) {
                     <div class="dropzone-icon-pulse">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                     </div>
-                    <span class="dropzone-prompt" id="modal-dropzone-prompt">Drop your ZIP archive or single <code>index.html</code> here</span>
-                    <span class="dropzone-hint">Up to 50MB &bull; Automatic relative link grounding &bull; 0ms build</span>
+                    <span class="dropzone-prompt" id="modal-dropzone-prompt">Drop your ZIP folder or <code>index.html</code> file here</span>
+                    <span class="dropzone-hint">Up to 50MB &bull; Instant live link &bull; Free SSL included</span>
                 </div>
                 <div class="modal-dialog-footer">
-                    <a href="<?= url() ?>" class="btn-ghost btn-sm">Full Deployment Dock</a>
+                    <a href="<?= url() ?>" class="btn-ghost btn-sm">Open Homepage Dock</a>
                     <button type="submit" class="btn-primary" id="modal-upload-submit" disabled>
-                        <span>Deploy to Edge Fleet</span>
+                        <span>Publish Website</span>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                     </button>
                 </div>
@@ -573,13 +578,13 @@ $formatRelativeDate = function($dateString) {
         <div class="modal-tab-content" id="modal-tab-paste" style="display:none;">
             <form action="<?= url('api/upload-paste') ?>" method="POST" id="fast-paste-form">
                 <div class="modal-paste-area">
-                    <label for="paste-html-textarea" class="modal-field-label">Single-File HTML Content</label>
-                    <textarea name="html" id="paste-html-textarea" placeholder="<!DOCTYPE html>&#10;<html>&#10;<head><title>My Sovereign Page</title></head>&#10;<body>&#10;  <h1>Hello World</h1>&#10;</body>&#10;</html>" class="modal-textarea" rows="8" required></textarea>
+                    <label for="paste-html-textarea" class="modal-field-label">Paste Your HTML Page</label>
+                    <textarea name="html" id="paste-html-textarea" placeholder="<!DOCTYPE html>&#10;<html>&#10;<head><title>My Business Page</title></head>&#10;<body>&#10;  <h1>Welcome</h1>&#10;</body>&#10;</html>" class="modal-textarea" rows="8" required></textarea>
                 </div>
                 <div class="modal-dialog-footer">
-                    <a href="<?= url() ?>" class="btn-ghost btn-sm">Full Deployment Dock</a>
+                    <a href="<?= url() ?>" class="btn-ghost btn-sm">Open Homepage Dock</a>
                     <button type="submit" class="btn-primary">
-                        <span>Deploy HTML Instantaneously</span>
+                        <span>Publish Page Now</span>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                     </button>
                 </div>
@@ -593,8 +598,8 @@ $formatRelativeDate = function($dateString) {
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
                     </div>
                     <div class="modal-tpl-info">
-                        <strong>Developer Portfolio</strong>
-                        <span>Terminal aesthetic &bull; Work showcase &bull; Dark mode</span>
+                        <strong>Portfolio &amp; Showcase</strong>
+                        <span>Clean layout &bull; Project gallery &bull; Contact form</span>
                     </div>
                     <span class="modal-tpl-arrow">&rarr;</span>
                 </a>
@@ -603,8 +608,8 @@ $formatRelativeDate = function($dateString) {
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
                     </div>
                     <div class="modal-tpl-info">
-                        <strong>SaaS Product Waitlist</strong>
-                        <span>High-converting hero &bull; Form capture &bull; Neon cards</span>
+                        <strong>Product Launch &amp; Waitlist</strong>
+                        <span>Clear headline &bull; Lead capture form &bull; Crisp cards</span>
                     </div>
                     <span class="modal-tpl-arrow">&rarr;</span>
                 </a>
@@ -613,14 +618,14 @@ $formatRelativeDate = function($dateString) {
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                     </div>
                     <div class="modal-tpl-info">
-                        <strong>API Documentation Hub</strong>
-                        <span>Syntax highlighted &bull; Sidebar nav &bull; Monospace clean</span>
+                        <strong>Help Center &amp; Guides</strong>
+                        <span>Easy navigation &bull; Clean reading layout &bull; Fast search</span>
                     </div>
                     <span class="modal-tpl-arrow">&rarr;</span>
                 </a>
             </div>
             <div class="modal-dialog-footer">
-                <a href="<?= url('templates') ?>" class="btn-secondary w-full">Browse All Sovereign Blueprints</a>
+                <a href="<?= url('templates') ?>" class="btn-secondary w-full">Browse All Templates</a>
             </div>
         </div>
     </div>
