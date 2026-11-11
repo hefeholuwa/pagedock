@@ -65,13 +65,59 @@ spl_autoload_register(function ($class) {
     }
 });
 
+function is_https_request(): bool {
+    if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+        return true;
+    }
+    if (($_SERVER['SERVER_PORT'] ?? null) == 443) {
+        return true;
+    }
+    if (strtolower($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https') {
+        return true;
+    }
+    if (!empty($_SERVER['HTTP_CF_VISITOR']) && str_contains($_SERVER['HTTP_CF_VISITOR'], '"https"')) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Helper to extract Bearer token from Authorization header across Apache/CGI/FastCGI/PHP-CLI
+ */
+function get_bearer_token(): ?string {
+    $header = $_SERVER['HTTP_AUTHORIZATION']
+        ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION']
+        ?? null;
+
+    if (!$header && function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        foreach ($headers as $k => $v) {
+            if (strtolower((string)$k) === 'authorization') {
+                $header = $v;
+                break;
+            }
+        }
+    }
+
+    if (!$header || !is_string($header)) {
+        return null;
+    }
+
+    if (preg_match('/^\s*Bearer\s+(.+)\s*$/i', $header, $m)) {
+        $token = trim($m[1]);
+        return $token !== '' ? $token : null;
+    }
+
+    return null;
+}
+
 /**
  * Helper to generate relative or absolute app URLs
  */
 function url(string $path = ''): string {
     // Dynamically use current browser host if available (localhost:8080 or production domain)
     if (!empty($_SERVER['HTTP_HOST'])) {
-        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
+        $protocol = is_https_request() ? "https://" : "http://";
         return rtrim($protocol . $_SERVER['HTTP_HOST'], '/') . '/' . ltrim($path, '/');
     }
 

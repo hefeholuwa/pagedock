@@ -1,12 +1,141 @@
 <?php
 
 class Auth {
-    public static function check(): bool {
+    private static ?int $bearerUserId = null;
+    private static bool $bearerChecked = false;
+    private static bool $bearerAttempted = false;
+    private static bool $bearerInvalid = false;
+
+    public static function hasSession(): bool {
         return isset($_SESSION['user_id']);
     }
 
+    public static function check(): bool {
+        if (isset($_SESSION['user_id'])) {
+            return true;
+        }
+        self::resolveBearerRequest();
+        return self::$bearerUserId !== null;
+    }
+
     public static function id(): ?int {
-        return $_SESSION['user_id'] ?? null;
+        if (isset($_SESSION['user_id'])) {
+            return (int)$_SESSION['user_id'];
+        }
+        self::resolveBearerRequest();
+        return self::$bearerUserId;
+    }
+
+    public static function setBearerUser(?int $userId): void {
+        self::$bearerUserId = $userId;
+        self::$bearerChecked = true;
+        self::$bearerAttempted = $userId !== null;
+        self::$bearerInvalid = false;
+    }
+
+    public static function hasInvalidBearer(): bool {
+        self::resolveBearerRequest();
+        return self::$bearerAttempted && self::$bearerInvalid;
+    }
+
+    public static function resolveBearerRequest(): ?int {
+        if (self::$bearerChecked) {
+            return self::$bearerUserId;
+        }
+        self::$bearerChecked = true;
+
+        $rawToken = function_exists('get_bearer_token') ? get_bearer_token() : null;
+        if (!$rawToken) {
+            return null;
+        }
+
+        self::$bearerAttempted = true;
+        $hash = hash('sha256', $rawToken);
+        $db = Database::getConnection();
+        $stmt = $db->prepare("SELECT id, user_id, expires_at FROM api_tokens WHERE token_hash = ? LIMIT 1");
+        $stmt->execute([$hash]);
+        $row = $stmt->fetch();
+
+        if (!$row) {
+            self::$bearerInvalid = true;
+            return null;
+        }
+
+        if (!empty($row['expires_at'])) {
+            $expTs = strtotime($row['expires_at'] . ' UTC');
+            if ($expTs !== false && $expTs < time()) {
+                self::$bearerInvalid = true;
+                return null;
+            }
+        }
+
+        $upd = $db->prepare("UPDATE api_tokens SET last_used_at = ? WHERE id = ?");
+        $upd->execute([gmdate('Y-m-d H:i:s'), $row['id']]);
+
+        self::$bearerUserId = (int)$row['user_id'];
+        self::$bearerInvalid = false;
+        return self::$bearerUserId;
+    }
+
+    public static function createApiToken(
+        int $userId,
+        string $name = 'Personal Access Token',
+        string $scopes = 'mcp sites:read sites:write',
+        ?int $ttlSeconds = null,
+        bool $withRefreshToken = false
+    ): array {
+        $isOAuth = $withRefreshToken || str_starts_with(strtolower($name), 'oauth:');
+        $prefixTag = $isOAuth ? 'pd_oauth_' : 'pd_pat_';
+        $plainToken = $prefixTag . bin2hex(random_bytes(24));
+        $tokenHash = hash('sha256', $plainToken);
+        $tokenPrefix = substr($plainToken, 0, 14) . '…';
+        $expiresAt = $ttlSeconds !== null ? gmdate('Y-m-d H:i:s', time() + $ttlSeconds) : null;
+
+        $plainRefresh = null;
+        $refreshHash = null;
+        if ($withRefreshToken) {
+            $plainRefresh = 'pd_ref_' . bin2hex(random_bytes(24));
+            $refreshHash = hash('sha256', $plainRefresh);
+        }
+
+        $db = Database::getConnection();
+        $stmt = $db->prepare("
+            INSERT INTO api_tokens (user_id, name, token_hash, token_prefix, refresh_token_hash, scopes, expires_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ");
+        $stmt->execute([$userId, trim($name) ?: 'Personal Access Token', $tokenHash, $tokenPrefix, $refreshHash, $scopes, $expiresAt]);
+
+        $res = [
+            'id' => (int)$db->lastInsertId(),
+            'token' => $plainToken,
+            'token_prefix' => $tokenPrefix,
+            'name' => trim($name) ?: 'Personal Access Token',
+            'scopes' => $scopes,
+            'expires_at' => $expiresAt,
+        ];
+        if ($plainRefresh !== null) {
+            $res['refresh_token'] = $plainRefresh;
+        }
+        return $res;
+    }
+
+    public static function listApiTokens(int $userId): array {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("
+            SELECT id, name, token_prefix, scopes, expires_at, last_used_at, created_at
+            FROM api_tokens
+            WHERE user_id = ?
+            ORDER BY created_at DESC, id DESC
+        ");
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll() ?: [];
+    }
+
+    public static function revokeApiToken(int $userId, int $tokenId): bool {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("DELETE FROM api_tokens WHERE id = ? AND user_id = ?");
+        $stmt->execute([$tokenId, $userId]);
+        return $stmt->rowCount() > 0;
     }
 
     public static function user(): ?array {

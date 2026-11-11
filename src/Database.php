@@ -114,6 +114,49 @@ class Database {
 
         CREATE INDEX IF NOT EXISTS idx_analytics_site_created ON analytics_events(site_id, created_at);
         CREATE INDEX IF NOT EXISTS idx_analytics_visitor_date ON analytics_events(site_id, visitor_hash, created_at);
+
+        CREATE TABLE IF NOT EXISTS api_tokens (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            name TEXT NOT NULL DEFAULT 'API Token',
+            token_hash TEXT UNIQUE NOT NULL,
+            token_prefix TEXT NOT NULL,
+            refresh_token_hash TEXT UNIQUE DEFAULT NULL,
+            scopes TEXT DEFAULT 'mcp sites:read sites:write',
+            expires_at DATETIME NULL,
+            last_used_at DATETIME NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        );
+        CREATE INDEX IF NOT EXISTS idx_api_tokens_hash ON api_tokens(token_hash);
+        CREATE INDEX IF NOT EXISTS idx_api_tokens_user ON api_tokens(user_id);
+
+        CREATE TABLE IF NOT EXISTS oauth_clients (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            client_id TEXT UNIQUE NOT NULL,
+            client_secret_hash TEXT DEFAULT NULL,
+            client_name TEXT NOT NULL DEFAULT 'MCP Client',
+            redirect_uris_json TEXT NOT NULL,
+            grant_types TEXT DEFAULT 'authorization_code refresh_token',
+            token_endpoint_auth_method TEXT DEFAULT 'none',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS oauth_codes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            code_hash TEXT UNIQUE NOT NULL,
+            client_id TEXT NOT NULL,
+            user_id INTEGER NOT NULL,
+            redirect_uri TEXT NOT NULL,
+            scope TEXT DEFAULT 'mcp sites:read sites:write',
+            code_challenge TEXT NOT NULL,
+            code_challenge_method TEXT DEFAULT 'S256',
+            resource TEXT DEFAULT NULL,
+            expires_at DATETIME NOT NULL,
+            used INTEGER DEFAULT 0,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        );
         ";
 
         self::$instance->exec($sql);
@@ -183,6 +226,51 @@ class Database {
                 FOREIGN KEY (site_id) REFERENCES sites(id) ON DELETE CASCADE
             );
             CREATE INDEX IF NOT EXISTS idx_versions_site ON site_versions(site_id, version_number);
+        ");
+
+        self::$instance->exec("
+            CREATE TABLE IF NOT EXISTS api_tokens (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                name TEXT NOT NULL DEFAULT 'API Token',
+                token_hash TEXT UNIQUE NOT NULL,
+                token_prefix TEXT NOT NULL,
+                refresh_token_hash TEXT UNIQUE DEFAULT NULL,
+                scopes TEXT DEFAULT 'mcp sites:read sites:write',
+                expires_at DATETIME NULL,
+                last_used_at DATETIME NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            );
+            CREATE INDEX IF NOT EXISTS idx_api_tokens_hash ON api_tokens(token_hash);
+            CREATE INDEX IF NOT EXISTS idx_api_tokens_user ON api_tokens(user_id);
+
+            CREATE TABLE IF NOT EXISTS oauth_clients (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                client_id TEXT UNIQUE NOT NULL,
+                client_secret_hash TEXT DEFAULT NULL,
+                client_name TEXT NOT NULL DEFAULT 'MCP Client',
+                redirect_uris_json TEXT NOT NULL,
+                grant_types TEXT DEFAULT 'authorization_code refresh_token',
+                token_endpoint_auth_method TEXT DEFAULT 'none',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TABLE IF NOT EXISTS oauth_codes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                code_hash TEXT UNIQUE NOT NULL,
+                client_id TEXT NOT NULL,
+                user_id INTEGER NOT NULL,
+                redirect_uri TEXT NOT NULL,
+                scope TEXT DEFAULT 'mcp sites:read sites:write',
+                code_challenge TEXT NOT NULL,
+                code_challenge_method TEXT DEFAULT 'S256',
+                resource TEXT DEFAULT NULL,
+                expires_at DATETIME NOT NULL,
+                used INTEGER DEFAULT 0,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            );
         ");
     }
 
@@ -257,6 +345,50 @@ class Database {
             INDEX idx_analytics_site_created (site_id, created_at),
             INDEX idx_analytics_visitor_date (site_id, visitor_hash, created_at),
             FOREIGN KEY (site_id) REFERENCES sites(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+        CREATE TABLE IF NOT EXISTS api_tokens (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            name VARCHAR(255) NOT NULL DEFAULT 'API Token',
+            token_hash VARCHAR(64) UNIQUE NOT NULL,
+            token_prefix VARCHAR(32) NOT NULL,
+            refresh_token_hash VARCHAR(64) UNIQUE DEFAULT NULL,
+            scopes VARCHAR(255) DEFAULT 'mcp sites:read sites:write',
+            expires_at DATETIME NULL,
+            last_used_at DATETIME NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_api_tokens_hash (token_hash),
+            INDEX idx_api_tokens_user (user_id),
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+        CREATE TABLE IF NOT EXISTS oauth_clients (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            client_id VARCHAR(128) UNIQUE NOT NULL,
+            client_secret_hash VARCHAR(64) DEFAULT NULL,
+            client_name VARCHAR(255) NOT NULL DEFAULT 'MCP Client',
+            redirect_uris_json TEXT NOT NULL,
+            grant_types VARCHAR(255) DEFAULT 'authorization_code refresh_token',
+            token_endpoint_auth_method VARCHAR(64) DEFAULT 'none',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+        CREATE TABLE IF NOT EXISTS oauth_codes (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            code_hash VARCHAR(64) UNIQUE NOT NULL,
+            client_id VARCHAR(128) NOT NULL,
+            user_id INT NOT NULL,
+            redirect_uri VARCHAR(1000) NOT NULL,
+            scope VARCHAR(255) DEFAULT 'mcp sites:read sites:write',
+            code_challenge VARCHAR(255) NOT NULL,
+            code_challenge_method VARCHAR(16) DEFAULT 'S256',
+            resource VARCHAR(500) DEFAULT NULL,
+            expires_at DATETIME NOT NULL,
+            used TINYINT DEFAULT 0,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_oauth_codes_hash (code_hash),
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
         ";
 

@@ -5,7 +5,12 @@
     RewriteEngine On
     RewriteBase /
 
-    # Block direct access to hidden files and directories (.env, .git, .htmlhost, etc.)
+    # Preserve Authorization header for PHP (cPanel / Apache / FastCGI)
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Block direct access to hidden files and directories (.env, .git, etc.) except /.well-known/
+    RewriteCond %{REQUEST_URI} !^/\.well-known/ [NC]
     RewriteRule (^\.|/\.) - [F,L]
 
     # Block public access to internal Netlify _redirects configuration files

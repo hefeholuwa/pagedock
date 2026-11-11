@@ -3,6 +3,13 @@
     RewriteEngine On
     RewriteBase /
 
+    # Preserve Authorization header for PHP (cPanel / Apache / FastCGI)
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Allow OAuth/RFC discovery well-known paths before sensitive directory rules
+    RewriteRule ^\.well-known/ public/index.php [QSA,L]
+
     # Block direct access to sensitive directories and dotfiles
     RewriteRule ^(\.git|\.env|\.agents|tests|src|config|data|storage|scripts|graphify-out) - [F,L,NC]
     RewriteRule ^(\.htaccess|\.htpasswd|_redirects) - [F,L,NC]

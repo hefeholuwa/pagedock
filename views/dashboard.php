@@ -148,6 +148,10 @@ $formatRelativeDate = function($dateString) {
             <p class="text-muted">Edit your pages, check visitor traffic, and view customer form messages in one place.</p>
         </div>
         <div class="dashboard-header-actions">
+            <button type="button" class="btn-secondary" id="open-connections-btn" onclick="openConnectionsModal()" title="Connect ChatGPT & AI Assistants">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                <span>Connect ChatGPT</span>
+            </button>
             <a href="<?= url('templates') ?>" class="btn-secondary" title="Browse Ready-Made Templates">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
                 <span>Templates</span>
@@ -631,6 +635,93 @@ $formatRelativeDate = function($dateString) {
     </div>
 </div>
 
+<!-- Connect ChatGPT / Remote MCP & API Tokens Modal -->
+<div id="connections-modal" class="pagedock-modal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modal-connections-title">
+    <div class="modal-backdrop" onclick="closeConnectionsModal()"></div>
+    <div class="modal-dialog-card" style="max-width: 580px;">
+        <div class="modal-dialog-header">
+            <div class="modal-header-left">
+                <div class="modal-icon-badge">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                </div>
+                <div>
+                    <h2 id="modal-connections-title">Connect ChatGPT &amp; AI Tools</h2>
+                    <p class="modal-sub">Use ChatGPT directly with your PageDock websites via OAuth MCP or API keys.</p>
+                </div>
+            </div>
+            <button type="button" class="modal-close-btn" onclick="closeConnectionsModal()" aria-label="Close modal">&times;</button>
+        </div>
+
+        <div class="modal-tabs-header">
+            <button type="button" class="modal-tab-trigger active" onclick="switchConnTab('mcp', this)">ChatGPT App (OAuth MCP)</button>
+            <button type="button" class="modal-tab-trigger" onclick="switchConnTab('keys', this)">API Keys &amp; Custom GPT</button>
+        </div>
+
+        <div class="modal-tab-content active" id="conn-tab-mcp">
+            <div style="background:var(--bg-subtle, #f8fafc); border:1px solid var(--border, #e2e8f0); border-radius:12px; padding:14px; margin-bottom:14px;">
+                <div style="font-size:12px; font-weight:700; color:var(--fg-muted, #64748b); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;">Remote MCP Server URL</div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <input type="text" readonly value="<?= htmlspecialchars(url('mcp')) ?>" id="mcp-endpoint-url" class="input-text" style="font-family:'JetBrains Mono', monospace; font-size:13px; flex:1;">
+                    <button type="button" class="btn-secondary btn-sm" onclick="copyTextField('mcp-endpoint-url', this)">Copy</button>
+                </div>
+            </div>
+            <ol style="margin:0 0 14px 18px; padding:0; font-size:13.5px; line-height:1.65; color:var(--fg-muted, #475569);">
+                <li>In <strong>ChatGPT</strong>, open <strong>Settings &rarr; Apps &amp; Connectors</strong> (enable <em>Developer mode</em> under Advanced settings if needed).</li>
+                <li>Click <strong>Create</strong>, give it the name <code>PageDock</code>, and paste the MCP URL above.</li>
+                <li>Leave Authentication on <strong>OAuth</strong> and click <strong>Create</strong> — ChatGPT will open PageDock to sign in and approve access automatically.</li>
+            </ol>
+            <p style="margin:0; font-size:12.5px; color:var(--fg-muted, #64748b);">
+                Tools exposed: <code>list_sites</code>, <code>get_site</code>, <code>pull_site</code>, <code>deploy_html</code>, <code>update_site_file</code>, <code>list_versions</code>, <code>rollback_site</code>, <code>get_site_analytics</code>, <code>list_form_submissions</code>.
+            </p>
+        </div>
+
+        <div class="modal-tab-content" id="conn-tab-keys" style="display:none;">
+            <div style="background:var(--bg-subtle, #f8fafc); border:1px solid var(--border, #e2e8f0); border-radius:12px; padding:12px 14px; margin-bottom:14px;">
+                <div style="font-size:12px; font-weight:700; color:var(--fg-muted, #64748b); text-transform:uppercase; margin-bottom:6px;">Custom GPT OpenAPI Schema URL</div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <input type="text" readonly value="<?= htmlspecialchars(url('openapi.json')) ?>" id="openapi-endpoint-url" class="input-text" style="font-family:'JetBrains Mono', monospace; font-size:12.5px; flex:1;">
+                    <button type="button" class="btn-secondary btn-sm" onclick="copyTextField('openapi-endpoint-url', this)">Copy</button>
+                </div>
+            </div>
+
+            <form onsubmit="createApiToken(event)" style="display:flex; gap:8px; margin-bottom:12px;">
+                <input type="text" id="new-token-name" placeholder="Token label (e.g. Custom GPT / Responses API)" class="input-text" style="flex:1;" maxlength="80">
+                <button type="submit" class="btn-primary btn-sm" id="create-token-btn">Generate Bearer Key</button>
+            </form>
+
+            <div id="newly-created-token-box" style="display:none; background:#ecfdf5; border:1px solid #a7f3d0; border-radius:10px; padding:12px; margin-bottom:12px;">
+                <div style="font-size:12px; font-weight:700; color:#065f46; margin-bottom:6px;">Copy your new Bearer token now (shown once):</div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <input type="text" readonly id="newly-created-token-val" class="input-text" style="font-family:'JetBrains Mono', monospace; font-size:12.5px; flex:1; background:#fff;">
+                    <button type="button" class="btn-secondary btn-sm" onclick="copyTextField('newly-created-token-val', this)">Copy</button>
+                </div>
+            </div>
+
+            <div style="font-size:12px; font-weight:700; color:var(--fg-muted, #64748b); text-transform:uppercase; margin-bottom:6px;">Active Connections &amp; Tokens</div>
+            <div id="api-tokens-list" style="max-height:200px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+                <?php if (empty($apiTokens)): ?>
+                    <div id="no-tokens-msg" style="font-size:13px; color:var(--fg-muted, #64748b); padding:10px 0;">No active OAuth sessions or API tokens yet.</div>
+                <?php else: ?>
+                    <?php foreach ($apiTokens as $tok): ?>
+                        <div class="api-token-row" id="token-row-<?= (int)$tok['id'] ?>" style="display:flex; justify-content:space-between; align-items:center; gap:10px; padding:9px 12px; border:1px solid var(--border, #e2e8f0); border-radius:10px; font-size:13px;">
+                            <div>
+                                <div style="font-weight:600; color:var(--fg, #0f172a);"><?= htmlspecialchars($tok['name']) ?></div>
+                                <div style="font-size:11.5px; color:var(--fg-muted, #64748b); font-family:'JetBrains Mono', monospace;">
+                                    <?= htmlspecialchars($tok['token_prefix']) ?>
+                                    <?php if (!empty($tok['last_used_at'])): ?>
+                                        &middot; Last used <?= htmlspecialchars($tok['last_used_at']) ?>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-table-action danger" onclick="revokeApiToken(<?= (int)$tok['id'] ?>)">Revoke</button>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 // ==========================================
 // Dashboard Interactivity & State Management
@@ -891,4 +982,101 @@ document.querySelectorAll('.delete-site-btn').forEach(btn => {
         }
     });
 });
+
+// 7. Connections Modal (ChatGPT Remote MCP & Bearer API Tokens)
+const connectionsModal = document.getElementById('connections-modal');
+function openConnectionsModal() {
+    if (connectionsModal) {
+        connectionsModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+}
+function closeConnectionsModal() {
+    if (connectionsModal) {
+        connectionsModal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+}
+function switchConnTab(tabId, btnEl) {
+    if (!connectionsModal) return;
+    connectionsModal.querySelectorAll('.modal-tab-trigger').forEach(b => b.classList.remove('active'));
+    connectionsModal.querySelectorAll('.modal-tab-content').forEach(c => c.style.display = 'none');
+    if (btnEl) btnEl.classList.add('active');
+    const target = document.getElementById(`conn-tab-${tabId}`);
+    if (target) target.style.display = 'block';
+}
+function copyTextField(inputId, btn) {
+    const el = document.getElementById(inputId);
+    if (!el || !navigator.clipboard) return;
+    navigator.clipboard.writeText(el.value).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = orig; }, 1600);
+    });
+}
+async function createApiToken(e) {
+    e.preventDefault();
+    const nameInput = document.getElementById('new-token-name');
+    const btn = document.getElementById('create-token-btn');
+    const name = (nameInput?.value || '').trim() || 'ChatGPT / API Key';
+    btn.disabled = true;
+    try {
+        const res = await fetch('<?= url('api/tokens') ?>', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name })
+        });
+        const data = await res.json();
+        if (data.success && data.token) {
+            document.getElementById('newly-created-token-val').value = data.token.token;
+            document.getElementById('newly-created-token-box').style.display = 'block';
+            if (nameInput) nameInput.value = '';
+            const noMsg = document.getElementById('no-tokens-msg');
+            if (noMsg) noMsg.remove();
+            const list = document.getElementById('api-tokens-list');
+            const row = document.createElement('div');
+            row.className = 'api-token-row';
+            row.id = `token-row-${data.token.id}`;
+            row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; gap:10px; padding:9px 12px; border:1px solid var(--border, #e2e8f0); border-radius:10px; font-size:13px;';
+            const info = document.createElement('div');
+            const title = document.createElement('div');
+            title.style.cssText = 'font-weight:600; color:var(--fg, #0f172a);';
+            title.textContent = data.token.name;
+            const meta = document.createElement('div');
+            meta.style.cssText = "font-size:11.5px; color:var(--fg-muted, #64748b); font-family:'JetBrains Mono', monospace;";
+            meta.textContent = data.token.token_prefix;
+            info.appendChild(title);
+            info.appendChild(meta);
+            const delBtn = document.createElement('button');
+            delBtn.type = 'button';
+            delBtn.className = 'btn-table-action danger';
+            delBtn.textContent = 'Revoke';
+            delBtn.onclick = () => revokeApiToken(data.token.id);
+            row.appendChild(info);
+            row.appendChild(delBtn);
+            list.prepend(row);
+        } else {
+            alert(data.error || 'Could not generate API key.');
+        }
+    } catch (err) {
+        alert('Error creating API key.');
+    } finally {
+        btn.disabled = false;
+    }
+}
+async function revokeApiToken(tokenId) {
+    if (!confirm('Revoke this connection token? Connected apps using it will stop working.')) return;
+    try {
+        const res = await fetch(`<?= url('api/tokens/') ?>${tokenId}/revoke`, { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+            const row = document.getElementById(`token-row-${tokenId}`);
+            if (row) row.remove();
+        } else {
+            alert('Failed to revoke token.');
+        }
+    } catch (e) {
+        alert('Error revoking token.');
+    }
+}
 </script>

@@ -137,22 +137,26 @@ curl -F "file=@dist.zip" -H "X-Claim-Token: YOUR_CLAIM_TOKEN" <?= url('api/deplo
     <!-- 5. AI Agents & MCP Tooling -->
     <div class="docs-section" id="mcp-agents" style="margin-bottom: 48px;">
         <h2 style="font-size: 22px; font-weight: 700; color: var(--fg); margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
-            5. AI Coding Assistants (MCP)
+            5. ChatGPT &amp; AI Assistants (Remote + Local MCP)
         </h2>
         <p style="color: var(--fg-muted); line-height: 1.6; margin-bottom: 16px;">
-            PageDock includes a <strong>Model Context Protocol (MCP)</strong> server (<code>pagedock-mcp</code>) so AI coding tools like Antigravity, Cursor, and Claude Code can publish and update websites directly.
+            PageDock supports both <strong>Remote Streamable HTTP MCP</strong> (for ChatGPT Apps / Connectors with OAuth 2.1) and local <code>stdio</code> MCP (for Cursor, Antigravity, and Claude Desktop).
         </p>
-        <pre class="code-block"><code># Run PageDock MCP Server
+        <pre class="code-block"><code># Connect ChatGPT App / Connector (OAuth 2.1):
+MCP Server URL: <?= htmlspecialchars(url('mcp')) ?>
+
+OpenAPI Schema: <?= htmlspecialchars(url('openapi.json')) ?>
+
+Auth Method:    OAuth (PKCE + Dynamic Client Registration) or Bearer Key
+
+# Or run local stdio MCP for desktop IDEs:
 npx pagedock-mcp
 
-# Available Agent Tools:
-# - deploy_html: Publish a static site directly
-# - update_site_file: Edit index.html, style.css, or script.js
-# - pull_site: Inspect HTML of any existing site
-# - list_versions: View saved snapshots
-# - rollback_site: Revert to an earlier version
-# - get_site_analytics: Check page views and visitor stats
-# - list_form_submissions: Read form leads & inquiries</code></pre>
+# Available Tools:
+# - list_sites, get_site, list_site_files, pull_site
+# - deploy_html, update_site_file
+# - list_versions, rollback_site
+# - get_site_analytics, list_form_submissions, delete_site</code></pre>
     </div>
 
     <!-- 6. File Limits & Specifications -->

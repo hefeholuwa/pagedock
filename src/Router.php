@@ -20,6 +20,49 @@ class Router {
             }
         }
 
+        // 0b. Remote MCP Endpoint (ChatGPT Apps / Connectors & AI Clients)
+        if ($path === 'mcp') {
+            McpServer::handle($method);
+            return;
+        }
+
+        // 0c. OAuth 2.1 Discovery & Dynamic Client Registration for MCP
+        if ($method === 'OPTIONS' && (!empty($parts) && (in_array($parts[0], ['.well-known', 'oauth'], true) || $path === 'openapi.json'))) {
+            OAuthServer::sendCorsHeaders();
+            http_response_code(204);
+            exit;
+        }
+
+        if (($path === '.well-known/oauth-protected-resource' || $path === '.well-known/oauth-protected-resource/mcp') && $method === 'GET') {
+            OAuthServer::handleProtectedResourceMetadata();
+            return;
+        }
+
+        if (($path === '.well-known/oauth-authorization-server' || $path === '.well-known/openid-configuration') && $method === 'GET') {
+            OAuthServer::handleAuthServerMetadata();
+            return;
+        }
+
+        if ($path === 'oauth/register' && $method === 'POST') {
+            OAuthServer::handleRegister();
+            return;
+        }
+
+        if ($path === 'oauth/authorize' && ($method === 'GET' || $method === 'POST')) {
+            OAuthServer::handleAuthorize($method);
+            return;
+        }
+
+        if ($path === 'oauth/token' && $method === 'POST') {
+            OAuthServer::handleToken();
+            return;
+        }
+
+        if ($path === 'openapi.json' && $method === 'GET') {
+            self::renderOpenApiSpec();
+            return;
+        }
+
         // 1. Serving Hosted Static Sites: /s/{slug} or /s/{slug}/{filepath}
         if (!empty($parts) && $parts[0] === 's') {
             $slug = $parts[1] ?? null;
@@ -296,6 +339,85 @@ class Router {
                 $res = SiteManager::updateSiteHtml($slug, $html, $file);
             }
             json_response($res, $res['success'] ? 200 : 400);
+            return;
+        }
+
+        // 5b. API Tokens (Personal Access Tokens for ChatGPT Actions / API / CLI)
+        if (!empty($parts) && $parts[0] === 'api' && ($parts[1] ?? '') === 'tokens') {
+            $userId = Auth::id();
+            if (!$userId) {
+                json_response(['success' => false, 'error' => 'Unauthorized'], 401);
+                return;
+            }
+            if (count($parts) === 2 && $method === 'GET') {
+                json_response(['success' => true, 'tokens' => Auth::listApiTokens($userId)]);
+                return;
+            }
+            if (count($parts) === 2 && $method === 'POST') {
+                $raw = file_get_contents('php://input');
+                $data = json_decode($raw ?: '', true) ?: $_POST;
+                $name = trim((string)($data['name'] ?? 'ChatGPT / API Key'));
+                $created = Auth::createApiToken($userId, $name);
+                json_response(['success' => true, 'token' => $created], 201);
+                return;
+            }
+            if (count($parts) === 4 && ($parts[3] ?? '') === 'revoke' && $method === 'POST') {
+                $tokenId = (int)$parts[2];
+                $revoked = Auth::revokeApiToken($userId, $tokenId);
+                json_response(['success' => $revoked], $revoked ? 200 : 404);
+                return;
+            }
+        }
+
+        // 5c. List Sites / Get Site Metadata: GET /api/sites and GET /api/sites/{slug}
+        if ($path === 'api/sites' && $method === 'GET') {
+            $slugParam = isset($_GET['slug']) ? trim((string)$_GET['slug']) : '';
+            if ($slugParam !== '') {
+                $site = SiteManager::getSite($slugParam);
+                if (!$site) {
+                    json_response(['success' => false, 'error' => 'Site not found'], 404);
+                    return;
+                }
+                if (!SiteManager::canManage($site)) {
+                    json_response(['success' => false, 'error' => 'Unauthorized'], 403);
+                    return;
+                }
+                $site['liveUrl'] = url('s/' . $site['slug'] . '/');
+                $site['editorUrl'] = url('editor/' . $site['slug']);
+                $site['files'] = SiteManager::getSiteFileList($site['slug']);
+                json_response(['success' => true, 'site' => $site]);
+                return;
+            }
+
+            if (!Auth::check() && empty(Auth::getActiveGuestTokens())) {
+                json_response(['success' => false, 'error' => 'Unauthorized'], 401);
+                return;
+            }
+            $sites = SiteManager::getUserSites();
+            foreach ($sites as &$s) {
+                $s['liveUrl'] = url('s/' . $s['slug'] . '/');
+                $s['editorUrl'] = url('editor/' . $s['slug']);
+            }
+            unset($s);
+            json_response(['success' => true, 'count' => count($sites), 'sites' => $sites]);
+            return;
+        }
+
+        if (!empty($parts) && $parts[0] === 'api' && ($parts[1] ?? '') === 'sites' && count($parts) === 3 && $method === 'GET') {
+            $slug = $parts[2] ?? '';
+            $site = SiteManager::getSite($slug);
+            if (!$site) {
+                json_response(['success' => false, 'error' => 'Site not found'], 404);
+                return;
+            }
+            if (!SiteManager::canManage($site)) {
+                json_response(['success' => false, 'error' => 'Unauthorized'], 403);
+                return;
+            }
+            $site['liveUrl'] = url('s/' . $site['slug'] . '/');
+            $site['editorUrl'] = url('editor/' . $site['slug']);
+            $site['files'] = SiteManager::getSiteFileList($site['slug']);
+            json_response(['success' => true, 'site' => $site]);
             return;
         }
 
@@ -867,14 +989,16 @@ class Router {
 
         // 8. Dashboard (Authentication Required)
         if ($path === 'dashboard') {
-            if (!Auth::check()) {
+            if (!Auth::hasSession()) {
                 redirect('login?redirect=dashboard');
                 return;
             }
 
             $sites = SiteManager::getUserSites();
+            $apiTokens = Auth::listApiTokens((int)Auth::id());
             render_view('dashboard', [
                 'sites' => $sites,
+                'apiTokens' => $apiTokens,
                 'user' => Auth::user(),
                 'title' => 'Dashboard — PageDock'
             ]);
@@ -969,7 +1093,7 @@ class Router {
 
         // 9. Auth Routes
         if ($path === 'login') {
-            if (Auth::check()) {
+            if (Auth::hasSession()) {
                 redirect('dashboard');
                 return;
             }
@@ -981,7 +1105,8 @@ class Router {
                 $password = $_POST['password'] ?? '';
                 $res = Auth::login($email, $password);
                 if ($res['success']) {
-                    $dest = !empty($_POST['redirect']) && !str_starts_with($_POST['redirect'], 'http') ? ltrim($_POST['redirect'], '/') : 'dashboard';
+                    $rawDest = (string)($_POST['redirect'] ?? '');
+                    $dest = (!empty($rawDest) && !str_starts_with($rawDest, 'http') && !str_starts_with($rawDest, '//')) ? ltrim($rawDest, '/') : 'dashboard';
                     redirect($dest);
                 } else {
                     render_view('login', [
@@ -1000,7 +1125,7 @@ class Router {
         }
 
         if ($path === 'register') {
-            if (Auth::check()) {
+            if (Auth::hasSession()) {
                 redirect('dashboard');
                 return;
             }
@@ -1013,7 +1138,8 @@ class Router {
                 $name = $_POST['name'] ?? '';
                 $res = Auth::register($email, $password, $name);
                 if ($res['success']) {
-                    $dest = !empty($_POST['redirect']) && !str_starts_with($_POST['redirect'], 'http') ? ltrim($_POST['redirect'], '/') : 'dashboard';
+                    $rawDest = (string)($_POST['redirect'] ?? '');
+                    $dest = (!empty($rawDest) && !str_starts_with($rawDest, 'http') && !str_starts_with($rawDest, '//')) ? ltrim($rawDest, '/') : 'dashboard';
                     redirect($dest);
                 } else {
                     render_view('register', [
@@ -1566,5 +1692,157 @@ class Router {
         }
 
         readfile($filePath);
+    }
+
+    private static function renderOpenApiSpec(): void {
+        OAuthServer::sendCorsHeaders();
+        $base = rtrim(url(), '/');
+        json_response([
+            'openapi' => '3.1.0',
+            'info' => [
+                'title' => 'PageDock API',
+                'version' => APP_VERSION,
+                'description' => 'Deploy static HTML sites, edit files, inspect versions, roll back, and read analytics/form leads on PageDock.',
+            ],
+            'servers' => [['url' => $base]],
+            'components' => [
+                'securitySchemes' => [
+                    'bearerAuth' => [
+                        'type' => 'http',
+                        'scheme' => 'bearer',
+                    ],
+                ],
+            ],
+            'security' => [['bearerAuth' => []]],
+            'paths' => [
+                '/api/sites' => [
+                    'get' => [
+                        'operationId' => 'listSites',
+                        'summary' => 'List all websites belonging to the authenticated account',
+                        'responses' => ['200' => ['description' => 'List of sites']],
+                    ],
+                ],
+                '/api/sites/{slug}' => [
+                    'get' => [
+                        'operationId' => 'getSite',
+                        'summary' => 'Get metadata and file list for a site',
+                        'parameters' => [['name' => 'slug', 'in' => 'path', 'required' => true, 'schema' => ['type' => 'string']]],
+                        'responses' => ['200' => ['description' => 'Site details']],
+                    ],
+                ],
+                '/api/deploy' => [
+                    'post' => [
+                        'operationId' => 'deployHtmlSite',
+                        'summary' => 'Publish a new HTML site or update an existing site by slug',
+                        'requestBody' => [
+                            'required' => true,
+                            'content' => [
+                                'application/json' => [
+                                    'schema' => [
+                                        'type' => 'object',
+                                        'required' => ['html'],
+                                        'properties' => [
+                                            'html' => ['type' => 'string', 'description' => 'Complete HTML document'],
+                                            'title' => ['type' => 'string'],
+                                            'slug' => ['type' => 'string'],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'responses' => ['200' => ['description' => 'Published or updated site metadata']],
+                    ],
+                ],
+                '/api/editor/{slug}' => [
+                    'post' => [
+                        'operationId' => 'updateSiteFiles',
+                        'summary' => 'Update HTML or multiple files in an existing site',
+                        'parameters' => [['name' => 'slug', 'in' => 'path', 'required' => true, 'schema' => ['type' => 'string']]],
+                        'requestBody' => [
+                            'required' => true,
+                            'content' => [
+                                'application/json' => [
+                                    'schema' => [
+                                        'type' => 'object',
+                                        'properties' => [
+                                            'html' => ['type' => 'string'],
+                                            'file' => ['type' => 'string'],
+                                            'files' => ['type' => 'object', 'additionalProperties' => ['type' => 'string']],
+                                            'summary' => ['type' => 'string'],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'responses' => ['200' => ['description' => 'Updated files']],
+                    ],
+                ],
+                '/api/sites/{slug}/files' => [
+                    'get' => [
+                        'operationId' => 'listSiteFiles',
+                        'summary' => 'List all files inside a site',
+                        'parameters' => [['name' => 'slug', 'in' => 'path', 'required' => true, 'schema' => ['type' => 'string']]],
+                        'responses' => ['200' => ['description' => 'File paths array']],
+                    ],
+                ],
+                '/api/sites/{slug}/file' => [
+                    'get' => [
+                        'operationId' => 'getSiteFile',
+                        'summary' => 'Read a specific file from a site',
+                        'parameters' => [
+                            ['name' => 'slug', 'in' => 'path', 'required' => true, 'schema' => ['type' => 'string']],
+                            ['name' => 'path', 'in' => 'query', 'required' => false, 'schema' => ['type' => 'string', 'default' => 'index.html']],
+                        ],
+                        'responses' => ['200' => ['description' => 'File contents']],
+                    ],
+                ],
+                '/api/sites/{slug}/versions' => [
+                    'get' => [
+                        'operationId' => 'listSiteVersions',
+                        'summary' => 'List deployment version snapshots',
+                        'parameters' => [['name' => 'slug', 'in' => 'path', 'required' => true, 'schema' => ['type' => 'string']]],
+                        'responses' => ['200' => ['description' => 'Version snapshots']],
+                    ],
+                ],
+                '/api/sites/{slug}/rollback' => [
+                    'post' => [
+                        'operationId' => 'rollbackSiteVersion',
+                        'summary' => 'Rollback a site to a previous version snapshot',
+                        'parameters' => [['name' => 'slug', 'in' => 'path', 'required' => true, 'schema' => ['type' => 'string']]],
+                        'requestBody' => [
+                            'required' => false,
+                            'content' => [
+                                'application/json' => [
+                                    'schema' => [
+                                        'type' => 'object',
+                                        'properties' => ['version' => ['type' => 'integer']],
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'responses' => ['200' => ['description' => 'Rollback result']],
+                    ],
+                ],
+                '/api/sites/{slug}/analytics' => [
+                    'get' => [
+                        'operationId' => 'getSiteAnalytics',
+                        'summary' => 'Get visitor analytics for a site',
+                        'parameters' => [
+                            ['name' => 'slug', 'in' => 'path', 'required' => true, 'schema' => ['type' => 'string']],
+                            ['name' => 'days', 'in' => 'query', 'required' => false, 'schema' => ['type' => 'integer', 'default' => 30]],
+                        ],
+                        'responses' => ['200' => ['description' => 'Analytics metrics']],
+                    ],
+                ],
+                '/api/sites/{slug}/forms' => [
+                    'get' => [
+                        'operationId' => 'listFormSubmissions',
+                        'summary' => 'List captured form submissions for a site',
+                        'parameters' => [['name' => 'slug', 'in' => 'path', 'required' => true, 'schema' => ['type' => 'string']]],
+                        'responses' => ['200' => ['description' => 'Form submissions']],
+                    ],
+                ],
+            ],
+        ]);
     }
 }
