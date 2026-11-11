@@ -5,6 +5,10 @@ class Router {
         $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
+        if (defined('DATA_DIR')) {
+            @file_put_contents(DATA_DIR . '/router_debug.log', date('Y-m-d H:i:s') . " {$method} {$uri} Accept: " . substr($_SERVER['HTTP_ACCEPT'] ?? '', 0, 40) . "\n", FILE_APPEND);
+        }
+
         // Trim slashes
         $path = trim($uri, '/');
         $parts = $path === '' ? [] : explode('/', $path);
@@ -1662,6 +1666,10 @@ class Router {
         header('Cache-Control: public, max-age=3600');
 
         if ($ext === 'html' || $ext === 'htm') {
+            header('Cache-Control: no-cache, no-store, must-revalidate');
+            header('Pragma: no-cache');
+            header('Expires: 0');
+
             $content = file_get_contents($filePath);
 
             // Layer 4 Grounding: ensure relative links (style.css, script.js, images/) resolve to the site directory
@@ -1697,6 +1705,33 @@ class Router {
                 },
                 $content
             );
+
+            // Critical CSS Delivery: If primary stylesheet exists on disk and is <= 256KB,
+            // inline it directly into <head> so the page renders instantly with zero FOUC,
+            // zero proxy/cookie drops, and zero mixed-content blocks across all browsers and proxies.
+            $siteDir = realpath(SITES_DIR . '/' . $site['slug']);
+            if ($siteDir && is_dir($siteDir)) {
+                $primaryCssCandidates = ['styles.css', 'style.css', 'css/styles.css', 'css/style.css', 'assets/css/style.css', 'assets/style.css'];
+                $foundCssContent = null;
+                foreach ($primaryCssCandidates as $cssRel) {
+                    $cssPath = realpath($siteDir . '/' . $cssRel);
+                    if ($cssPath && str_starts_with($cssPath, $siteDir) && is_file($cssPath)) {
+                        $cssSize = filesize($cssPath);
+                        if ($cssSize > 0 && $cssSize <= 256 * 1024) {
+                            $foundCssContent = file_get_contents($cssPath);
+                            break;
+                        }
+                    }
+                }
+                if ($foundCssContent !== null) {
+                    $inlineCssTag = "\n    <style id=\"pagedock-direct-css\">\n" . $foundCssContent . "\n    </style>\n";
+                    if (stripos($content, '</head>') !== false) {
+                        $content = str_ireplace('</head>', $inlineCssTag . '</head>', $content);
+                    } else {
+                        $content = $inlineCssTag . $content;
+                    }
+                }
+            }
 
             // Outbound Link Hygiene: add rel="nofollow ugc" to external links on unverified sites
             $content = preg_replace_callback('/<a\s+([^>]*href=["\'](https?:\/\/[^"\']+)["\'][^>]*)>/i', function($matches) {
