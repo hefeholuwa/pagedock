@@ -1,4 +1,6 @@
-# PageDock Root Apache Configuration for Shared Hosting / cPanel (InfinityFree)
+# PageDock Root Apache Configuration for Shared Hosting / cPanel
+ErrorDocument 401 default
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /

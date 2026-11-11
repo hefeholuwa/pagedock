@@ -1,5 +1,6 @@
 # PageDock Production Web Server Rewrite Rules
 # Apache / LiteSpeed / cPanel Compatibility
+ErrorDocument 401 default
 
 <IfModule mod_rewrite.c>
     RewriteEngine On

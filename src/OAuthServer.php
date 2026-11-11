@@ -4,8 +4,15 @@ class OAuthServer {
     public static function sendCorsHeaders(): void {
         header('Access-Control-Allow-Origin: *');
         header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-        header('Access-Control-Allow-Headers: Content-Type, Accept, Authorization, Mcp-Protocol-Version');
+        header('Access-Control-Allow-Headers: Content-Type, Accept, Authorization, Mcp-Protocol-Version, Client-ID, X-Request-ID');
         header('Access-Control-Max-Age: 86400');
+        header('Cache-Control: no-store, no-cache, must-revalidate');
+        header('Pragma: no-cache');
+    }
+
+    public static function handleJwks(): void {
+        self::sendCorsHeaders();
+        json_response(['keys' => []]);
     }
 
     public static function getBaseUrl(): string {
@@ -41,6 +48,7 @@ class OAuthServer {
             'authorization_endpoint' => $base . '/oauth/authorize',
             'token_endpoint' => $base . '/oauth/token',
             'registration_endpoint' => $base . '/oauth/register',
+            'jwks_uri' => $base . '/.well-known/jwks.json',
             'response_types_supported' => ['code'],
             'response_modes_supported' => ['query'],
             'grant_types_supported' => ['authorization_code', 'refresh_token'],

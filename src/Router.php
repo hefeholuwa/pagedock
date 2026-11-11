@@ -38,22 +38,27 @@ class Router {
             return;
         }
 
-        if (($path === '.well-known/oauth-authorization-server' || $path === '.well-known/openid-configuration') && $method === 'GET') {
+        if (($path === '.well-known/oauth-authorization-server' || $path === '.well-known/oauth-authorization-server/mcp' || $path === '.well-known/openid-configuration' || $path === '.well-known/openid-configuration/mcp') && $method === 'GET') {
             OAuthServer::handleAuthServerMetadata();
             return;
         }
 
-        if ($path === 'oauth/register' && $method === 'POST') {
+        if ($path === '.well-known/jwks.json' && $method === 'GET') {
+            OAuthServer::handleJwks();
+            return;
+        }
+
+        if (($path === 'oauth/register' || $path === 'mcp/register' || $path === 'register_client') && $method === 'POST') {
             OAuthServer::handleRegister();
             return;
         }
 
-        if ($path === 'oauth/authorize' && ($method === 'GET' || $method === 'POST')) {
+        if (($path === 'oauth/authorize' || $path === 'mcp/authorize') && ($method === 'GET' || $method === 'POST')) {
             OAuthServer::handleAuthorize($method);
             return;
         }
 
-        if ($path === 'oauth/token' && $method === 'POST') {
+        if (($path === 'oauth/token' || $path === 'mcp/token') && $method === 'POST') {
             OAuthServer::handleToken();
             return;
         }
