@@ -72,10 +72,33 @@ function is_https_request(): bool {
     if (($_SERVER['SERVER_PORT'] ?? null) == 443) {
         return true;
     }
-    if (strtolower($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https') {
+    if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
+        $proto = strtolower((string)$_SERVER['HTTP_X_FORWARDED_PROTO']);
+        if (str_contains($proto, 'https')) {
+            return true;
+        }
+    }
+    if (!empty($_SERVER['HTTP_X_FORWARDED_SSL']) && strtolower((string)$_SERVER['HTTP_X_FORWARDED_SSL']) === 'on') {
         return true;
     }
-    if (!empty($_SERVER['HTTP_CF_VISITOR']) && str_contains($_SERVER['HTTP_CF_VISITOR'], '"https"')) {
+    if (!empty($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower((string)$_SERVER['HTTP_FRONT_END_HTTPS']) === 'on') {
+        return true;
+    }
+    if (($_SERVER['HTTP_X_FORWARDED_PORT'] ?? null) == 443) {
+        return true;
+    }
+    if (!empty($_SERVER['HTTP_CF_VISITOR']) && str_contains((string)$_SERVER['HTTP_CF_VISITOR'], '"https"')) {
+        return true;
+    }
+    if (!empty($_SERVER['REQUEST_SCHEME']) && strtolower((string)$_SERVER['REQUEST_SCHEME']) === 'https') {
+        return true;
+    }
+    if (!empty($_SERVER['SCRIPT_URI']) && str_starts_with(strtolower((string)$_SERVER['SCRIPT_URI']), 'https://')) {
+        return true;
+    }
+    // Shared hosting reverse proxy check: if public domain is accessed, default to https
+    $host = $_SERVER['HTTP_HOST'] ?? '';
+    if ($host && !str_starts_with($host, 'localhost') && !str_starts_with($host, '127.0.0.1') && !str_starts_with($host, '192.168.') && !str_starts_with($host, '10.')) {
         return true;
     }
     return false;

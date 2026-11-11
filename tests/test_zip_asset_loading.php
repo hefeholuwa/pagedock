@@ -74,7 +74,7 @@ ob_start();
 $outputFileMethod->invoke(null, $siteDir . '/index.html', SiteManager::getSite($slug));
 $renderedHtml = ob_get_clean();
 
-$expectedBase = url('s/' . $slug . '/');
+$expectedBase = '/s/' . $slug . '/';
 assertZipTest('HTML contains corrected site <base href="...">', str_contains($renderedHtml, '<base href="' . $expectedBase . '">'));
 assertZipTest('Old <base href="/"> was replaced', !str_contains($renderedHtml, '<base href="/">'));
 assertZipTest('Root-relative href="/style.css" was grounded', str_contains($renderedHtml, 'href="' . $expectedBase . 'style.css"'));
@@ -96,7 +96,22 @@ $serveMethod->invoke(null, $slug, 'CSS/Style.css');
 $caseCssOutput = ob_get_clean();
 assertZipTest('CSS/Style.css resolved case-insensitively', str_contains($caseCssOutput, 'background: #000'));
 
-// 7. Cleanup test site and temp files
+// 7. Test Stylesheet Name Aliasing (requesting styles.css when file is css/style.css)
+ob_start();
+$serveMethod->invoke(null, $slug, 'styles.css');
+$aliasedOutput = ob_get_clean();
+assertZipTest('styles.css resolved to aliased css/style.css', str_contains($aliasedOutput, 'background: #000'));
+
+// 8. Test is_https_request() detection on reverse proxy public domain
+$_SERVER['HTTP_HOST'] = 'pagedock.freedev.app';
+$_SERVER['HTTPS'] = 'off';
+$_SERVER['SERVER_PORT'] = '80';
+assertZipTest('is_https_request() returns true on public production domain', is_https_request() === true);
+
+$_SERVER['HTTP_HOST'] = 'localhost:8080';
+assertZipTest('is_https_request() returns false on localhost without SSL', is_https_request() === false);
+
+// 9. Cleanup test site and temp files
 $siteRecord = SiteManager::getSite($slug);
 if ($siteRecord) {
     SiteManager::deleteSite((int)$siteRecord['id']);
@@ -104,11 +119,15 @@ if ($siteRecord) {
 @unlink($zipFile);
 @rmdir($tmpDir);
 
-// 8. Zero Emojis Compliance
+// 10. Zero Emojis Compliance
 $emojiRegex = '/[\x{1F300}-\x{1F9FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}]/u';
 $siteManagerSrc = file_get_contents(dirname(__DIR__) . '/src/SiteManager.php');
 $routerSrc = file_get_contents(dirname(__DIR__) . '/src/Router.php');
+$configSrc = file_get_contents(dirname(__DIR__) . '/config/config.php');
+$editorJsSrc = file_get_contents(dirname(__DIR__) . '/public/assets/js/editor.js');
 assertZipTest('src/SiteManager.php has ZERO emojis', !preg_match($emojiRegex, $siteManagerSrc));
 assertZipTest('src/Router.php has ZERO emojis', !preg_match($emojiRegex, $routerSrc));
+assertZipTest('config/config.php has ZERO emojis', !preg_match($emojiRegex, $configSrc));
+assertZipTest('public/assets/js/editor.js has ZERO emojis', !preg_match($emojiRegex, $editorJsSrc));
 
 echo "\n[SUCCESS] ALL ZIP UPLOAD & STATIC ASSET RESOLUTION TESTS PASSED!\n";

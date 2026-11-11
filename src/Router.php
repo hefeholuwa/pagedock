@@ -106,7 +106,8 @@ class Router {
             $subpath = implode('/', array_slice($parts, 2));
 
             // Layer 1: Canonical trailing slash redirect for site root URLs in browsers
-            if ($subpath === '' && !str_ends_with($uri, '/')) {
+            $pathOnly = parse_url($uri, PHP_URL_PATH) ?? '';
+            if ($subpath === '' && !str_ends_with($pathOnly, '/')) {
                 $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
                 if (str_contains($accept, 'text/html') && empty($_SERVER['HTTP_X_REQUESTED_WITH'])) {
                     $qs = !empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '';
@@ -1467,7 +1468,7 @@ class Router {
             if ($ext === 'html' || $ext === 'htm') {
                 $qs = !empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '';
                 if ($lowerSubpath === 'index.html' || $lowerSubpath === 'index.htm') {
-                    header('Location: ' . url('s/' . $slug) . $qs, true, 301);
+                    header('Location: ' . url('s/' . $slug . '/') . $qs, true, 301);
                     exit;
                 }
                 // Do not redirect subfolder index files e.g. blog/index.html so relative assets resolve
@@ -1543,6 +1544,37 @@ class Router {
                     if ($ciNested) {
                         $fileToServe = $ciNested;
                         break;
+                    }
+                }
+            }
+
+            // G. Common stylesheet and script name aliasing (e.g. style.css <-> styles.css, app.js <-> main.js)
+            if (!$fileToServe && !str_contains($trimmedSubpath, '/')) {
+                $subExt = strtolower(pathinfo($trimmedSubpath, PATHINFO_EXTENSION));
+                $aliases = [];
+                if ($subExt === 'css') {
+                    $aliases = ['style.css', 'styles.css', 'main.css', 'app.css'];
+                } elseif ($subExt === 'js') {
+                    $aliases = ['script.js', 'scripts.js', 'main.js', 'app.js', 'bundle.js'];
+                }
+                foreach ($aliases as $alias) {
+                    if (strtolower($alias) === strtolower($trimmedSubpath)) continue;
+                    $candidate = realpath($siteDir . '/' . $alias);
+                    if ($candidate && str_starts_with($candidate, $siteDir) && is_file($candidate)) {
+                        $fileToServe = $candidate;
+                        break;
+                    }
+                    $ciCandidate = self::findFileCaseInsensitive($siteDir, $alias);
+                    if ($ciCandidate) {
+                        $fileToServe = $ciCandidate;
+                        break;
+                    }
+                    foreach (['css', 'assets', 'assets/css', 'js', 'assets/js'] as $sub) {
+                        $subCandidate = realpath($siteDir . '/' . $sub . '/' . $alias);
+                        if ($subCandidate && str_starts_with($subCandidate, $siteDir) && is_file($subCandidate)) {
+                            $fileToServe = $subCandidate;
+                            break 2;
+                        }
                     }
                 }
             }
@@ -1633,7 +1665,8 @@ class Router {
             $content = file_get_contents($filePath);
 
             // Layer 4 Grounding: ensure relative links (style.css, script.js, images/) resolve to the site directory
-            $siteBase = url('s/' . $site['slug'] . '/');
+            // Use root-relative base (/s/{slug}/) to eliminate mixed-content blocking across HTTP/HTTPS and proxy boundaries
+            $siteBase = '/s/' . $site['slug'] . '/';
             if (preg_match('/<base\b[^>]*>/i', $content)) {
                 $content = preg_replace('/<base\b[^>]*>/i', "<base href=\"{$siteBase}\">", $content, 1);
             } else {

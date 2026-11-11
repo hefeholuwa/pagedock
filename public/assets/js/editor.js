@@ -612,8 +612,9 @@ document.addEventListener('DOMContentLoaded', () => {
             doc = `<base href="${baseHref}">\n` + doc;
         }
 
-        if (fileCache['style.css'] !== undefined) {
-            const inlineStyle = `<style id="__pd_live_css">\n${fileCache['style.css']}\n</style>`;
+        const activeCss = fileCache['style.css'] ?? fileCache['styles.css'] ?? fileCache['css/style.css'] ?? fileCache['css/styles.css'] ?? fileCache['assets/css/style.css'];
+        if (activeCss !== undefined) {
+            const inlineStyle = `<style id="__pd_live_css">\n${activeCss}\n</style>`;
             if (/<\/head>/i.test(doc)) {
                 doc = doc.replace(/<\/head>/i, `${inlineStyle}\n</head>`);
             } else {
