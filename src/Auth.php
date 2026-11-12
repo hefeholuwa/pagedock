@@ -144,7 +144,7 @@ class Auth {
         }
 
         $db = Database::getConnection();
-        $stmt = $db->prepare("SELECT id, email, name, plan, created_at FROM users WHERE id = ?");
+        $stmt = $db->prepare("SELECT id, email, name, plan, role, created_at FROM users WHERE id = ?");
         $stmt->execute([self::id()]);
         $user = $stmt->fetch();
 
@@ -154,6 +154,32 @@ class Auth {
         }
 
         return $user;
+    }
+
+    public static function isAdmin(): bool {
+        $u = self::user();
+        if (!$u) {
+            return false;
+        }
+        if (!empty($u['role']) && $u['role'] === 'admin') {
+            return true;
+        }
+        if (defined('ADMIN_EMAIL') && ADMIN_EMAIL !== '' && strtolower($u['email']) === strtolower(ADMIN_EMAIL)) {
+            return true;
+        }
+        return false;
+    }
+
+    public static function requireAdmin(): void {
+        if (!self::check()) {
+            redirect('login?redirect=admin');
+            exit;
+        }
+        if (!self::isAdmin()) {
+            http_response_code(403);
+            render_view('404', ['title' => 'Forbidden — Administrator Access Required']);
+            exit;
+        }
     }
 
     public static function register(string $email, string $password, string $name = ''): array {

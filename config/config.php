@@ -49,6 +49,7 @@ define('DB_PASS', getenv('DB_PASS') ?: '');
 define('DB_PATH', DATA_DIR . '/pagedock.sqlite');
 define('MAX_UPLOAD_BYTES', 50 * 1024 * 1024); // 50MB
 define('DEFAULT_EXPIRY_DAYS', 0); // 0 = never expires
+define('ADMIN_EMAIL', getenv('ADMIN_EMAIL') ?: 'ajogbejei@gmail.com');
 
 // Cloudflare R2 Storage configuration (S3-compatible 10GB object storage)
 define('STORAGE_DRIVER', getenv('STORAGE_DRIVER') ?: 'local');

@@ -32,6 +32,9 @@
                 <a href="<?= url('docs') ?>" class="nav-item">Docs</a>
                 <?php if (Auth::check()): ?>
                     <?php $currentUser = Auth::user(); ?>
+                    <?php if (Auth::isAdmin()): ?>
+                        <a href="<?= url('admin') ?>" class="nav-item nav-admin-badge" style="background:rgba(4,120,87,0.12); color:var(--accent); font-weight:700; padding:4px 10px; border-radius:6px; border:1px solid rgba(4,120,87,0.25);">Admin</a>
+                    <?php endif; ?>
                     <a href="<?= url('dashboard') ?>" class="nav-item">Dashboard</a>
                     <span class="nav-user-pill" style="font-size:12px; color:var(--fg-muted); display:flex; align-items:center; gap:6px;">
                         <span style="width:22px; height:22px; border-radius:50%; background:var(--accent); color:#ffffff; font-weight:800; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">
@@ -65,6 +68,9 @@
             <a href="<?= url('templates') ?>" class="mobile-nav-link">Templates</a>
             <a href="<?= url('docs') ?>" class="mobile-nav-link">Docs</a>
             <?php if (Auth::check()): ?>
+                <?php if (Auth::isAdmin()): ?>
+                    <a href="<?= url('admin') ?>" class="mobile-nav-link" style="color:var(--accent); font-weight:700;">Admin Console</a>
+                <?php endif; ?>
                 <a href="<?= url('dashboard') ?>" class="mobile-nav-link">Dashboard</a>
                 <a href="<?= url('logout') ?>" class="mobile-nav-link text-danger">Log Out</a>
             <?php else: ?>

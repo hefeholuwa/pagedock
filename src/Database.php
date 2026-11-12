@@ -53,6 +53,7 @@ class Database {
             password_hash TEXT NOT NULL,
             name TEXT,
             plan TEXT DEFAULT 'free',
+            role TEXT DEFAULT 'user',
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
 
@@ -68,6 +69,7 @@ class Database {
             expires_at DATETIME NULL,
             views_count INTEGER DEFAULT 0,
             current_version INTEGER DEFAULT 1,
+            is_suspended INTEGER DEFAULT 0,
             webhook_url TEXT DEFAULT NULL,
             webhook_format TEXT DEFAULT 'generic',
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -211,11 +213,26 @@ class Database {
         if (!in_array('current_version', $siteCols)) {
             self::$instance->exec("ALTER TABLE sites ADD COLUMN current_version INTEGER DEFAULT 1");
         }
+        if (!in_array('is_suspended', $siteCols)) {
+            self::$instance->exec("ALTER TABLE sites ADD COLUMN is_suspended INTEGER DEFAULT 0");
+        }
         if (!in_array('webhook_url', $siteCols)) {
             self::$instance->exec("ALTER TABLE sites ADD COLUMN webhook_url TEXT DEFAULT NULL");
         }
         if (!in_array('webhook_format', $siteCols)) {
             self::$instance->exec("ALTER TABLE sites ADD COLUMN webhook_format TEXT DEFAULT 'generic'");
+        }
+
+        // Ensure user role column exists
+        $userCols = self::$instance->query("PRAGMA table_info(users)")->fetchAll(PDO::FETCH_COLUMN, 1);
+        if (!in_array('role', $userCols)) {
+            self::$instance->exec("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user'");
+        }
+
+        // Promote configured admin user if configured
+        if (defined('ADMIN_EMAIL') && ADMIN_EMAIL !== '') {
+            $updAdmin = self::$instance->prepare("UPDATE users SET role = 'admin' WHERE LOWER(email) = LOWER(?)");
+            $updAdmin->execute([ADMIN_EMAIL]);
         }
 
         if (!in_array('spam_reason', $cols)) {
@@ -290,6 +307,7 @@ class Database {
             password_hash VARCHAR(255) NOT NULL,
             name VARCHAR(255),
             plan VARCHAR(50) DEFAULT 'free',
+            role VARCHAR(50) DEFAULT 'user',
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -305,6 +323,7 @@ class Database {
             expires_at DATETIME NULL,
             views_count INT DEFAULT 0,
             current_version INT DEFAULT 1,
+            is_suspended TINYINT DEFAULT 0,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             INDEX idx_sites_slug (slug),

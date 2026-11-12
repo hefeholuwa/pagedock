@@ -323,6 +323,57 @@ class Router {
             return;
         }
 
+        // 2e-admin. Platform Administration API: /api/admin/*
+        if (!empty($parts) && $parts[0] === 'api' && ($parts[1] ?? '') === 'admin') {
+            if (!Auth::isAdmin()) {
+                json_response(['success' => false, 'error' => 'Administrator access required'], 403);
+                return;
+            }
+
+            $adminAction = $parts[2] ?? '';
+
+            // POST /api/admin/sites/{slug}/toggle-status
+            if ($adminAction === 'sites' && ($parts[4] ?? '') === 'toggle-status' && $method === 'POST') {
+                $slug = $parts[3] ?? '';
+                $res = Admin::toggleSiteSuspension($slug);
+                json_response($res, $res['success'] ? 200 : 400);
+                return;
+            }
+
+            // POST /api/admin/sites/{slug}/delete
+            if ($adminAction === 'sites' && ($parts[4] ?? '') === 'delete' && $method === 'POST') {
+                $slug = $parts[3] ?? '';
+                $res = Admin::deleteSite($slug);
+                json_response($res, $res['success'] ? 200 : 400);
+                return;
+            }
+
+            // POST /api/admin/users/{id}/toggle-role
+            if ($adminAction === 'users' && ($parts[4] ?? '') === 'toggle-role' && $method === 'POST') {
+                $userId = (int)($parts[3] ?? 0);
+                $res = Admin::toggleUserRole($userId);
+                json_response($res, $res['success'] ? 200 : 400);
+                return;
+            }
+
+            // POST /api/admin/maintenance/sync-db
+            if ($adminAction === 'maintenance' && ($parts[3] ?? '') === 'sync-db' && $method === 'POST') {
+                $ok = Database::syncDatabaseToR2();
+                json_response(['success' => $ok, 'message' => $ok ? 'Database backup synced to Cloudflare R2' : 'Storage unconfigured or backup failed']);
+                return;
+            }
+
+            // POST /api/admin/maintenance/cleanup-expired
+            if ($adminAction === 'maintenance' && ($parts[3] ?? '') === 'cleanup-expired' && $method === 'POST') {
+                $res = Admin::cleanupExpiredSites();
+                json_response($res);
+                return;
+            }
+
+            json_response(['error' => 'Unknown admin endpoint'], 404);
+            return;
+        }
+
         // 2f. Surge / Redoost Unified cURL & Agent Deploy Endpoint: POST/PUT /api/deploy
         if ($path === 'api/deploy' && ($method === 'POST' || $method === 'PUT')) {
             self::handleApiDeploy();
@@ -1113,6 +1164,26 @@ class Router {
             return;
         }
 
+        // 8d. Admin Platform Console: /admin
+        if ($path === 'admin') {
+            Auth::requireAdmin();
+
+            $stats = Admin::getPlatformStats();
+            $sites = Admin::getAllSites('', '', 100);
+            $users = Admin::getAllUsers('', 100);
+            $activity = Admin::getRecentActivity(25);
+
+            render_view('admin', [
+                'stats' => $stats,
+                'sites' => $sites,
+                'users' => $users,
+                'activity' => $activity,
+                'user' => Auth::user(),
+                'title' => 'Admin Console — PageDock'
+            ]);
+            return;
+        }
+
         // 9. Auth Routes
         if ($path === 'login') {
             if (Auth::hasSession()) {
@@ -1411,6 +1482,12 @@ class Router {
         if (!$site) {
             http_response_code(404);
             echo "<h1>404 — Site not found</h1><p>The requested PageDock site does not exist.</p>";
+            return;
+        }
+
+        if (!empty($site['is_suspended'])) {
+            http_response_code(451);
+            echo "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Site Suspended — PageDock</title><style>body{font-family:sans-serif;background:#0b0f19;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;}div{text-align:center;max-width:480px;padding:32px;background:#161d2f;border:1px solid #2d3748;border-radius:12px;}h1{color:#ef4444;font-size:24px;margin-bottom:8px;}p{color:#94a3b8;font-size:14px;line-height:1.6;}</style></head><body><div><h1>Site Suspended</h1><p>This deployment has been suspended by the platform administrator for policy review.</p></div></body></html>";
             return;
         }
 
