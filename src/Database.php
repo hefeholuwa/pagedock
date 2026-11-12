@@ -21,6 +21,14 @@ class Database {
                     mkdir($dir, 0755, true);
                 }
 
+                // Re-hydrate SQLite database from Cloudflare R2 if local database file is missing
+                if (!file_exists(DB_PATH) && class_exists('R2Storage') && R2Storage::isConfigured()) {
+                    $r2Db = R2Storage::getObject('db/pagedock.sqlite');
+                    if ($r2Db !== null && strlen($r2Db) > 0) {
+                        file_put_contents(DB_PATH, $r2Db);
+                    }
+                }
+
                 self::$instance = new PDO('sqlite:' . DB_PATH);
                 self::$instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 self::$instance->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
@@ -393,5 +401,27 @@ class Database {
         ";
 
         self::$instance->exec($sql);
+    }
+
+    /**
+     * Backup SQLite database to Cloudflare R2
+     */
+    public static function syncDatabaseToR2(): bool {
+        if (!class_exists('R2Storage') || !R2Storage::isConfigured() || !file_exists(DB_PATH)) {
+            return false;
+        }
+
+        // Checkpoint SQLite WAL before backing up
+        if (self::$instance !== null) {
+            try {
+                self::$instance->exec('PRAGMA wal_checkpoint(TRUNCATE);');
+            } catch (Throwable $e) {}
+        }
+
+        $dbBytes = file_get_contents(DB_PATH);
+        if ($dbBytes !== false && strlen($dbBytes) > 0) {
+            return R2Storage::putObject('db/pagedock.sqlite', $dbBytes, 'application/x-sqlite3');
+        }
+        return false;
     }
 }

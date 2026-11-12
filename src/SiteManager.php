@@ -85,6 +85,12 @@ class SiteManager {
             $_SESSION['guest_claim_tokens'][] = $claimToken;
         }
 
+        // Synchronize site files and SQLite database to Cloudflare R2
+        if (class_exists('R2Storage') && R2Storage::isConfigured()) {
+            R2Storage::syncDirectoryToR2($siteDir, 'sites/' . $slug);
+            Database::syncDatabaseToR2();
+        }
+
         return [
             'success' => true,
             'slug' => $slug,
@@ -301,6 +307,12 @@ class SiteManager {
             $_SESSION['guest_claim_tokens'][] = $claimToken;
         }
 
+        // Synchronize site files and SQLite database to Cloudflare R2
+        if (class_exists('R2Storage') && R2Storage::isConfigured()) {
+            R2Storage::syncDirectoryToR2($siteDir, 'sites/' . $slug);
+            Database::syncDatabaseToR2();
+        }
+
         return [
             'success' => true,
             'slug' => $slug,
@@ -330,6 +342,13 @@ class SiteManager {
         if (!$site) return null;
 
         $siteDir = realpath(SITES_DIR . '/' . $slug);
+        if (!$siteDir || !is_dir($siteDir)) {
+            if (class_exists('R2Storage') && R2Storage::isConfigured()) {
+                $targetDir = SITES_DIR . '/' . $slug;
+                R2Storage::syncR2ToDirectory('sites/' . $slug, $targetDir);
+                $siteDir = realpath($targetDir);
+            }
+        }
         if (!$siteDir) return null;
 
         $targetFile = $relPath ?: ($site['entry_file'] ?: 'index.html');
@@ -429,6 +448,12 @@ class SiteManager {
         // Create immutable revision snapshot
         $snapshotSummary = $summary ?: ("Web Editor save (" . implode(', ', $savedFiles) . ")");
         $version = VersionManager::createSnapshot((int)$site['id'], $slug, $snapshotSummary);
+
+        // Synchronize updated site files and SQLite database to Cloudflare R2
+        if (class_exists('R2Storage') && R2Storage::isConfigured()) {
+            R2Storage::syncDirectoryToR2($siteDir, 'sites/' . $slug);
+            Database::syncDatabaseToR2();
+        }
 
         return [
             'success' => true,
@@ -894,6 +919,12 @@ class SiteManager {
         $siteDir = SITES_DIR . '/' . $slug;
         if (is_dir($siteDir)) {
             self::recursiveRmdir($siteDir);
+        }
+
+        // Delete from Cloudflare R2
+        if (class_exists('R2Storage') && R2Storage::isConfigured()) {
+            R2Storage::deletePrefix('sites/' . $slug);
+            Database::syncDatabaseToR2();
         }
 
         return ['success' => true];

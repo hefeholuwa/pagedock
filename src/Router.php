@@ -1416,6 +1416,13 @@ class Router {
 
         $siteDir = realpath(SITES_DIR . '/' . $slug);
         if (!$siteDir || !is_dir($siteDir)) {
+            if (class_exists('R2Storage') && R2Storage::isConfigured()) {
+                $targetDir = SITES_DIR . '/' . $slug;
+                R2Storage::syncR2ToDirectory('sites/' . $slug, $targetDir);
+                $siteDir = realpath($targetDir);
+            }
+        }
+        if (!$siteDir || !is_dir($siteDir)) {
             http_response_code(404);
             echo "<h1>Site files missing</h1>";
             return;

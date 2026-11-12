@@ -13,3 +13,4 @@ chown -R www-data:www-data /var/www/html/data /var/www/html/sites
 chmod -R 775 /var/www/html/data /var/www/html/sites
 
 exec "$@"
+

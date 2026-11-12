@@ -50,6 +50,13 @@ define('DB_PATH', DATA_DIR . '/pagedock.sqlite');
 define('MAX_UPLOAD_BYTES', 50 * 1024 * 1024); // 50MB
 define('DEFAULT_EXPIRY_DAYS', 0); // 0 = never expires
 
+// Cloudflare R2 Storage configuration (S3-compatible 10GB object storage)
+define('STORAGE_DRIVER', getenv('STORAGE_DRIVER') ?: 'local');
+define('R2_ACCOUNT_ID', getenv('R2_ACCOUNT_ID') ?: '');
+define('R2_ACCESS_KEY_ID', getenv('R2_ACCESS_KEY_ID') ?: '');
+define('R2_SECRET_ACCESS_KEY', getenv('R2_SECRET_ACCESS_KEY') ?: '');
+define('R2_BUCKET', getenv('R2_BUCKET') ?: '');
+
 // Start session securely
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
