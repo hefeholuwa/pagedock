@@ -36,6 +36,39 @@ $formatRelativeDate = function($dateString) {
     if ($diff < 604800) return floor($diff / 86400) . 'd ago';
     return date('M j, Y', $time);
 };
+
+// AI assistant metadata resolver
+$detectAiClient = function(string $tokenName, string $prefix): array {
+    $lower = strtolower($tokenName);
+    $isOAuth = str_starts_with($prefix, 'pd_oauth_') || str_starts_with($lower, 'oauth:');
+    
+    $cleanName = $tokenName;
+    if (str_starts_with($cleanName, 'OAuth: ')) {
+        $cleanName = substr($cleanName, 7);
+    }
+
+    $provider = 'AI Assistant';
+    $protocol = $isOAuth ? 'Remote MCP (OAuth 2.1)' : 'Personal Access Token (PAT)';
+
+    if (str_contains($lower, 'chatgpt') || str_contains($lower, 'openai')) {
+        $provider = 'ChatGPT (OpenAI)';
+    } elseif (str_contains($lower, 'claude') || str_contains($lower, 'anthropic')) {
+        $provider = 'Claude (Anthropic)';
+    } elseif (str_contains($lower, 'cursor')) {
+        $provider = 'Cursor IDE';
+    } elseif (str_contains($lower, 'copilot')) {
+        $provider = 'GitHub Copilot';
+    } elseif ($isOAuth) {
+        $provider = $cleanName ?: 'MCP AI Client';
+    }
+
+    return [
+        'name' => $cleanName ?: $provider,
+        'provider' => $provider,
+        'protocol' => $protocol,
+        'isOAuth' => $isOAuth,
+    ];
+};
 ?>
 
 <div class="dashboard-container">
@@ -137,6 +170,98 @@ $formatRelativeDate = function($dateString) {
             </div>
         </div>
     <?php endif; ?>
+
+    <!-- Connected AI Assistants & Remote MCP Overview Panel -->
+    <div class="ai-connections-panel" style="margin-bottom: 28px; background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(4, 120, 87, 0.1); border: 1px solid rgba(4, 120, 87, 0.2); display: flex; align-items: center; justify-content: center; color: var(--accent);">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><rect x="4" y="8" width="16" height="12" rx="2"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/><path d="M9 17h6"/></svg>
+                </div>
+                <div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <h2 style="font-size: 16px; font-weight: 700; color: var(--fg); margin: 0;">Connected AI Assistants</h2>
+                        <span style="font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: <?= empty($apiTokens) ? 'var(--bg-2)' : 'rgba(4, 120, 87, 0.12)' ?>; color: <?= empty($apiTokens) ? 'var(--fg-muted)' : 'var(--accent)' ?>;">
+                            <?= count($apiTokens) ?> <?= count($apiTokens) === 1 ? 'Connected' : 'Connected' ?>
+                        </span>
+                    </div>
+                    <p style="font-size: 12.5px; color: var(--fg-muted); margin: 2px 0 0 0;">AI agents with remote MCP access to deploy, edit, and inspect your websites.</p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn-sm btn-ghost" onclick="openMcpToolsModal()" title="View the 11 tools accessible to connected AI agents">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                    Exposed Tools (11)
+                </button>
+                <button type="button" class="btn-sm btn-secondary" onclick="openConnectionsModal()">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Connect ChatGPT / MCP
+                </button>
+            </div>
+        </div>
+
+        <?php if (!empty($apiTokens)): ?>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;" id="dashboard-ai-tokens-grid">
+                <?php foreach ($apiTokens as $tok): ?>
+                    <?php $meta = $detectAiClient($tok['name'], $tok['token_prefix']); ?>
+                    <div class="ai-assistant-card" id="ai-card-<?= (int)$tok['id'] ?>" style="background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px;">
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div style="width: 24px; height: 24px; border-radius: 50%; background: var(--bg-1); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: var(--accent);">
+                                        <?= strtoupper(substr($meta['provider'], 0, 1)) ?>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 700; font-size: 14px; color: var(--fg);"><?= htmlspecialchars($meta['name']) ?></div>
+                                        <?php if ($meta['provider'] !== $meta['name']): ?>
+                                            <div style="font-size: 11px; color: var(--fg-muted);"><?= htmlspecialchars($meta['provider']) ?></div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <span style="display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: var(--accent); background: rgba(4, 120, 87, 0.1); padding: 2px 7px; border-radius: 4px;">
+                                    <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--accent);"></span>
+                                    Active
+                                </span>
+                            </div>
+                            <div style="font-size: 11.5px; color: var(--fg-muted); display: flex; flex-direction: column; gap: 3px;">
+                                <div>Protocol: <strong style="color: var(--fg);"><?= htmlspecialchars($meta['protocol']) ?></strong></div>
+                                <div>Permissions: <span style="color: var(--accent);">Full MCP Studio &amp; Deploy Access</span></div>
+                                <div style="font-family: var(--font-mono); font-size: 11px; color: var(--fg-muted); margin-top: 4px;">
+                                    Key: <?= htmlspecialchars($tok['token_prefix']) ?>
+                                    <?php if (!empty($tok['last_used_at'])): ?>
+                                        &middot; Active <?= $formatRelativeDate($tok['last_used_at']) ?>
+                                    <?php else: ?>
+                                        &middot; Created <?= $formatRelativeDate($tok['created_at']) ?>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: flex-end; align-items: center; border-top: 1px solid var(--border); padding-top: 10px;">
+                            <button type="button" class="btn-sm btn-ghost" onclick="revokeApiTokenFromCard(<?= (int)$tok['id'] ?>)" style="color: var(--danger); font-size: 12px; padding: 3px 8px;">
+                                Revoke Connection
+                            </button>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <!-- Zero Connections Onboarding Callout -->
+            <div style="background: var(--bg-2); border: 1px dashed var(--border); border-radius: 10px; padding: 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(4, 120, 87, 0.08); border: 1px solid rgba(4, 120, 87, 0.2); display: flex; align-items: center; justify-content: center; color: var(--accent); flex-shrink: 0;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><rect x="4" y="8" width="16" height="12" rx="2"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/><path d="M9 17h6"/></svg>
+                    </div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 14px; color: var(--fg); margin-bottom: 2px;">No AI Assistants Connected Yet</div>
+                        <div style="font-size: 12.5px; color: var(--fg-muted);">Link ChatGPT, Claude Desktop, or Cursor to publish, update, and inspect your sites straight from conversation.</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-sm btn-accent" onclick="openConnectionsModal()">
+                    Connect ChatGPT via MCP &rarr;
+                </button>
+            </div>
+        <?php endif; ?>
+    </div>
 
     <!-- Dashboard Content Header & High-Velocity Actions -->
     <div class="dashboard-header">
@@ -722,6 +847,76 @@ $formatRelativeDate = function($dateString) {
     </div>
 </div>
 
+<!-- Modal: 11 Exposed MCP Tools -->
+<div id="mcp-tools-modal" class="pagedock-modal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modal-mcp-tools-title">
+    <div class="modal-backdrop" onclick="closeMcpToolsModal()"></div>
+    <div class="modal-dialog-card" style="max-width: 620px;">
+        <div class="modal-dialog-header">
+            <div class="modal-header-left">
+                <div class="modal-icon-badge">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                </div>
+                <div>
+                    <h2 id="modal-mcp-tools-title">Exposed MCP Tools Catalog</h2>
+                    <p class="modal-sub">The 11 tools currently available to authorized AI clients connected to your account.</p>
+                </div>
+            </div>
+            <button type="button" class="modal-close-btn" onclick="closeMcpToolsModal()" aria-label="Close modal">&times;</button>
+        </div>
+        <div class="modal-dialog-body" style="padding: 18px 24px; max-height: 420px; overflow-y: auto;">
+            <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
+                <div style="padding: 10px 12px; background: var(--bg-2); border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="font-weight: 700; color: var(--accent); font-family: var(--font-mono);">deploy_html</div>
+                    <div style="color: var(--fg-muted); font-size: 12px;">Publish a new HTML website or overwrite an existing site with live preview URL.</div>
+                </div>
+                <div style="padding: 10px 12px; background: var(--bg-2); border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="font-weight: 700; color: var(--accent); font-family: var(--font-mono);">update_site_file</div>
+                    <div style="color: var(--fg-muted); font-size: 12px;">Surgically update or create an individual file (HTML, CSS, JS) with automatic version snapshot.</div>
+                </div>
+                <div style="padding: 10px 12px; background: var(--bg-2); border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="font-weight: 700; color: var(--accent); font-family: var(--font-mono);">pull_site</div>
+                    <div style="color: var(--fg-muted); font-size: 12px;">Read raw HTML or code source of a hosted site for inspection or debugging.</div>
+                </div>
+                <div style="padding: 10px 12px; background: var(--bg-2); border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="font-weight: 700; color: var(--accent); font-family: var(--font-mono);">list_sites</div>
+                    <div style="color: var(--fg-muted); font-size: 12px;">List all hosted sites on your account with slugs, titles, and live URLs.</div>
+                </div>
+                <div style="padding: 10px 12px; background: var(--bg-2); border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="font-weight: 700; color: var(--accent); font-family: var(--font-mono);">get_site</div>
+                    <div style="color: var(--fg-muted); font-size: 12px;">Get full site metadata, file list, storage size, and live endpoints.</div>
+                </div>
+                <div style="padding: 10px 12px; background: var(--bg-2); border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="font-weight: 700; color: var(--accent); font-family: var(--font-mono);">list_site_files</div>
+                    <div style="color: var(--fg-muted); font-size: 12px;">List all relative file paths inside a multi-file deployment.</div>
+                </div>
+                <div style="padding: 10px 12px; background: var(--bg-2); border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="font-weight: 700; color: var(--accent); font-family: var(--font-mono);">list_versions</div>
+                    <div style="color: var(--fg-muted); font-size: 12px;">Inspect historical immutable version snapshots with timestamps and summaries.</div>
+                </div>
+                <div style="padding: 10px 12px; background: var(--bg-2); border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="font-weight: 700; color: var(--accent); font-family: var(--font-mono);">rollback_site</div>
+                    <div style="color: var(--fg-muted); font-size: 12px;">Restore site to an earlier version snapshot with 1-click rollback.</div>
+                </div>
+                <div style="padding: 10px 12px; background: var(--bg-2); border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="font-weight: 700; color: var(--accent); font-family: var(--font-mono);">get_site_analytics</div>
+                    <div style="color: var(--fg-muted); font-size: 12px;">Query visitor view counts, unique visitors, referrers, and device breakdown.</div>
+                </div>
+                <div style="padding: 10px 12px; background: var(--bg-2); border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="font-weight: 700; color: var(--accent); font-family: var(--font-mono);">list_form_submissions</div>
+                    <div style="color: var(--fg-muted); font-size: 12px;">Retrieve customer inquiries and contact form leads with spam filtering.</div>
+                </div>
+                <div style="padding: 10px 12px; background: var(--bg-2); border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="font-weight: 700; color: var(--accent); font-family: var(--font-mono);">delete_site</div>
+                    <div style="color: var(--fg-muted); font-size: 12px;">Permanently delete a hosted site and purge on-disk and R2 cloud files.</div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-dialog-footer" style="padding: 12px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end;">
+            <button type="button" class="btn-secondary btn-sm" onclick="closeMcpToolsModal()">Close</button>
+        </div>
+    </div>
+</div>
+
 <script>
 // ==========================================
 // Dashboard Interactivity & State Management
@@ -1072,11 +1267,31 @@ async function revokeApiToken(tokenId) {
         if (data.success) {
             const row = document.getElementById(`token-row-${tokenId}`);
             if (row) row.remove();
+            const card = document.getElementById(`ai-card-${tokenId}`);
+            if (card) card.remove();
+            const remaining = document.querySelectorAll('.ai-assistant-card');
+            if (remaining.length === 0 && document.getElementById('dashboard-ai-tokens-grid')) {
+                location.reload();
+            }
         } else {
             alert('Failed to revoke token.');
         }
     } catch (e) {
         alert('Error revoking token.');
     }
+}
+
+function openMcpToolsModal() {
+    const m = document.getElementById('mcp-tools-modal');
+    if (m) m.style.display = 'flex';
+}
+
+function closeMcpToolsModal() {
+    const m = document.getElementById('mcp-tools-modal');
+    if (m) m.style.display = 'none';
+}
+
+function revokeApiTokenFromCard(tokenId) {
+    revokeApiToken(tokenId);
 }
 </script>
