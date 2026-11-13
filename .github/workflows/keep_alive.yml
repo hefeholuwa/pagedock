@@ -1,0 +1,24 @@
+name: PageDock Keep-Alive
+
+on:
+  schedule:
+    # Ping every 12 minutes to reset Render's 15-minute inactivity sleep timer
+    - cron: '*/12 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping PageDock Health Endpoint
+        run: |
+          TARGET_URL="${{ secrets.RENDER_SERVICE_URL }}"
+          if [ -z "$TARGET_URL" ]; then
+            echo "RENDER_SERVICE_URL secret not configured. Skipping ping."
+            exit 0
+          fi
+          # Ensure URL has no trailing slash
+          TARGET_URL="${TARGET_URL%/}"
+          echo "Pinging ${TARGET_URL}/health..."
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "${TARGET_URL}/health" || echo "failed")
+          echo "Health check HTTP status: ${STATUS}"

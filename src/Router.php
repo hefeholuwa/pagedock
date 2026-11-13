@@ -20,6 +20,20 @@ class Router {
             }
         }
 
+        // 0a-health. Fast Health Check & Keep-Alive Endpoint
+        if ($path === 'health' || $path === 'ping') {
+            header('Content-Type: application/json; charset=utf-8');
+            header('Cache-Control: no-cache, no-store, must-revalidate');
+            echo json_encode([
+                'status' => 'ok',
+                'app' => APP_NAME,
+                'version' => APP_VERSION,
+                'storage' => defined('STORAGE_DRIVER') ? STORAGE_DRIVER : 'local',
+                'timestamp' => time()
+            ]);
+            return;
+        }
+
         // 0b. Remote MCP Endpoint (ChatGPT Apps / Connectors & AI Clients)
         if ($path === 'mcp') {
             McpServer::handle($method);
